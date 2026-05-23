@@ -43,7 +43,7 @@ export function EditorSidebar({ items, activeId, onChange, className = '' }: Edi
               {isActive && (
                 <motion.div
                   layoutId="sidebar-active-pill"
-                  className="absolute inset-0 rounded-lg bg-blue-600/10 border border-blue-500/20"
+                  className="absolute inset-0 rounded-lg bg-white/[0.03] border border-white/[0.08]"
                   transition={{ type: 'spring', bounce: 0.15, duration: 0.3 }}
                 />
               )}
@@ -52,7 +52,7 @@ export function EditorSidebar({ items, activeId, onChange, className = '' }: Edi
               <span
                 className={`relative z-10 shrink-0 transition-colors ${
                   isActive
-                    ? 'text-blue-400'
+                    ? 'text-white'
                     : 'text-zinc-600 group-hover:text-zinc-400'
                 }`}
               >
@@ -64,7 +64,7 @@ export function EditorSidebar({ items, activeId, onChange, className = '' }: Edi
 
               {/* Unsaved dot */}
               {item.hasChanges && (
-                <span className="relative z-10 w-1.5 h-1.5 rounded-full bg-amber-400 shrink-0" />
+                <span className="relative z-10 w-1.5 h-1.5 rounded-full bg-zinc-400 shrink-0" />
               )}
 
               {/* Badge */}
@@ -72,8 +72,8 @@ export function EditorSidebar({ items, activeId, onChange, className = '' }: Edi
                 <span
                   className={`relative z-10 min-w-[20px] text-center text-xs px-1.5 py-0.5 rounded-md shrink-0 ${
                     isActive
-                      ? 'bg-blue-500/20 text-blue-300'
-                      : 'bg-zinc-800 text-zinc-500'
+                      ? 'bg-white/[0.06] text-white border border-white/[0.08]'
+                      : 'bg-zinc-900 text-zinc-500 border border-transparent'
                   }`}
                 >
                   {item.badge}

@@ -40,17 +40,11 @@ const SkillCard = ({ skill, index, isInView }: { skill: Skill; index: number; is
   }
 
   const getSkillGradient = (proficiency: number) => {
-    if (proficiency >= 90) return 'from-emerald-500 to-green-400'
-    if (proficiency >= 75) return 'from-blue-500 to-cyan-400'
-    if (proficiency >= 60) return 'from-amber-500 to-yellow-400'
-    return 'from-rose-500 to-red-400'
+    return 'from-white to-zinc-400'
   }
 
   const getSkillGlow = (proficiency: number) => {
-    if (proficiency >= 90) return 'rgba(16, 185, 129, 0.15)'
-    if (proficiency >= 75) return 'rgba(59, 130, 246, 0.15)'
-    if (proficiency >= 60) return 'rgba(245, 158, 11, 0.15)'
-    return 'rgba(239, 68, 68, 0.15)'
+    return 'rgba(255, 255, 255, 0.01)'
   }
 
   const getCategoryIcon = (category: string) => {
@@ -80,13 +74,9 @@ const SkillCard = ({ skill, index, isInView }: { skill: Skill; index: number; is
         style={{ transformStyle: 'preserve-3d' }}
       >
         {/* Card background */}
-        <div className="relative bg-gradient-to-br from-white/[0.06] to-white/[0.01] backdrop-blur-sm rounded-2xl p-5 border border-white/[0.06] hover:border-white/[0.12] transition-all duration-500"
-          style={{ boxShadow: isHovered ? `0 20px 40px rgba(0,0,0,0.3), 0 0 30px ${getSkillGlow(skill.proficiency)}` : '0 4px 20px rgba(0,0,0,0.1)' }}
+        <div className="relative bg-white/[0.01] backdrop-blur-sm rounded-2xl p-5 border border-white/[0.04] hover:border-white/[0.08] transition-all duration-500"
+          style={{ boxShadow: isHovered ? '0 12px 24px rgba(0,0,0,0.2)' : '0 4px 12px rgba(0,0,0,0.05)' }}
         >
-          {/* Glow follow cursor */}
-          <div className="glow-follow absolute w-32 h-32 rounded-full pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity duration-300 -translate-x-1/2 -translate-y-1/2"
-            style={{ background: `radial-gradient(circle, ${getSkillGlow(skill.proficiency)}, transparent 70%)` }}
-          />
 
           <div className="relative z-10">
             <div className="flex items-center justify-between mb-4">
@@ -95,29 +85,27 @@ const SkillCard = ({ skill, index, isInView }: { skill: Skill; index: number; is
                   <span className="text-2xl group-hover:scale-110 transition-transform duration-300 drop-shadow-lg">{skill.icon}</span>
                 )}
                 <div>
-                  <h3 className="text-white font-semibold text-base group-hover:text-blue-200 transition-colors">{skill.name}</h3>
-                  <span className="text-[11px] text-gray-500 uppercase tracking-wider flex items-center gap-1">
+                  <h3 className="text-white font-medium text-[14px] group-hover:text-zinc-200 transition-colors">{skill.name}</h3>
+                  <span className="text-[10px] text-zinc-500 uppercase tracking-wider flex items-center gap-1">
                     {getCategoryIcon(skill.category)}
                   </span>
                 </div>
               </div>
               <div className="flex items-center gap-1.5">
-                <TrendingUp size={12} className={`${skill.proficiency >= 75 ? 'text-emerald-400' : 'text-gray-600'}`} />
-                <span className={`font-bold text-base bg-gradient-to-r ${getSkillGradient(skill.proficiency)} bg-clip-text text-transparent`}>
+                <TrendingUp size={12} className="text-zinc-500" />
+                <span className="font-semibold text-xs text-zinc-400">
                   {skill.proficiency}%
                 </span>
               </div>
             </div>
 
-            {/* Progress bar */}
-            <div className="relative h-1.5 bg-white/[0.04] rounded-full overflow-hidden">
+            <div className="relative h-1 bg-white/[0.02] rounded-full overflow-hidden">
               <motion.div
                 initial={{ width: 0 }}
                 animate={isInView ? { width: `${skill.proficiency}%` } : { width: 0 }}
                 transition={{ duration: 1.2, delay: 0.2 + Math.min(index * 0.03, 0.6), ease: "easeOut" }}
-                className={`absolute inset-y-0 left-0 rounded-full bg-gradient-to-r ${getSkillGradient(skill.proficiency)}`}
+                className="absolute inset-y-0 left-0 rounded-full bg-zinc-400"
               >
-                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/25 to-transparent animate-shimmer" style={{ backgroundSize: '200% 100%' }} />
               </motion.div>
             </div>
           </div>
@@ -198,27 +186,24 @@ const Skills = () => {
       <div className="max-w-6xl mx-auto relative" ref={ref}>
         {/* Header */}
         <motion.div
-          initial={{ opacity: 0, y: 50 }}
-          animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 50 }}
+          initial={{ opacity: 0, y: 30 }}
+          animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 30 }}
           transition={{ duration: 0.8 }}
-          className="text-center mb-14"
+          className="text-center mb-12"
         >
           <motion.div
-            initial={{ opacity: 0, scale: 0.5 }}
-            animate={isInView ? { opacity: 1, scale: 1 } : { opacity: 0, scale: 0.5 }}
-            transition={{ duration: 0.5 }}
-            className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-blue-500/10 border border-blue-500/20 mb-6"
+            initial={{ opacity: 0 }}
+            animate={isInView ? { opacity: 1 } : { opacity: 0 }}
+            className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full border border-white/[0.06] bg-white/[0.01] mb-6"
           >
-            <Layers size={14} className="text-blue-400" />
-            <span className="text-blue-400 text-sm font-medium">Technical Expertise</span>
+            <Layers size={12} className="text-zinc-400" />
+            <span className="text-zinc-400 text-[10px] font-medium tracking-[0.2em] uppercase">Technical Expertise</span>
           </motion.div>
 
-          <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold mb-5 tracking-tight">
-            <span className="bg-gradient-to-r from-white via-blue-100 to-white bg-clip-text text-transparent">
-              Skills & Technologies
-            </span>
+          <h2 className="text-3xl sm:text-4xl md:text-5xl font-semibold text-white mb-4 tracking-tight">
+            Skills & Technologies
           </h2>
-          <p className="text-base md:text-lg text-gray-400/80 max-w-2xl mx-auto">
+          <p className="text-zinc-500 text-xs md:text-sm max-w-xl mx-auto leading-relaxed">
             Technologies and tools I use to bring ideas to life
           </p>
         </motion.div>
@@ -226,32 +211,22 @@ const Skills = () => {
         {/* Category Filter */}
         {!loading && !error && skills.length > 0 && (
           <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
-            transition={{ duration: 0.6, delay: 0.2 }}
-            className="flex flex-wrap justify-center gap-2 mb-12"
+            initial={{ opacity: 0 }}
+            animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0 }}
+            className="flex flex-wrap justify-center gap-2 mb-10"
           >
             {categories.map((category) => (
-              <motion.button
+              <button
                 key={category}
                 onClick={() => setActiveCategory(category)}
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-                className={`relative px-5 py-2.5 rounded-xl text-sm font-medium transition-all duration-300 ${
+                className={`px-4 py-2 rounded-lg text-[11px] font-semibold tracking-wider uppercase border transition-all duration-300 ${
                   activeCategory === category
-                    ? 'text-white'
-                    : 'bg-white/[0.03] text-gray-400 hover:bg-white/[0.06] hover:text-white border border-white/[0.06]'
+                    ? 'bg-white text-black border-white'
+                    : 'bg-white/[0.01] text-zinc-400 hover:bg-white/[0.03] hover:text-white border-white/5 hover:border-white/10'
                 }`}
               >
-                {activeCategory === category && (
-                  <motion.div
-                    layoutId="activeCategory"
-                    className="absolute inset-0 bg-gradient-to-r from-blue-500 to-purple-500 rounded-xl shadow-lg shadow-blue-500/25"
-                    transition={{ type: 'spring', bounce: 0.15, duration: 0.5 }}
-                  />
-                )}
-                <span className="relative z-10">{formatCategoryLabel(category)}</span>
-              </motion.button>
+                <span>{formatCategoryLabel(category)}</span>
+              </button>
             ))}
           </motion.div>
         )}
@@ -305,25 +280,20 @@ const Skills = () => {
             transition={{ duration: 0.8, delay: 0.8 }}
             className="mt-16"
           >
-            <div className="relative overflow-hidden rounded-2xl glass-card p-8 md:p-10">
-              <div className="absolute inset-0 opacity-30 pointer-events-none">
-                <div className="absolute top-0 right-0 w-64 h-64 bg-blue-500/10 rounded-full blur-[80px]" />
-                <div className="absolute bottom-0 left-0 w-64 h-64 bg-purple-500/10 rounded-full blur-[80px]" />
-              </div>
-
+            <div className="relative overflow-hidden rounded-xl border border-white/[0.04] bg-white/[0.01] p-6 md:p-8">
               <div className="relative flex flex-col md:flex-row items-center gap-6 text-center md:text-left">
                 <div className="flex-shrink-0">
-                  <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-blue-500 to-purple-500 flex items-center justify-center shadow-lg shadow-blue-500/20">
-                    <Zap size={24} className="text-white" />
+                  <div className="w-12 h-12 rounded-xl border border-white/[0.06] bg-white/[0.01] flex items-center justify-center text-zinc-400">
+                    <Zap size={20} />
                   </div>
                 </div>
                 <div>
-                  <h3 className="text-xl font-bold text-white mb-2">
+                  <h3 className="text-md font-semibold text-white mb-1.5">
                     Always Learning & Growing
                   </h3>
-                  <p className="text-gray-400/80 max-w-2xl leading-relaxed">
+                  <p className="text-zinc-500 text-[13px] max-w-2xl leading-relaxed">
                     Technology evolves rapidly, and I&apos;m committed to continuous learning. 
-                    Currently exploring AI/ML integration, Web3 technologies, and advanced 3D web experiences.
+                    Currently exploring AI/ML integration, Web3 systems, and high-performance interactive architectures.
                   </p>
                 </div>
               </div>

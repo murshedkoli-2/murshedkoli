@@ -52,25 +52,22 @@ const Education = () => {
             <div className="max-w-6xl mx-auto relative" ref={ref}>
                 {/* Header */}
                 <motion.div
-                    initial={{ opacity: 0, y: 50 }}
-                    animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 50 }}
+                    initial={{ opacity: 0, y: 30 }}
+                    animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 30 }}
                     transition={{ duration: 0.8 }}
-                    className="text-center mb-14 md:mb-20"
+                    className="text-center mb-12"
                 >
                     <motion.div
-                        initial={{ opacity: 0, scale: 0.5 }}
-                        animate={isInView ? { opacity: 1, scale: 1 } : { opacity: 0, scale: 0.5 }}
-                        transition={{ duration: 0.5 }}
-                        className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-purple-500/10 border border-purple-500/20 mb-6"
+                        initial={{ opacity: 0 }}
+                        animate={isInView ? { opacity: 1 } : { opacity: 0 }}
+                        className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full border border-white/[0.06] bg-white/[0.01] mb-6"
                     >
-                        <BookOpen size={14} className="text-purple-400" />
-                        <span className="text-purple-400 text-sm font-medium">Academic Background</span>
+                        <BookOpen size={12} className="text-zinc-400" />
+                        <span className="text-zinc-400 text-[10px] font-medium tracking-[0.2em] uppercase">Academic Background</span>
                     </motion.div>
 
-                    <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold mb-5 tracking-tight">
-                        <span className="bg-gradient-to-r from-white via-purple-100 to-white bg-clip-text text-transparent">
-                            Education
-                        </span>
+                    <h2 className="text-3xl sm:text-4xl md:text-5xl font-semibold text-white mb-4 tracking-tight">
+                        Education
                     </h2>
                 </motion.div>
 
@@ -86,24 +83,24 @@ const Education = () => {
                                 initial={{ opacity: 0, y: 30, scale: 0.96 }}
                                 animate={isInView ? { opacity: 1, y: 0, scale: 1 } : { opacity: 0, y: 30, scale: 0.96 }}
                                 transition={{ duration: 0.5, delay: index * 0.12 }}
-                                className="glass-card rounded-2xl p-7 group hover:shadow-2xl hover:shadow-purple-500/[0.06] transition-all duration-500"
+                                className="glass-card rounded-2xl p-6 group hover:shadow-xl transition-all duration-500"
                             >
                                 <div className="flex items-start justify-between mb-5">
-                                    <div className="p-3 rounded-xl bg-gradient-to-br from-purple-500/20 to-purple-600/10 border border-purple-500/10 text-purple-400 group-hover:scale-110 transition-transform duration-300">
-                                        <GraduationCap size={28} />
+                                    <div className="p-2.5 rounded-xl border border-white/[0.06] bg-white/[0.01] text-zinc-400 group-hover:scale-105 transition-transform duration-300">
+                                        <GraduationCap size={20} />
                                     </div>
-                                    <span className="text-gray-500 font-mono text-xs flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white/[0.03] border border-white/[0.06]">
-                                        <Calendar size={12} />
+                                    <span className="text-zinc-500 font-mono text-[10px] flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-white/[0.02] border border-white/[0.04]">
+                                        <Calendar size={10} />
                                         {new Date(edu.startDate).getFullYear()} — {edu.current ? 'Present' : new Date(edu.endDate!).getFullYear()}
                                     </span>
                                 </div>
 
-                                <h3 className="text-xl font-bold text-white mb-1.5 group-hover:text-purple-300 transition-colors">{edu.degree}</h3>
-                                <h4 className="text-base text-purple-400/80 mb-4">{edu.institution}</h4>
+                                <h3 className="text-lg font-semibold text-white mb-1.5">{edu.degree}</h3>
+                                <h4 className="text-sm text-zinc-400 mb-3">{edu.institution}</h4>
 
                                 {edu.field && (
-                                    <p className="text-gray-400/80 mb-4 text-sm">
-                                        Major in <span className="text-gray-300">{edu.field}</span>
+                                    <p className="text-zinc-500 mb-4 text-[13px]">
+                                        Major in <span className="text-zinc-400">{edu.field}</span>
                                     </p>
                                 )}
 

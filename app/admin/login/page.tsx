@@ -29,37 +29,33 @@ const AdminLogin = () => {
   }
 
   return (
-    <div className="min-h-screen bg-[#0a0a1a] flex items-center justify-center px-4 relative overflow-hidden">
-      {/* Background Elements */}
-      <div className="absolute inset-0 bg-gradient-to-br from-[#0a0a1a] via-[#0f0f23] to-[#1a1a2e]" />
-      <div className="absolute inset-0 bg-[url('/grid.svg')] bg-center [mask-image:linear-gradient(180deg,white,rgba(255,255,255,0))] opacity-50" />
+    <div className="min-h-screen bg-[#050507] flex items-center justify-center px-4 relative overflow-hidden">
+      {/* Background decorations */}
+      <div className="absolute inset-0 pointer-events-none">
+        <div className="absolute top-20 right-20 w-[300px] h-[300px] bg-white/[0.01] rounded-full blur-[100px]" />
+        <div className="absolute bottom-20 left-20 w-[300px] h-[300px] bg-white/[0.01] rounded-full blur-[100px]" />
+      </div>
       
       <motion.div
-        initial={{ opacity: 0, scale: 0.95 }}
-        animate={{ opacity: 1, scale: 1 }}
-        transition={{ duration: 0.5 }}
-        className="relative w-full max-w-md"
+        initial={{ opacity: 0, y: 15 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.6 }}
+        className="relative w-full max-w-sm"
       >
-        <div className="bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl shadow-2xl p-8">
+        <div className="bg-white/[0.01] border border-white/[0.04] backdrop-blur-sm rounded-xl p-8 shadow-2xl">
           <div className="text-center mb-8">
-            <motion.div
-              initial={{ width: 0 }}
-              animate={{ width: "100%" }}
-              transition={{ delay: 0.5, duration: 0.8 }}
-              className="h-1 bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 mx-auto mb-6 rounded-full"
-              style={{ maxWidth: '60px' }}
-            />
-            <h1 className="text-2xl font-bold text-white mb-2 tracking-tight">
+            <div className="h-px bg-white/[0.08] w-12 mx-auto mb-6" />
+            <h1 className="text-lg font-semibold text-white mb-2 tracking-tight uppercase tracking-[0.1em]">
               Welcome Back
             </h1>
-            <p className="text-gray-400 text-sm">
+            <p className="text-zinc-500 text-xs">
               Sign in to access your portfolio dashboard
             </p>
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-5">
             <div className="space-y-1.5">
-              <label htmlFor="username" className="block text-xs font-medium text-gray-400 uppercase tracking-wider">
+              <label htmlFor="username" className="block text-[10px] font-medium text-zinc-500 uppercase tracking-[0.15em]">
                 Username
               </label>
               <input
@@ -67,14 +63,14 @@ const AdminLogin = () => {
                 id="username"
                 value={credentials.username}
                 onChange={(e) => setCredentials({ ...credentials, username: e.target.value })}
-                className="w-full px-4 py-3 bg-black/40 border border-white/10 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 transition-all text-sm"
-                placeholder="Enter your username"
+                className="w-full px-4 py-3 bg-white/[0.01] border border-white/[0.06] rounded-lg text-white placeholder-zinc-700 focus:outline-none focus:border-white/20 transition-all text-xs font-mono"
+                placeholder="Enter username"
                 required
               />
             </div>
 
             <div className="space-y-1.5">
-              <label htmlFor="password" className="block text-xs font-medium text-gray-400 uppercase tracking-wider">
+              <label htmlFor="password" className="block text-[10px] font-medium text-zinc-500 uppercase tracking-[0.15em]">
                 Password
               </label>
               <input
@@ -82,17 +78,17 @@ const AdminLogin = () => {
                 id="password"
                 value={credentials.password}
                 onChange={(e) => setCredentials({ ...credentials, password: e.target.value })}
-                className="w-full px-4 py-3 bg-black/40 border border-white/10 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 transition-all text-sm"
-                placeholder="Enter your password"
+                className="w-full px-4 py-3 bg-white/[0.01] border border-white/[0.06] rounded-lg text-white placeholder-zinc-700 focus:outline-none focus:border-white/20 transition-all text-xs font-mono"
+                placeholder="Enter password"
                 required
               />
             </div>
 
             {error && (
               <motion.div
-                initial={{ opacity: 0, y: -10 }}
+                initial={{ opacity: 0, y: -5 }}
                 animate={{ opacity: 1, y: 0 }}
-                className="p-3 rounded-lg bg-red-500/10 border border-red-500/20 text-red-400 text-xs text-center font-medium"
+                className="p-3 rounded-lg bg-red-500/5 border border-red-500/10 text-red-400 text-xs text-center font-mono"
               >
                 {error}
               </motion.div>
@@ -101,7 +97,7 @@ const AdminLogin = () => {
             <button
               type="submit"
               disabled={isLoading}
-              className="w-full bg-gradient-to-r from-blue-600 to-purple-600 text-white py-3 px-6 rounded-lg font-semibold hover:from-blue-700 hover:to-purple-700 focus:outline-none focus:ring-2 focus:ring-blue-500/50 transition-all disabled:opacity-50 disabled:cursor-not-allowed text-sm mt-2"
+              className="w-full bg-white text-zinc-950 py-3 px-6 rounded-lg font-mono uppercase tracking-[0.2em] text-xs font-semibold hover:bg-zinc-100 transition-all disabled:opacity-50 disabled:cursor-not-allowed mt-2 border border-white"
             >
               {isLoading ? 'Signing in...' : 'Sign In'}
             </button>
@@ -110,9 +106,9 @@ const AdminLogin = () => {
           <div className="mt-8 text-center">
             <button
               onClick={() => router.push('/')}
-              className="text-gray-500 hover:text-white transition-colors text-xs font-medium flex items-center justify-center gap-2 mx-auto group"
+              className="text-zinc-650 hover:text-white transition-colors text-[10px] font-mono uppercase tracking-wider flex items-center justify-center gap-1.5 mx-auto group"
             >
-              <span className="group-hover:-translate-x-1 transition-transform">←</span>
+              <span className="group-hover:-translate-x-0.5 transition-transform">←</span>
               Back to Portfolio
             </button>
           </div>

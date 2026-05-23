@@ -76,25 +76,25 @@ const About = () => {
 
   const features = [
     {
-      icon: <Code className="w-6 h-6" />,
+      icon: <Code className="w-5 h-5" />,
       title: 'Clean Code',
       description: 'Writing maintainable, scalable, and efficient code following best practices.',
-      gradient: 'from-blue-500 to-cyan-500',
-      glow: 'group-hover:shadow-blue-500/20'
+      border: 'border-white/[0.04]',
+      iconColor: 'text-zinc-400'
     },
     {
-      icon: <Palette className="w-6 h-6" />,
+      icon: <Palette className="w-5 h-5" />,
       title: 'Modern Design',
       description: 'Creating beautiful, responsive interfaces with attention to user experience.',
-      gradient: 'from-purple-500 to-pink-500',
-      glow: 'group-hover:shadow-purple-500/20'
+      border: 'border-white/[0.04]',
+      iconColor: 'text-zinc-400'
     },
     {
-      icon: <Zap className="w-6 h-6" />,
+      icon: <Zap className="w-5 h-5" />,
       title: 'Performance',
       description: 'Optimizing applications for speed, accessibility, and search engines.',
-      gradient: 'from-amber-500 to-orange-500',
-      glow: 'group-hover:shadow-amber-500/20'
+      border: 'border-white/[0.04]',
+      iconColor: 'text-zinc-400'
     }
   ]
 
@@ -125,17 +125,16 @@ const About = () => {
           className="text-center mb-16 md:mb-20"
         >
           <motion.div
-            initial={{ opacity: 0, scale: 0.5 }}
-            animate={isInView ? { opacity: 1, scale: 1 } : { opacity: 0, scale: 0.5 }}
-            transition={{ duration: 0.5 }}
-            className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-blue-500/10 border border-blue-500/20 mb-6"
+            initial={{ opacity: 0 }}
+            animate={isInView ? { opacity: 1 } : { opacity: 0 }}
+            className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full border border-white/[0.06] bg-white/[0.01] mb-6"
           >
-            <Briefcase size={14} className="text-blue-400" />
-            <span className="text-blue-400 text-sm font-medium">Who I Am</span>
+            <Briefcase size={12} className="text-zinc-400" />
+            <span className="text-zinc-400 text-[10px] font-medium tracking-[0.2em] uppercase">Who I Am</span>
           </motion.div>
 
-          <h2 className="text-3xl sm:text-4xl md:text-6xl font-bold text-white mb-6 tracking-tight">
-            About <span className="bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">Me</span>
+          <h2 className="text-3xl sm:text-4xl md:text-5xl font-semibold text-white mb-4 tracking-tight">
+            About Me
           </h2>
           <div className="max-w-3xl mx-auto">
             <p className="text-lg md:text-xl text-gray-400/90 leading-relaxed">
@@ -170,14 +169,14 @@ const About = () => {
               <div className="grid gap-4">
                 <motion.div variants={itemVariants}>
                   <TiltCard>
-                    <div className="glass-card rounded-2xl p-6 group">
+                    <div className="glass-card rounded-2xl p-5 group">
                       <div className="flex items-center gap-4">
-                        <div className="p-3 rounded-xl bg-gradient-to-br from-blue-500/20 to-blue-600/10 border border-blue-500/10">
-                          <Briefcase size={20} className="text-blue-400" />
+                        <div className="p-2.5 rounded-xl border border-white/[0.06] bg-white/[0.01] text-zinc-400">
+                          <Briefcase size={16} />
                         </div>
                         <div>
-                          <p className="text-sm text-gray-500 mb-0.5">Professional Title</p>
-                          <p className="text-white font-semibold text-lg">{profile.title}</p>
+                          <p className="text-[11px] text-zinc-500 tracking-wider uppercase">Professional Title</p>
+                          <p className="text-white font-medium text-sm mt-0.5">{profile.title}</p>
                         </div>
                       </div>
                     </div>
@@ -187,14 +186,14 @@ const About = () => {
                 {profile.location && (
                   <motion.div variants={itemVariants}>
                     <TiltCard>
-                      <div className="glass-card rounded-2xl p-6 group">
+                      <div className="glass-card rounded-2xl p-5 group">
                         <div className="flex items-center gap-4">
-                          <div className="p-3 rounded-xl bg-gradient-to-br from-purple-500/20 to-purple-600/10 border border-purple-500/10">
-                            <MapPin size={20} className="text-purple-400" />
+                          <div className="p-2.5 rounded-xl border border-white/[0.06] bg-white/[0.01] text-zinc-400">
+                            <MapPin size={16} />
                           </div>
                           <div>
-                            <p className="text-sm text-gray-500 mb-0.5">Location</p>
-                            <p className="text-white font-semibold text-lg">{profile.location}</p>
+                            <p className="text-[11px] text-zinc-500 tracking-wider uppercase">Location</p>
+                            <p className="text-white font-medium text-sm mt-0.5">{profile.location}</p>
                           </div>
                         </div>
                       </div>
@@ -204,15 +203,15 @@ const About = () => {
                 
                 <motion.div variants={itemVariants}>
                   <TiltCard>
-                    <div className="glass-card rounded-2xl p-6 group">
+                    <div className="glass-card rounded-2xl p-5 group">
                       <div className="flex items-center gap-4">
-                        <div className="p-3 rounded-xl bg-gradient-to-br from-emerald-500/20 to-green-600/10 border border-emerald-500/10">
-                          <Mail size={20} className="text-emerald-400" />
+                        <div className="p-2.5 rounded-xl border border-white/[0.06] bg-white/[0.01] text-zinc-400">
+                          <Mail size={16} />
                         </div>
                         <div>
-                          <p className="text-sm text-gray-500 mb-0.5">Contact</p>
-                          <p className="text-white font-semibold">{profile.email}</p>
-                          {profile.phone && <p className="text-gray-400 text-sm mt-0.5">{profile.phone}</p>}
+                          <p className="text-[11px] text-zinc-500 tracking-wider uppercase">Contact</p>
+                          <p className="text-white font-medium text-sm mt-0.5">{profile.email}</p>
+                          {profile.phone && <p className="text-zinc-500 text-[12px] mt-0.5">{profile.phone}</p>}
                         </div>
                       </div>
                     </div>
@@ -231,9 +230,9 @@ const About = () => {
             
             <motion.div variants={itemVariants}>
               <motion.button
-                whileHover={{ scale: 1.02, boxShadow: "0 20px 50px rgba(59, 130, 246, 0.25)" }}
+                whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
-                className="group mt-4 bg-gradient-to-r from-blue-600 via-blue-500 to-purple-600 text-white px-8 py-4 rounded-2xl font-semibold shadow-lg shadow-blue-500/20 transition-all duration-300 flex items-center gap-2"
+                className="group mt-4 px-6 py-2.5 rounded-lg border border-white/10 text-white text-[11px] font-semibold tracking-wider uppercase bg-white/[0.01] hover:bg-white/[0.03] hover:border-white/20 transition-all duration-300 flex items-center gap-2"
                 onClick={() => {
                   const projectsSection = document.querySelector('#projects')
                   if (projectsSection) {
@@ -241,8 +240,8 @@ const About = () => {
                   }
                 }}
               >
-                View My Projects
-                <ArrowRight size={18} className="group-hover:translate-x-1 transition-transform" />
+                View Projects
+                <ArrowRight size={13} className="group-hover:translate-x-1 transition-transform" />
               </motion.button>
             </motion.div>
           </motion.div>
@@ -266,16 +265,16 @@ const About = () => {
             {features.map((feature, index) => (
               <motion.div key={feature.title} variants={itemVariants}>
                 <TiltCard>
-                  <div className={`group glass-card rounded-2xl p-7 ${feature.glow} hover:shadow-2xl transition-all duration-500`}>
+                  <div className="group glass-card rounded-2xl p-6 transition-all duration-500">
                     <div className="flex items-start gap-5">
-                      <div className={`flex-shrink-0 p-4 rounded-2xl bg-gradient-to-br ${feature.gradient} shadow-lg`}>
-                        <div className="text-white">{feature.icon}</div>
+                      <div className={`flex-shrink-0 p-3.5 rounded-xl border border-white/[0.06] bg-white/[0.01] ${feature.iconColor}`}>
+                        <div>{feature.icon}</div>
                       </div>
                       <div className="flex-1 min-w-0">
-                        <h4 className="text-xl font-bold text-white mb-2 group-hover:text-blue-300 transition-colors duration-300">
+                        <h4 className="text-lg font-semibold text-white mb-2 transition-colors duration-300">
                           {feature.title}
                         </h4>
-                        <p className="text-gray-400/90 leading-relaxed group-hover:text-gray-300 transition-colors duration-300">
+                        <p className="text-zinc-400 text-[13px] leading-relaxed transition-colors duration-300">
                           {feature.description}
                         </p>
                       </div>

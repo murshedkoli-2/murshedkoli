@@ -58,19 +58,16 @@ const Experience = () => {
                     className="text-center mb-14 md:mb-20"
                 >
                     <motion.div
-                        initial={{ opacity: 0, scale: 0.5 }}
-                        animate={isInView ? { opacity: 1, scale: 1 } : { opacity: 0, scale: 0.5 }}
-                        transition={{ duration: 0.5 }}
-                        className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-blue-500/10 border border-blue-500/20 mb-6"
+                        initial={{ opacity: 0 }}
+                        animate={isInView ? { opacity: 1 } : { opacity: 0 }}
+                        className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full border border-white/[0.06] bg-white/[0.01] mb-6"
                     >
-                        <Briefcase size={14} className="text-blue-400" />
-                        <span className="text-blue-400 text-sm font-medium">Career Path</span>
+                        <Briefcase size={12} className="text-zinc-400" />
+                        <span className="text-zinc-400 text-[10px] font-medium tracking-[0.2em] uppercase">Career Path</span>
                     </motion.div>
 
-                    <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold mb-5 tracking-tight">
-                        <span className="bg-gradient-to-r from-white via-blue-100 to-white bg-clip-text text-transparent">
-                            Experience
-                        </span>
+                    <h2 className="text-3xl sm:text-4xl md:text-5xl font-semibold text-white mb-4 tracking-tight">
+                        Experience
                     </h2>
                 </motion.div>
 
@@ -83,7 +80,7 @@ const Experience = () => {
                         animate={isInView ? { height: '100%' } : { height: 0 }}
                         transition={{ duration: 1.5, ease: 'easeOut' }}
                     >
-                        <div className="w-full h-full bg-gradient-to-b from-blue-500/40 via-purple-500/20 to-transparent" />
+                        <div className="w-full h-full bg-zinc-800/40" />
                     </motion.div>
 
                     {loading ? (
@@ -110,8 +107,7 @@ const Experience = () => {
                                             transition={{ delay: 0.3 + index * 0.15, type: 'spring', stiffness: 300 }}
                                             className="relative"
                                         >
-                                            <div className="w-3 h-3 rounded-full bg-blue-500 shadow-lg shadow-blue-500/50" />
-                                            <div className="absolute inset-0 w-3 h-3 rounded-full bg-blue-500 animate-ping opacity-30" />
+                                            <div className="w-2.5 h-2.5 rounded-full bg-zinc-600" />
                                         </motion.div>
                                     </div>
 
@@ -120,13 +116,13 @@ const Experience = () => {
                                         index % 2 === 0 ? 'justify-end text-right' : 'justify-start text-left'
                                     }`}>
                                         <div className="pt-0">
-                                            <p className="text-blue-400 font-mono font-medium flex items-center gap-2">
-                                                {index % 2 !== 0 && <Calendar size={14} />}
+                                            <p className="text-zinc-400 font-mono text-[13px] font-medium flex items-center gap-2">
+                                                {index % 2 !== 0 && <Calendar size={12} />}
                                                 {new Date(exp.startDate).getFullYear()} — {exp.current ? 'Present' : new Date(exp.endDate!).getFullYear()}
-                                                {index % 2 === 0 && <Calendar size={14} />}
+                                                {index % 2 === 0 && <Calendar size={12} />}
                                             </p>
                                             {exp.location && (
-                                                <p className="text-gray-500 text-sm mt-1.5 flex items-center gap-1.5">
+                                                <p className="text-zinc-600 text-xs mt-1.5 flex items-center gap-1.5">
                                                     {index % 2 !== 0 && <MapPin size={12} />}
                                                     {exp.location}
                                                     {index % 2 === 0 && <MapPin size={12} />}
@@ -137,28 +133,28 @@ const Experience = () => {
 
                                     {/* Content card */}
                                     <div className="ml-12 md:ml-0 md:w-[calc(50%-2rem)]">
-                                        <div className="glass-card rounded-2xl p-6 group hover:shadow-2xl hover:shadow-blue-500/[0.06] transition-all duration-500">
+                                        <div className="glass-card rounded-2xl p-5 group hover:shadow-xl transition-all duration-500">
                                             {/* Mobile date */}
-                                            <div className="md:hidden flex flex-wrap gap-3 text-sm mb-3">
-                                                <span className="flex items-center gap-1.5 text-blue-400 font-mono">
+                                            <div className="md:hidden flex flex-wrap gap-3 text-xs mb-3">
+                                                <span className="flex items-center gap-1.5 text-zinc-400 font-mono">
                                                     <Calendar size={12} />
                                                     {new Date(exp.startDate).getFullYear()} — {exp.current ? 'Present' : new Date(exp.endDate!).getFullYear()}
                                                 </span>
                                                 {exp.location && (
-                                                    <span className="flex items-center gap-1 text-gray-500">
+                                                    <span className="flex items-center gap-1 text-zinc-500">
                                                         <MapPin size={12} /> {exp.location}
                                                     </span>
                                                 )}
                                             </div>
 
-                                            <h3 className="text-xl font-bold text-white mb-1 group-hover:text-blue-300 transition-colors">
+                                            <h3 className="text-lg font-semibold text-white mb-1">
                                                 {exp.position}
                                             </h3>
-                                            <h4 className="text-base text-gray-400 flex items-center gap-2 mb-4">
-                                                <Briefcase size={14} className="text-blue-500" />
+                                            <h4 className="text-xs text-zinc-400 flex items-center gap-2 mb-3">
+                                                <Briefcase size={12} className="text-zinc-500" />
                                                 {exp.company}
                                             </h4>
-                                            <p className="text-gray-400/80 leading-relaxed text-sm whitespace-pre-line">
+                                            <p className="text-zinc-500 leading-relaxed text-[13px] whitespace-pre-line">
                                                 {exp.description}
                                             </p>
                                         </div>

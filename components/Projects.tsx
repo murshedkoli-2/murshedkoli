@@ -53,14 +53,7 @@ const ProjectCard = ({ project, index, isInView, isFeatured = false }: {
     : project.technologies || []
 
   const getProjectTypeStyles = (type?: string) => {
-    switch (type) {
-      case 'android':
-        return { bg: 'from-emerald-500/20 to-green-500/20', text: 'text-emerald-400', border: 'border-emerald-500/30' }
-      case 'api':
-        return { bg: 'from-purple-500/20 to-violet-500/20', text: 'text-purple-400', border: 'border-purple-500/30' }
-      default:
-        return { bg: 'from-sky-500/20 to-blue-500/20', text: 'text-sky-400', border: 'border-sky-500/30' }
-    }
+    return { bg: 'bg-white/[0.02]', text: 'text-zinc-400', border: 'border-white/[0.05]' }
   }
 
   const typeStyles = getProjectTypeStyles(project.projectType)
@@ -77,7 +70,7 @@ const ProjectCard = ({ project, index, isInView, isFeatured = false }: {
       }`}
     >
       {/* Card container */}
-      <div className="relative h-full bg-gradient-to-br from-white/[0.06] to-white/[0.01] backdrop-blur-sm border border-white/[0.06] rounded-2xl overflow-hidden transition-all duration-500 hover:border-blue-500/20 hover:shadow-2xl hover:shadow-blue-500/[0.08]" style={{ transformStyle: 'preserve-3d' }}>
+      <div className="relative h-full bg-white/[0.01] backdrop-blur-sm border border-white/[0.04] rounded-2xl overflow-hidden transition-all duration-500 hover:border-white/[0.08] hover:shadow-xl" style={{ transformStyle: 'preserve-3d' }}>
         
         {/* Image section */}
         <div className={`relative overflow-hidden ${isFeatured ? 'h-56 md:h-64' : 'h-48'}`}>
@@ -101,123 +94,68 @@ const ProjectCard = ({ project, index, isInView, isFeatured = false }: {
           {/* Progress badge */}
           {project.overallProgress !== undefined && project.overallProgress > 0 && project.overallProgress < 100 && (
             <motion.div 
-              initial={{ opacity: 0, scale: 0.8 }}
-              animate={{ opacity: 1, scale: 1 }}
-              className="absolute top-4 right-4 flex items-center gap-2 px-3 py-1.5 bg-black/60 backdrop-blur-md rounded-full border border-white/10"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              className="absolute top-4 right-4 flex items-center gap-2 px-2.5 py-1 bg-black/60 backdrop-blur-md rounded-full border border-white/[0.04]"
             >
-              <div className="w-16 h-1.5 bg-white/10 rounded-full overflow-hidden">
+              <div className="w-12 h-1 bg-white/[0.06] rounded-full overflow-hidden">
                 <motion.div 
-                  className="h-full bg-gradient-to-r from-blue-500 to-purple-500 rounded-full"
+                  className="h-full bg-zinc-400 rounded-full"
                   initial={{ width: 0 }}
                   animate={{ width: `${project.overallProgress}%` }}
                   transition={{ duration: 1, delay: 0.5 }}
                 />
               </div>
-              <span className="text-xs text-white/80 font-medium">{project.overallProgress}%</span>
+              <span className="text-[10px] text-zinc-400 font-medium">{project.overallProgress}%</span>
             </motion.div>
           )}
 
           {/* Project type & status badges */}
-          <div className="absolute top-4 left-4 flex flex-wrap gap-2">
-            <span className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-gradient-to-r ${typeStyles.bg} ${typeStyles.text} border ${typeStyles.border} backdrop-blur-sm`}>
-              {project.projectType === 'android' ? '📱 Android' : project.projectType === 'api' ? '⚡ API' : '🌐 Web App'}
+          <div className="absolute top-4 left-4 flex flex-wrap gap-1.5">
+            <span className="inline-flex items-center px-2.5 py-1 rounded-lg text-[10px] font-semibold tracking-wider uppercase bg-[#050507]/80 text-zinc-400 border border-white/[0.04] backdrop-blur-sm">
+              {project.projectType === 'android' ? 'Android' : project.projectType === 'api' ? 'API' : 'Web App'}
             </span>
             {project.lifecycleStatus && project.lifecycleStatus !== 'live' && (
-              <span className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium backdrop-blur-sm ${
-                project.lifecycleStatus === 'development' ? 'bg-yellow-500/20 text-yellow-400 border border-yellow-500/30' :
-                project.lifecycleStatus === 'testing' ? 'bg-orange-500/20 text-orange-400 border border-orange-500/30' :
-                'bg-gray-500/20 text-gray-400 border border-gray-500/30'
-              }`}>
-                {project.lifecycleStatus.charAt(0).toUpperCase() + project.lifecycleStatus.slice(1)}
+              <span className="inline-flex items-center px-2.5 py-1 rounded-lg text-[10px] font-semibold tracking-wider uppercase bg-[#050507]/80 text-zinc-500 border border-white/[0.04] backdrop-blur-sm">
+                {project.lifecycleStatus}
               </span>
             )}
           </div>
 
           {/* Quick action buttons (visible on hover) */}
           <motion.div 
-            className="absolute inset-0 flex items-center justify-center gap-3"
+            className="absolute inset-0 flex items-center justify-center gap-2 bg-black/40 backdrop-blur-sm"
             initial={{ opacity: 0 }}
             animate={{ opacity: isHovered ? 1 : 0 }}
-            transition={{ duration: 0.3 }}
+            transition={{ duration: 0.2 }}
           >
             {project.demoUrlEnabled !== false && project.demoUrl && (
-              <motion.a
+              <a
                 href={project.demoUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                initial={{ scale: 0 }}
-                animate={{ scale: isHovered ? 1 : 0 }}
-                transition={{ duration: 0.3, delay: 0.1 }}
-                className="p-3 rounded-full bg-blue-500 text-white hover:bg-blue-400 transition-colors shadow-lg"
+                className="p-2.5 rounded-lg bg-white text-black hover:bg-zinc-200 transition-colors shadow-lg"
               >
-                <ExternalLink size={20} />
-              </motion.a>
+                <ExternalLink size={16} />
+              </a>
             )}
             {project.githubUrlEnabled !== false && project.githubUrl && (
-              <motion.a
+              <a
                 href={project.githubUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                initial={{ scale: 0 }}
-                animate={{ scale: isHovered ? 1 : 0 }}
-                transition={{ duration: 0.3, delay: 0.2 }}
-                className="p-3 rounded-full bg-gray-800 text-white hover:bg-gray-700 transition-colors shadow-lg"
+                className="p-2.5 rounded-lg bg-zinc-900 text-white hover:bg-zinc-800 transition-colors shadow-lg border border-white/5"
               >
-                <Github size={20} />
-              </motion.a>
-            )}
-            {project.clientLiveUrlEnabled && project.clientLiveUrl && (
-              <motion.a
-                href={project.clientLiveUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                initial={{ scale: 0 }}
-                animate={{ scale: isHovered ? 1 : 0 }}
-                transition={{ duration: 0.3, delay: 0.15 }}
-                className="p-3 rounded-full bg-emerald-500 text-white hover:bg-emerald-400 transition-colors shadow-lg"
-                title="Client Live"
-              >
-                <ExternalLink size={20} />
-              </motion.a>
-            )}
-            {project.adminLiveUrlEnabled && project.adminLiveUrl && (
-              <motion.a
-                href={project.adminLiveUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                initial={{ scale: 0 }}
-                animate={{ scale: isHovered ? 1 : 0 }}
-                transition={{ duration: 0.3, delay: 0.25 }}
-                className="p-3 rounded-full bg-orange-500 text-white hover:bg-orange-400 transition-colors shadow-lg"
-                title="Admin Live"
-              >
-                <ExternalLink size={20} />
-              </motion.a>
-            )}
-            {project.androidDownloadUrlEnabled && project.androidDownloadUrl && (
-              <motion.a
-                href={project.androidDownloadUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                initial={{ scale: 0 }}
-                animate={{ scale: isHovered ? 1 : 0 }}
-                transition={{ duration: 0.3, delay: 0.3 }}
-                className="p-3 rounded-full bg-green-500 text-white hover:bg-green-400 transition-colors shadow-lg"
-                title="Android App"
-              >
-                <ExternalLink size={20} />
-              </motion.a>
+                <Github size={16} />
+              </a>
             )}
             {project.slug && (
-              <motion.a
+              <a
                 href={`/projects/${project.slug}`}
-                initial={{ scale: 0 }}
-                animate={{ scale: isHovered ? 1 : 0 }}
-                transition={{ duration: 0.3, delay: 0.3 }}
-                className="p-3 rounded-full bg-purple-500 text-white hover:bg-purple-400 transition-colors shadow-lg"
+                className="p-2.5 rounded-lg bg-zinc-900 text-white hover:bg-zinc-800 transition-colors shadow-lg border border-white/5"
               >
-                <Eye size={20} />
-              </motion.a>
+                <Eye size={16} />
+              </a>
             )}
           </motion.div>
         </div>
@@ -226,51 +164,51 @@ const ProjectCard = ({ project, index, isInView, isFeatured = false }: {
         <div className="p-6">
           {/* Title with logo */}
           <div className="flex items-center gap-3 mb-3">
-            <div className="w-10 h-10 rounded-xl border border-white/10 bg-white/5 overflow-hidden flex items-center justify-center shrink-0">
+            <div className="w-8 h-8 rounded-lg border border-white/[0.06] bg-white/[0.01] overflow-hidden flex items-center justify-center shrink-0">
               {project.logoUrl ? (
-                <Image src={project.logoUrl} alt={`${project.title} logo`} className="w-full h-full object-cover" width={40} height={40} unoptimized />
+                <Image src={project.logoUrl} alt={`${project.title} logo`} className="w-full h-full object-cover" width={32} height={32} unoptimized />
               ) : (
-                <span className="text-sm text-white/70 font-bold">{project.title.charAt(0).toUpperCase()}</span>
+                <span className="text-xs text-zinc-400 font-bold">{project.title.charAt(0).toUpperCase()}</span>
               )}
             </div>
-            <h4 className="text-xl font-bold text-white group-hover:text-blue-400 transition-colors line-clamp-1">
+            <h4 className="text-base font-semibold text-white transition-colors line-clamp-1">
               {project.title}
             </h4>
           </div>
 
           {/* Description */}
-          <p className="text-gray-400 text-sm leading-relaxed mb-4 line-clamp-2 group-hover:text-gray-300 transition-colors">
+          <p className="text-zinc-500 text-[13px] leading-relaxed mb-4 line-clamp-2 transition-colors">
             {project.description}
           </p>
 
           {/* Technologies */}
-          <div className="flex flex-wrap gap-1.5 mb-5">
+          <div className="flex flex-wrap gap-1 mb-5">
             {technologies.slice(0, isFeatured ? 5 : 4).map((tech) => (
               <span
                 key={tech}
-                className="px-2.5 py-1 bg-white/5 text-gray-400 rounded-lg text-xs font-medium border border-white/5 group-hover:border-white/10 transition-colors"
+                className="px-2 py-0.5 bg-white/[0.01] text-zinc-400 rounded border border-white/[0.04] text-[10px] font-medium"
               >
                 {tech}
               </span>
             ))}
             {technologies.length > (isFeatured ? 5 : 4) && (
-              <span className="px-2.5 py-1 text-gray-500 text-xs">
+              <span className="px-2 py-0.5 text-zinc-600 text-[10px]">
                 +{technologies.length - (isFeatured ? 5 : 4)}
               </span>
             )}
           </div>
 
           {/* Bottom actions */}
-          <div className="flex items-center justify-between pt-4 border-t border-white/5">
-            <div className="flex items-center gap-3 flex-wrap">
+          <div className="flex items-center justify-between pt-4 border-t border-white/[0.04]">
+            <div className="flex items-center gap-3.5 flex-wrap">
               {project.githubUrlEnabled !== false && project.githubUrl && (
                 <a
                   href={project.githubUrl}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="flex items-center gap-1.5 text-gray-500 hover:text-white text-sm transition-colors"
+                  className="flex items-center gap-1.5 text-zinc-500 hover:text-white text-[12px] font-medium transition-colors"
                 >
-                  <Github size={16} />
+                  <Github size={13} />
                   <span>Code</span>
                 </a>
               )}
@@ -279,53 +217,20 @@ const ProjectCard = ({ project, index, isInView, isFeatured = false }: {
                   href={project.demoUrl}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="flex items-center gap-1.5 text-gray-500 hover:text-blue-400 text-sm transition-colors"
+                  className="flex items-center gap-1.5 text-zinc-500 hover:text-white text-[12px] font-medium transition-colors"
                 >
-                  <ExternalLink size={16} />
+                  <ExternalLink size={13} />
                   <span>Demo</span>
-                </a>
-              )}
-              {project.clientLiveUrlEnabled && project.clientLiveUrl && (
-                <a
-                  href={project.clientLiveUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="flex items-center gap-1.5 text-gray-500 hover:text-emerald-400 text-sm transition-colors"
-                >
-                  <ExternalLink size={16} />
-                  <span>Client</span>
-                </a>
-              )}
-              {project.adminLiveUrlEnabled && project.adminLiveUrl && (
-                <a
-                  href={project.adminLiveUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="flex items-center gap-1.5 text-gray-500 hover:text-orange-400 text-sm transition-colors"
-                >
-                  <ExternalLink size={16} />
-                  <span>Admin</span>
-                </a>
-              )}
-              {project.androidDownloadUrlEnabled && project.androidDownloadUrl && (
-                <a
-                  href={project.androidDownloadUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="flex items-center gap-1.5 text-gray-500 hover:text-green-400 text-sm transition-colors"
-                >
-                  <ExternalLink size={16} />
-                  <span>Android</span>
                 </a>
               )}
             </div>
             {project.slug && (
               <a
                 href={`/projects/${project.slug}`}
-                className="flex items-center gap-1 text-sm text-gray-500 hover:text-white transition-colors group/link"
+                className="flex items-center gap-1 text-[11px] font-semibold uppercase tracking-wider text-zinc-500 hover:text-white transition-colors group/link"
               >
                 <span>Details</span>
-                <ArrowRight size={14} className="group-hover/link:translate-x-1 transition-transform" />
+                <ArrowRight size={12} className="group-hover/link:translate-x-1 transition-transform" />
               </a>
             )}
           </div>
@@ -404,28 +309,25 @@ const Projects = () => {
 
       <div className="max-w-7xl mx-auto relative" ref={ref}>
         <motion.div
-          initial={{ opacity: 0, y: 50 }}
-          animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 50 }}
+          initial={{ opacity: 0, y: 30 }}
+          animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 30 }}
           transition={{ duration: 0.8 }}
-          className="text-center mb-14 md:mb-16"
+          className="text-center mb-12"
         >
           <motion.div
-            initial={{ opacity: 0, scale: 0.5 }}
-            animate={isInView ? { opacity: 1, scale: 1 } : { opacity: 0, scale: 0.5 }}
-            transition={{ duration: 0.5 }}
-            className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-purple-500/10 border border-purple-500/20 mb-6"
+            initial={{ opacity: 0 }}
+            animate={isInView ? { opacity: 1 } : { opacity: 0 }}
+            className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full border border-white/[0.06] bg-white/[0.01] mb-6"
           >
-            <Rocket size={14} className="text-purple-400" />
-            <span className="text-purple-400 text-sm font-medium">My Work</span>
+            <Rocket size={12} className="text-zinc-400" />
+            <span className="text-zinc-400 text-[10px] font-medium tracking-[0.2em] uppercase">My Work</span>
           </motion.div>
 
-          <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold mb-5 tracking-tight">
-            <span className="bg-gradient-to-r from-white via-purple-100 to-white bg-clip-text text-transparent">
-              Featured Projects
-            </span>
+          <h2 className="text-3xl sm:text-4xl md:text-5xl font-semibold text-white mb-4 tracking-tight">
+            Featured Projects
           </h2>
-          <p className="text-base md:text-lg text-gray-400/80 max-w-2xl mx-auto">
-            {loading ? 'Loading projects...' : `Explore ${displayProjects.length} projects showcasing my skills and passion for development.`}
+          <p className="text-zinc-500 text-xs md:text-sm max-w-xl mx-auto leading-relaxed">
+            {loading ? 'Loading projects...' : `Explore projects showcasing my skills and passion for development.`}
           </p>
         </motion.div>
 
@@ -442,11 +344,11 @@ const Projects = () => {
         {!loading && featuredProjects.length > 0 && (
           <div className="mb-16">
             <motion.h3 
-              initial={{ opacity: 0, x: -20 }}
-              animate={isInView ? { opacity: 1, x: 0 } : { opacity: 0, x: -20 }}
-              className="text-2xl font-bold text-white mb-8 flex items-center gap-3"
+              initial={{ opacity: 0 }}
+              animate={isInView ? { opacity: 1 } : { opacity: 0 }}
+              className="text-lg font-semibold text-white mb-6 flex items-center gap-2.5"
             >
-              <span className="w-8 h-0.5 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full" />
+              <span className="w-5 h-[1px] bg-zinc-800" />
               Featured Work
             </motion.h3>
             <div className="grid md:grid-cols-2 gap-6">
@@ -461,12 +363,12 @@ const Projects = () => {
         {!loading && otherProjects.length > 0 && (
           <div>
             <motion.h3 
-              initial={{ opacity: 0, x: -20 }}
-              animate={isInView ? { opacity: 1, x: 0 } : { opacity: 0, x: -20 }}
+              initial={{ opacity: 0 }}
+              animate={isInView ? { opacity: 1 } : { opacity: 0 }}
               transition={{ delay: 0.2 }}
-              className="text-2xl font-bold text-white mb-8 flex items-center gap-3"
+              className="text-lg font-semibold text-white mb-6 flex items-center gap-2.5"
             >
-              <span className="w-8 h-0.5 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full" />
+              <span className="w-5 h-[1px] bg-zinc-800" />
               Other Projects
             </motion.h3>
             <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -484,14 +386,14 @@ const Projects = () => {
           transition={{ duration: 0.8, delay: 0.6 }}
           className="text-center mt-16"
         >
-          <div className="inline-flex flex-col sm:flex-row items-center gap-4 p-6 rounded-2xl bg-gradient-to-r from-white/[0.03] to-white/[0.01] border border-white/10">
-            <p className="text-gray-400">
+          <div className="inline-flex flex-col sm:flex-row items-center gap-4 p-5 rounded-xl border border-white/[0.04] bg-white/[0.01]">
+            <p className="text-zinc-500 text-sm">
               Want to see more or discuss a project?
             </p>
             <motion.button
-              whileHover={{ scale: 1.02, boxShadow: '0 0 30px rgba(139, 92, 246, 0.3)' }}
+              whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}
-              className="px-6 py-3 rounded-xl bg-gradient-to-r from-purple-500 to-pink-500 text-white font-semibold flex items-center gap-2 transition-all duration-300"
+              className="px-5 py-2 rounded-lg bg-white text-black text-[11px] font-semibold tracking-wider uppercase hover:bg-zinc-200 transition-colors flex items-center gap-2"
               onClick={() => {
                 const contactSection = document.querySelector('#contact')
                 if (contactSection) {
@@ -500,7 +402,7 @@ const Projects = () => {
               }}
             >
               Get In Touch
-              <ArrowRight size={18} />
+              <ArrowRight size={12} />
             </motion.button>
           </div>
         </motion.div>

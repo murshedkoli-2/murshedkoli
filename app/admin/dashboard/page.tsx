@@ -170,17 +170,14 @@ const Sidebar = ({ activeTab, setActiveTab, handleLogout, mobileMenuOpen, setMob
       </AnimatePresence>
 
       <motion.aside
-        className={`fixed left-0 top-0 h-full w-64 z-50 flex flex-col transition-transform duration-300 bg-[#030014]/95 backdrop-blur-2xl border-r border-white/[0.06] shadow-2xl shadow-black/40 ${mobileMenuOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'}`}
+        className={`fixed left-0 top-0 h-full w-64 z-50 flex flex-col transition-transform duration-300 bg-[#050507] border-r border-white/[0.04] shadow-2xl shadow-black/40 ${mobileMenuOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'}`}
       >
-        <div className="p-6 border-b border-white/[0.06]">
-          <div className="flex items-center gap-3 font-bold text-xl text-white">
-            <div className="relative">
-              <div className="absolute inset-0 bg-gradient-to-r from-blue-500 to-purple-500 rounded-xl blur-lg opacity-40" />
-              <div className="relative w-9 h-9 rounded-xl bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-sm font-bold shadow-lg">
-                A
-              </div>
+        <div className="p-6 border-b border-white/[0.04]">
+          <div className="flex items-center gap-3 font-semibold text-lg text-white">
+            <div className="relative w-9 h-9 rounded-lg border border-white/[0.08] bg-white/[0.02] flex items-center justify-center text-sm font-semibold text-white font-mono shadow-sm">
+              A
             </div>
-            <span className="bg-gradient-to-r from-white to-gray-300 bg-clip-text text-transparent">Admin<span className="text-gray-500">Panel</span></span>
+            <span className="text-white font-medium text-base tracking-wider font-sans uppercase">Admin<span className="text-zinc-600">Panel</span></span>
           </div>
         </div>
 
@@ -195,36 +192,35 @@ const Sidebar = ({ activeTab, setActiveTab, handleLogout, mobileMenuOpen, setMob
                   setActiveTab(item.id)
                   setMobileMenuOpen(false)
                 }}
-                className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all duration-300 relative ${isActive
-                  ? 'text-white'
-                  : 'text-gray-400 hover:text-white hover:bg-white/[0.04]'
+                className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg text-xs font-mono uppercase tracking-wider transition-all duration-300 relative ${isActive
+                  ? 'text-white font-semibold'
+                  : 'text-zinc-500 hover:text-zinc-350 hover:bg-white/[0.02]'
                   }`}
               >
                 {isActive && (
                   <motion.div
                     layoutId="adminActiveTab"
-                    className="absolute inset-0 rounded-xl bg-gradient-to-r from-blue-500/15 to-purple-500/10 border border-blue-500/20"
-                    style={{ boxShadow: '0 0 20px rgba(59,130,246,0.08)' }}
+                    className="absolute inset-0 rounded-lg bg-white/[0.03] border border-white/[0.08]"
                     transition={{ type: 'spring', bounce: 0.15, duration: 0.5 }}
                   />
                 )}
-                <Icon size={18} className={`relative z-10 ${isActive ? 'text-blue-400' : ''}`} />
+                <Icon size={16} className={`relative z-10 ${isActive ? 'text-white' : ''}`} />
                 <span className="relative z-10">{item.label}</span>
                 {item.badge > 0 && (
-                  <span className="relative z-10 ml-auto bg-red-500 text-white text-xs font-bold px-1.5 py-0.5 rounded-full min-w-[20px] text-center shadow-lg shadow-red-500/30">{item.badge}</span>
+                  <span className="relative z-10 ml-auto bg-white text-zinc-950 text-[10px] font-semibold px-2 py-0.5 rounded-full min-w-[20px] text-center">{item.badge}</span>
                 )}
-                {isActive && !item.badge && <ChevronRight size={14} className="relative z-10 ml-auto text-blue-400" />}
+                {isActive && !item.badge && <ChevronRight size={14} className="relative z-10 ml-auto text-white/60" />}
               </button>
             )
           })}
         </nav>
 
-        <div className="p-3 border-t border-white/[0.06]">
+        <div className="p-3 border-t border-white/[0.04]">
           <button
             onClick={handleLogout}
-            className="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-red-400/80 hover:bg-red-500/10 hover:text-red-300 transition-all duration-300"
+            className="w-full flex items-center gap-3 px-4 py-3 rounded-lg text-xs font-mono uppercase tracking-wider text-zinc-500 hover:bg-white/[0.02] hover:text-white transition-all duration-300"
           >
-            <LogOut size={18} />
+            <LogOut size={16} />
             Sign Out
           </button>
         </div>
@@ -233,20 +229,20 @@ const Sidebar = ({ activeTab, setActiveTab, handleLogout, mobileMenuOpen, setMob
   )
 }
 
-const StatCard = ({ title, value, icon: Icon, color, delay }: any) => (
+const StatCard = ({ title, value, icon: Icon, delay }: any) => (
   <motion.div
-    initial={{ opacity: 0, y: 20, scale: 0.96 }}
+    initial={{ opacity: 0, y: 15, scale: 0.98 }}
     animate={{ opacity: 1, y: 0, scale: 1 }}
     transition={{ delay, duration: 0.5 }}
-    className="relative bg-gradient-to-br from-white/[0.06] to-white/[0.01] backdrop-blur-sm border border-white/[0.06] p-6 rounded-2xl hover:border-white/[0.12] transition-all duration-500 group hover:shadow-xl hover:shadow-blue-500/[0.04]"
+    className="relative bg-white/[0.01] border border-white/[0.04] p-5 sm:p-6 rounded-xl hover:border-white/[0.1] transition-all duration-300 group shadow-sm"
   >
     <div className="flex items-start justify-between">
       <div>
-        <p className="text-gray-500 text-sm font-medium mb-1.5">{title}</p>
-        <h3 className="text-3xl font-bold bg-gradient-to-r from-white to-gray-300 bg-clip-text text-transparent group-hover:from-blue-200 group-hover:to-purple-200 transition-all duration-500">{value}</h3>
+        <p className="text-zinc-500 text-xs font-mono uppercase tracking-wider mb-1.5">{title}</p>
+        <h3 className="text-2xl sm:text-3xl font-bold text-white font-mono">{value}</h3>
       </div>
-      <div className={`p-3.5 rounded-xl ${color} bg-opacity-10 group-hover:scale-110 transition-transform duration-300`}>
-        <Icon size={22} className={color.replace('bg-', 'text-')} />
+      <div className="p-3 rounded-lg border border-white/[0.06] bg-white/[0.02] text-zinc-400 group-hover:text-white transition-colors duration-300">
+        <Icon size={18} />
       </div>
     </div>
   </motion.div>
@@ -802,10 +798,10 @@ export default function AdminDashboard() {
 
   const unreadCount = messages.filter(m => m.status === 'unread').length
 
-  if (!isAuthenticated) return <div className="min-h-screen bg-[#030014]" />
+  if (!isAuthenticated) return <div className="min-h-screen bg-[#050507]" />
 
   return (
-    <div className="admin-dashboard min-h-screen font-sans bg-[#030014] text-gray-200">
+    <div className="admin-dashboard min-h-screen font-sans bg-[#050507] text-zinc-300">
       <Sidebar
         activeTab={activeTab}
         setActiveTab={setActiveTab}
@@ -817,8 +813,7 @@ export default function AdminDashboard() {
 
       {/* Main Content Area */}
       <main className="md:ml-64 min-h-screen transition-all duration-300">
-        <header className="sticky top-0 z-30 backdrop-blur-2xl px-4 sm:px-6 py-3 sm:py-4 flex items-center justify-between gap-2 bg-[#030014]/80 border-b border-white/[0.04] min-w-0">
-          <div className="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-blue-500/20 to-transparent" />
+        <header className="sticky top-0 z-30 backdrop-blur-2xl px-4 sm:px-6 py-3 sm:py-4 flex items-center justify-between gap-2 bg-[#050507]/85 border-b border-white/[0.04] min-w-0">
           <div className="flex items-center gap-2 sm:gap-4 min-w-0">
             <button
               onClick={() => setMobileMenuOpen(true)}
@@ -826,16 +821,16 @@ export default function AdminDashboard() {
             >
               <Menu size={20} />
             </button>
-            <h2 className="text-base sm:text-xl font-semibold capitalize tracking-tight bg-gradient-to-r from-white to-gray-400 bg-clip-text text-transparent truncate">{activeTab}</h2>
+            <h2 className="text-base sm:text-lg font-semibold uppercase tracking-wider text-white truncate font-mono">{activeTab}</h2>
           </div>
 
           {/* Header Actions per tab could go here */}
           {activeTab === 'projects' && !editingProject && (
             <Link
               href="/admin/projects/new"
-              className="flex items-center gap-2 px-3 sm:px-4 py-2 bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-500 hover:to-blue-400 text-white rounded-xl text-sm transition-all duration-300 shadow-lg shadow-blue-500/20 shrink-0"
+              className="flex items-center gap-2 px-4 py-2 bg-white text-zinc-950 hover:bg-zinc-100 rounded-lg text-xs font-semibold font-mono uppercase tracking-wider transition-all duration-300 border border-white shrink-0"
             >
-              <Plus size={16} />
+              <Plus size={14} />
               <span className="hidden sm:inline">New Project</span>
             </Link>
           )}
@@ -845,9 +840,9 @@ export default function AdminDashboard() {
                 name: '', category: 'frontend',
                 proficiency: 50, icon: '', order: skills.length, isEnabled: true
               })}
-              className="flex items-center gap-2 px-3 sm:px-4 py-2 bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-500 hover:to-blue-400 text-white rounded-xl text-sm transition-all duration-300 shadow-lg shadow-blue-500/20 shrink-0"
+              className="flex items-center gap-2 px-4 py-2 bg-white text-zinc-950 hover:bg-zinc-100 rounded-lg text-xs font-semibold font-mono uppercase tracking-wider transition-all duration-300 border border-white shrink-0"
             >
-              <Plus size={16} />
+              <Plus size={14} />
               <span className="hidden sm:inline">New Skill</span>
             </button>
           )}
@@ -856,9 +851,9 @@ export default function AdminDashboard() {
               onClick={() => setEditingCertification({
                 name: '', issuer: '', date: new Date().toISOString().split('T')[0], order: certifications.length
               })}
-              className="flex items-center gap-2 px-3 sm:px-4 py-2 bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-500 hover:to-blue-400 text-white rounded-xl text-sm transition-all duration-300 shadow-lg shadow-blue-500/20 shrink-0"
+              className="flex items-center gap-2 px-4 py-2 bg-white text-zinc-950 hover:bg-zinc-100 rounded-lg text-xs font-semibold font-mono uppercase tracking-wider transition-all duration-300 border border-white shrink-0"
             >
-              <Plus size={16} />
+              <Plus size={14} />
               <span className="hidden sm:inline">New Certification</span>
             </button>
           )}
@@ -869,34 +864,34 @@ export default function AdminDashboard() {
           {/* OVERVIEW TAB */}
           {activeTab === 'overview' && (
             <div className="space-y-6">
-            <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
-                <StatCard title="Total Projects" value={projects.length} icon={FileText} color="bg-blue-500" delay={0} />
-                <StatCard title="Featured" value={projects.filter(p => p.featured).length} icon={Eye} color="bg-green-500" delay={0.05} />
-                <StatCard title="Skills" value={skills.length} icon={Zap} color="bg-orange-500" delay={0.1} />
-                <StatCard title="Certifications" value={certifications.length} icon={Award} color="bg-yellow-500" delay={0.12} />
-                <StatCard title="Experience" value={experiences.length} icon={Briefcase} color="bg-cyan-500" delay={0.15} />
-                <StatCard title="Education" value={educations.length} icon={GraduationCap} color="bg-indigo-500" delay={0.2} />
-                <StatCard title="Unread Messages" value={unreadCount} icon={Mail} color="bg-red-500" delay={0.25} />
+              <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
+                <StatCard title="Total Projects" value={projects.length} icon={FileText} delay={0} />
+                <StatCard title="Featured" value={projects.filter(p => p.featured).length} icon={Eye} delay={0.05} />
+                <StatCard title="Skills" value={skills.length} icon={Zap} delay={0.1} />
+                <StatCard title="Certifications" value={certifications.length} icon={Award} delay={0.12} />
+                <StatCard title="Experience" value={experiences.length} icon={Briefcase} delay={0.15} />
+                <StatCard title="Education" value={educations.length} icon={GraduationCap} delay={0.2} />
+                <StatCard title="Unread Messages" value={unreadCount} icon={Mail} delay={0.25} />
               </div>
 
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-8">
                 {/* Recent Messages */}
-                <div className="bg-gradient-to-br from-white/[0.06] to-white/[0.01] border border-white/[0.06] rounded-2xl p-6">
+                <div className="bg-white/[0.01] border border-white/[0.04] rounded-xl p-6">
                   <div className="flex justify-between items-center mb-4">
-                    <h3 className="font-semibold text-gray-200">Recent Messages</h3>
-                    <button onClick={() => setActiveTab('messages')} className="text-xs text-blue-400 hover:text-blue-300">View All</button>
+                    <h3 className="font-semibold text-white text-sm uppercase tracking-wider font-mono">Recent Messages</h3>
+                    <button onClick={() => setActiveTab('messages')} className="text-xs text-zinc-500 hover:text-white font-mono uppercase tracking-wider">View All</button>
                   </div>
                   <div className="space-y-3">
-                    {messages.length === 0 && <p className="text-gray-400 text-sm">No messages yet.</p>}
+                    {messages.length === 0 && <p className="text-zinc-500 text-xs font-mono">No messages yet.</p>}
                     {messages.slice(0, 3).map((msg) => (
-                      <div key={msg.id} className={`p-3 rounded-xl border transition-all duration-300 ${msg.status === 'unread' ? 'bg-blue-500/[0.06] border-blue-500/15' : 'bg-white/[0.02] border-white/[0.06]'}`}>
+                      <div key={msg.id} className={`p-4 rounded-xl border transition-all duration-300 ${msg.status === 'unread' ? 'bg-white/[0.03] border-white/[0.1]' : 'bg-white/[0.01] border-white/[0.04]'}`}>
                         <div className="flex justify-between items-center mb-1 gap-2">
-                          <span className="text-sm font-medium text-gray-200 truncate">{msg.name}</span>
-                          <span className="text-[11px] text-gray-400 shrink-0">{new Date(msg.createdAt).toLocaleDateString()}</span>
+                          <span className="text-xs font-semibold text-white truncate">{msg.name}</span>
+                          <span className="text-[10px] text-zinc-500 font-mono shrink-0">{new Date(msg.createdAt).toLocaleDateString()}</span>
                         </div>
                         <div className="flex justify-between items-center gap-2">
-                          <p className="text-xs text-gray-400 truncate">{msg.subject || 'No subject'}</p>
-                          <span className={`text-[10px] px-2 py-0.5 rounded-full font-medium ${msg.status === 'unread' ? 'bg-blue-500/20 text-blue-400' : msg.status === 'replied' ? 'bg-green-500/20 text-green-400' : 'bg-white/10 text-gray-400'}`}>{msg.status}</span>
+                          <p className="text-xs text-zinc-400 truncate">{msg.subject || 'No subject'}</p>
+                          <span className={`text-[10px] px-2 py-0.5 rounded-md font-mono uppercase tracking-wider ${msg.status === 'unread' ? 'bg-white/[0.08] text-white border border-white/[0.08]' : msg.status === 'replied' ? 'bg-white/[0.03] text-zinc-400 border border-white/[0.04]' : 'bg-white/[0.01] text-zinc-600 border border-white/[0.03]'}`}>{msg.status}</span>
                         </div>
                       </div>
                     ))}
@@ -904,21 +899,21 @@ export default function AdminDashboard() {
                 </div>
 
                 {/* Quick Actions */}
-                <div className="bg-gradient-to-br from-white/[0.06] to-white/[0.01] border border-white/[0.06] rounded-2xl p-6">
-                  <h3 className="font-semibold mb-4 text-gray-200">Quick Actions</h3>
+                <div className="bg-white/[0.01] border border-white/[0.04] rounded-xl p-6">
+                  <h3 className="font-semibold mb-4 text-white text-sm uppercase tracking-wider font-mono">Quick Actions</h3>
                   <div className="grid grid-cols-2 gap-3">
                     {[
-                      { tab: 'projects', icon: FileText, label: 'Projects', color: 'text-blue-500' },
-                      { tab: 'skills', icon: Zap, label: 'Skills', color: 'text-orange-500' },
-                      { tab: 'profile', icon: Users, label: 'Profile', color: 'text-purple-500' },
-                      { tab: 'experience', icon: Briefcase, label: 'Experience', color: 'text-cyan-500' },
-                      { tab: 'education', icon: GraduationCap, label: 'Education', color: 'text-indigo-500' },
-                      { tab: 'certifications', icon: Award, label: 'Certifications', color: 'text-yellow-500' },
-                      { tab: 'messages', icon: Mail, label: 'Messages', color: 'text-red-500' },
-                    ].map(({ tab, icon: Icon, label, color }) => (
-                      <button key={tab} onClick={() => setActiveTab(tab)} className="p-4 bg-white/[0.02] border border-white/[0.06] rounded-xl hover:border-white/[0.12] hover:bg-white/[0.04] transition-all duration-300 text-left flex flex-col gap-2.5 group">
-                        <Icon className={color} size={20} />
-                        <span className="text-sm font-medium">{label}</span>
+                      { tab: 'projects', icon: FileText, label: 'Projects' },
+                      { tab: 'skills', icon: Zap, label: 'Skills' },
+                      { tab: 'profile', icon: Users, label: 'Profile' },
+                      { tab: 'experience', icon: Briefcase, label: 'Experience' },
+                      { tab: 'education', icon: GraduationCap, label: 'Education' },
+                      { tab: 'certifications', icon: Award, label: 'Certifications' },
+                      { tab: 'messages', icon: Mail, label: 'Messages' },
+                    ].map(({ tab, icon: Icon, label }) => (
+                      <button key={tab} onClick={() => setActiveTab(tab)} className="p-4 bg-white/[0.01] border border-white/[0.04] rounded-xl hover:border-white/[0.1] hover:bg-white/[0.02] transition-all duration-300 text-left flex flex-col gap-2.5 group">
+                        <Icon className="text-zinc-500 group-hover:text-white transition-colors duration-300" size={16} />
+                        <span className="text-xs font-mono uppercase tracking-wider text-zinc-400 group-hover:text-white transition-colors duration-300">{label}</span>
                       </button>
                     ))}
                   </div>
@@ -953,7 +948,7 @@ export default function AdminDashboard() {
                       <div className="space-y-2">
                         <label className="text-xs font-medium text-gray-400 uppercase tracking-wider">Full Name</label>
                         {editingProfile ? (
-                          <input type="text" value={profile.name} onChange={e => setProfile({ ...profile, name: e.target.value })} className="w-full px-3 py-2 bg-black/40 border border-white/10 rounded-lg focus:ring-1 focus:ring-blue-500 outline-none" />
+                          <input type="text" value={profile.name} onChange={e => setProfile({ ...profile, name: e.target.value })} className="w-full px-3 py-2 bg-white/[0.01] border border-white/[0.06] rounded-lg focus:outline-none focus:border-white/20 transition-all font-mono text-xs" />
                         ) : (
                           <p className="p-2 text-gray-300">{profile.name}</p>
                         )}
@@ -969,7 +964,7 @@ export default function AdminDashboard() {
                           )}
                         </div>
                         {editingProfile ? (
-                          <input type="text" value={profile.title} onChange={e => setProfile({ ...profile, title: e.target.value })} className="w-full px-3 py-2 bg-black/40 border border-white/10 rounded-lg focus:ring-1 focus:ring-blue-500 outline-none" />
+                          <input type="text" value={profile.title} onChange={e => setProfile({ ...profile, title: e.target.value })} className="w-full px-3 py-2 bg-white/[0.01] border border-white/[0.06] rounded-lg focus:outline-none focus:border-white/20 transition-all font-mono text-xs" />
                         ) : (
                           <p className="p-2 text-gray-300">{profile.title}</p>
                         )}
@@ -985,7 +980,7 @@ export default function AdminDashboard() {
                           )}
                         </div>
                         {editingProfile ? (
-                          <textarea rows={4} value={profile.description} onChange={e => setProfile({ ...profile, description: e.target.value })} className="w-full px-3 py-2 bg-black/40 border border-white/10 rounded-lg focus:ring-1 focus:ring-blue-500 outline-none resize-none" />
+                          <textarea rows={4} value={profile.description} onChange={e => setProfile({ ...profile, description: e.target.value })} className="w-full px-3 py-2 bg-white/[0.01] border border-white/[0.06] rounded-lg focus:outline-none focus:border-white/20 transition-all font-mono text-xs resize-none" />
                         ) : (
                           <p className="p-2 text-gray-300 leading-relaxed">{profile.description}</p>
                         )}
@@ -993,7 +988,7 @@ export default function AdminDashboard() {
                       <div className="space-y-2">
                         <label className="text-xs font-medium text-gray-400 uppercase tracking-wider">Email</label>
                         {editingProfile ? (
-                          <input type="email" value={profile.email} onChange={e => setProfile({ ...profile, email: e.target.value })} className="w-full px-3 py-2 bg-black/40 border border-white/10 rounded-lg focus:ring-1 focus:ring-blue-500 outline-none" />
+                          <input type="email" value={profile.email} onChange={e => setProfile({ ...profile, email: e.target.value })} className="w-full px-3 py-2 bg-white/[0.01] border border-white/[0.06] rounded-lg focus:outline-none focus:border-white/20 transition-all font-mono text-xs" />
                         ) : (
                           <p className="p-2 text-gray-300">{profile.email}</p>
                         )}
@@ -1001,7 +996,7 @@ export default function AdminDashboard() {
                       <div className="space-y-2">
                         <label className="text-xs font-medium text-gray-400 uppercase tracking-wider">Location</label>
                         {editingProfile ? (
-                          <input type="text" value={profile.location || ''} onChange={e => setProfile({ ...profile, location: e.target.value })} className="w-full px-3 py-2 bg-black/40 border border-white/10 rounded-lg focus:ring-1 focus:ring-blue-500 outline-none" />
+                          <input type="text" value={profile.location || ''} onChange={e => setProfile({ ...profile, location: e.target.value })} className="w-full px-3 py-2 bg-white/[0.01] border border-white/[0.06] rounded-lg focus:outline-none focus:border-white/20 transition-all font-mono text-xs" />
                         ) : (
                           <p className="p-2 text-gray-300">{profile.location || 'Not set'}</p>
                         )}
@@ -1009,7 +1004,7 @@ export default function AdminDashboard() {
                       <div className="space-y-2">
                         <label className="text-xs font-medium text-gray-400 uppercase tracking-wider">Phone</label>
                         {editingProfile ? (
-                          <input type="text" value={profile.phone || ''} onChange={e => setProfile({ ...profile, phone: e.target.value })} className="w-full px-3 py-2 bg-black/40 border border-white/10 rounded-lg focus:ring-1 focus:ring-blue-500 outline-none" placeholder="e.g. +880 1XXX-XXXXXX" />
+                          <input type="text" value={profile.phone || ''} onChange={e => setProfile({ ...profile, phone: e.target.value })} className="w-full px-3 py-2 bg-white/[0.01] border border-white/[0.06] rounded-lg focus:outline-none focus:border-white/20 transition-all font-mono text-xs" placeholder="e.g. +880 1XXX-XXXXXX" />
                         ) : (
                           <p className="p-2 text-gray-300">{profile.phone || 'Not set'}</p>
                         )}
@@ -1023,7 +1018,7 @@ export default function AdminDashboard() {
                                 type="text"
                                 value={profile.heroImage || ''}
                                 onChange={e => setProfile({ ...profile, heroImage: e.target.value })}
-className="flex-1 px-3 py-2 bg-black/40 border border-white/10 rounded-lg focus:ring-1 focus:ring-blue-500 outline-none text-sm"
+className="flex-1 px-3 py-2 bg-white/[0.01] border border-white/[0.06] rounded-lg focus:outline-none focus:border-white/20 transition-all font-mono text-xs text-sm"
                                 placeholder="/image.png"
                               />
                               <label className="cursor-pointer px-3 py-2 bg-white/10 hover:bg-white/20 text-white rounded-lg text-sm transition-colors border border-white/20 flex items-center gap-2">
@@ -1063,7 +1058,7 @@ className="flex-1 px-3 py-2 bg-black/40 border border-white/10 rounded-lg focus:
                               type="text"
                               value={profile.resume || ''}
                               onChange={e => setProfile({ ...profile, resume: e.target.value })}
-                              className="flex-1 px-3 py-2 bg-black/40 border border-white/10 rounded-lg focus:ring-1 focus:ring-blue-500 outline-none text-sm"
+                              className="flex-1 px-3 py-2 bg-white/[0.01] border border-white/[0.06] rounded-lg focus:outline-none focus:border-white/20 transition-all font-mono text-xs text-sm"
                               placeholder="/resume.pdf"
                             />
                             <label className="cursor-pointer px-3 py-2 bg-white/10 hover:bg-white/20 text-white rounded-lg text-sm transition-colors border border-white/20 flex items-center gap-2">
@@ -1131,7 +1126,7 @@ className="flex-1 px-3 py-2 bg-black/40 border border-white/10 rounded-lg focus:
                                       ...profile,
                                       socialLinks: { ...profile.socialLinks, [key]: e.target.value }
                                     })}
-                                    className="w-full pl-10 pr-3 py-2 bg-black/40 border border-white/10 rounded-lg focus:ring-1 focus:ring-blue-500 outline-none"
+                                    className="w-full pl-10 pr-3 py-2 bg-white/[0.01] border border-white/[0.06] rounded-lg focus:outline-none focus:border-white/20 transition-all font-mono text-xs"
                                     placeholder={`https://${key}.com/...`}
                                   />
                                 </div>
@@ -1159,7 +1154,7 @@ className="flex-1 px-3 py-2 bg-black/40 border border-white/10 rounded-lg focus:
                 <motion.div
                   initial={{ opacity: 0, y: -20 }}
                   animate={{ opacity: 1, y: 0 }}
-                  className="bg-white/5 backdrop-blur-md border border-white/10 rounded-xl p-6 mb-8 shadow-2xl relative"
+                  className="bg-white/[0.01] border border-white/[0.04] rounded-xl p-6 mb-8 relative"
                 >
                   <button onClick={() => setEditingProject(null)} className="absolute top-4 right-4 text-gray-400 hover:text-white">
                     <X size={20} />
@@ -1169,7 +1164,7 @@ className="flex-1 px-3 py-2 bg-black/40 border border-white/10 rounded-lg focus:
                     <div className="space-y-4">
                       <div>
                         <div className="flex justify-between items-end mb-1">
-                          <label className="block text-sm text-gray-300">Project Title</label>
+                          <label className="block text-[10px] font-medium uppercase tracking-[0.15em] text-zinc-500 mb-1.5">Project Title</label>
                           <AIGenerateButton 
                             onGenerate={(text) => setEditingProject({ ...editingProject, title: text })}
                             promptContext={{ field: 'project-title', contextData: { title: editingProject.title } }}
@@ -1178,13 +1173,13 @@ className="flex-1 px-3 py-2 bg-black/40 border border-white/10 rounded-lg focus:
                         <input
                           value={editingProject.title}
                           onChange={e => setEditingProject({ ...editingProject, title: e.target.value })}
-                          className="w-full px-4 py-2 bg-black/40 border border-white/10 rounded-lg focus:ring-1 focus:ring-blue-600 outline-none"
+                          className="w-full px-4 py-2 bg-white/[0.01] border border-white/[0.06] rounded-lg focus:outline-none focus:border-white/20 transition-all font-mono text-xs"
                           placeholder="My Awesome Project"
                         />
                       </div>
                       <div>
                         <div className="flex justify-between items-end mb-1">
-                          <label className="block text-sm text-gray-300">Description</label>
+                          <label className="block text-[10px] font-medium uppercase tracking-[0.15em] text-zinc-500 mb-1.5">Description</label>
                           <AIGenerateButton 
                             onGenerate={(text) => setEditingProject({ ...editingProject, description: text })}
                             promptContext={{ field: 'project-description', contextData: { title: editingProject.title, type: editingProject.projectType || 'webapp' } }}
@@ -1193,7 +1188,7 @@ className="flex-1 px-3 py-2 bg-black/40 border border-white/10 rounded-lg focus:
                         <textarea
                           value={editingProject.description}
                           onChange={e => setEditingProject({ ...editingProject, description: e.target.value })}
-                          className="w-full px-4 py-2 bg-black/40 border border-white/10 rounded-lg focus:ring-1 focus:ring-blue-600 outline-none resize-none"
+                          className="w-full px-4 py-2 bg-white/[0.01] border border-white/[0.06] rounded-lg focus:outline-none focus:border-white/20 transition-all font-mono text-xs resize-none"
                           rows={4}
                           placeholder="What does this project do?"
                         />
@@ -1201,7 +1196,7 @@ className="flex-1 px-3 py-2 bg-black/40 border border-white/10 rounded-lg focus:
                     </div>
                     <div className="space-y-4">
                       <div>
-                        <label className="block text-sm text-gray-300 mb-1">Project Type</label>
+                        <label className="block text-[10px] font-medium uppercase tracking-[0.15em] text-zinc-500 mb-1.5">Project Type</label>
                         <select
                           value={editingProject.projectType || 'webapp'}
                           onChange={(e) => {
@@ -1214,7 +1209,7 @@ className="flex-1 px-3 py-2 bg-black/40 border border-white/10 rounded-lg focus:
                             })
                             setSelectedTechnology(nextOptions[0])
                           }}
-                          className="w-full px-4 py-2 bg-black/40 border border-white/10 rounded-lg focus:ring-1 focus:ring-blue-600 outline-none"
+                          className="w-full px-4 py-2 bg-white/[0.01] border border-white/[0.06] rounded-lg focus:outline-none focus:border-white/20 transition-all font-mono text-xs"
                         >
                           <option value="webapp">Web App</option>
                           <option value="android">Android</option>
@@ -1222,7 +1217,7 @@ className="flex-1 px-3 py-2 bg-black/40 border border-white/10 rounded-lg focus:
                       </div>
 
                       <div>
-                        <label className="block text-sm text-gray-300 mb-1">Technologies</label>
+                        <label className="block text-[10px] font-medium uppercase tracking-[0.15em] text-zinc-500 mb-1.5">Technologies</label>
                         {(() => {
                           const currentType = editingProject.projectType || 'webapp'
                           const typeTechnologies = technologyOptionsByType[currentType]
@@ -1238,7 +1233,7 @@ className="flex-1 px-3 py-2 bg-black/40 border border-white/10 rounded-lg focus:
                                     ? ''
                                     : (availableTechnologies.includes(selectedTechnology) ? selectedTechnology : availableTechnologies[0])}
                                   onChange={(e) => setSelectedTechnology(e.target.value)}
-                                  className="flex-1 px-4 py-2 bg-black/40 border border-white/10 rounded-lg focus:ring-1 focus:ring-blue-600 outline-none"
+                                  className="flex-1 px-4 py-2 bg-white/[0.01] border border-white/[0.06] rounded-lg focus:outline-none focus:border-white/20 transition-all font-mono text-xs"
                                   disabled={availableTechnologies.length === 0}
                                 >
                                   {availableTechnologies.length === 0 ? (
@@ -1298,7 +1293,7 @@ className="flex-1 px-3 py-2 bg-black/40 border border-white/10 rounded-lg focus:
                       </div>
 
                       <div>
-                        <label className="block text-sm text-gray-300 mb-1">Project Icon / Logo (optional)</label>
+                        <label className="block text-[10px] font-medium uppercase tracking-[0.15em] text-zinc-500 mb-1.5">Project Icon / Logo (optional)</label>
                         <div className="flex items-center gap-3">
                           <div className="relative w-10 h-10 bg-black/40 border border-white/10 rounded-lg overflow-hidden flex-shrink-0">
                             {editingProject.logoUrl ? (
@@ -1350,7 +1345,7 @@ className="p-2 hover:bg-white/10 rounded-lg text-red-400"
                       </div>
 
                       <div>
-                        <label className="block text-sm text-gray-300 mb-1">Project Preview Image</label>
+                        <label className="block text-[10px] font-medium uppercase tracking-[0.15em] text-zinc-500 mb-1.5">Project Preview Image</label>
                         <div className="flex items-center gap-3">
                           <div className="relative w-16 h-10 bg-black/40 border border-white/10 rounded overflow-hidden flex-shrink-0">
                             {editingProject.imageUrl ? (
@@ -1403,19 +1398,19 @@ className="p-2 hover:bg-white/10 rounded-lg text-red-400"
 
                       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                         <div>
-                          <label className="block text-sm text-gray-300 mb-1">GitHub URL</label>
+                          <label className="block text-[10px] font-medium uppercase tracking-[0.15em] text-zinc-500 mb-1.5">GitHub URL</label>
                           <input
                             value={editingProject.githubUrl || ''}
                             onChange={e => setEditingProject({ ...editingProject, githubUrl: e.target.value })}
-                            className="w-full px-4 py-2 bg-black/40 border border-white/10 rounded-lg focus:ring-1 focus:ring-blue-600 outline-none"
+                            className="w-full px-4 py-2 bg-white/[0.01] border border-white/[0.06] rounded-lg focus:outline-none focus:border-white/20 transition-all font-mono text-xs"
                           />
                         </div>
                         <div>
-                          <label className="block text-sm text-gray-300 mb-1">Demo URL</label>
+                          <label className="block text-[10px] font-medium uppercase tracking-[0.15em] text-zinc-500 mb-1.5">Demo URL</label>
                           <input
                             value={editingProject.demoUrl || ''}
                             onChange={e => setEditingProject({ ...editingProject, demoUrl: e.target.value })}
-                            className="w-full px-4 py-2 bg-black/40 border border-white/10 rounded-lg focus:ring-1 focus:ring-blue-600 outline-none"
+                            className="w-full px-4 py-2 bg-white/[0.01] border border-white/[0.06] rounded-lg focus:outline-none focus:border-white/20 transition-all font-mono text-xs"
                           />
                         </div>
                       </div>
@@ -1442,6 +1437,13 @@ className="p-2 hover:bg-white/10 rounded-lg text-red-400"
               )}
 
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {projects.length === 0 && (
+                  <div className="col-span-full text-center py-16 border border-dashed border-white/[0.06] rounded-xl bg-white/[0.005]">
+                    <Code size={32} className="mx-auto mb-3 text-zinc-650" />
+                    <h4 className="text-white text-xs font-semibold tracking-wider uppercase font-mono mb-1">No Projects Found</h4>
+                    <p className="text-zinc-500 text-[10px] font-mono">Create one using the new project button to get started.</p>
+                  </div>
+                )}
                 {projects.map((project) => {
                   const technologies = project.techStack && project.techStack.length > 0
                     ? project.techStack.map(t => t.name)
@@ -1461,7 +1463,7 @@ className="p-2 hover:bg-white/10 rounded-lg text-red-400"
                     <motion.div
                       layout
                       key={project.id}
-                      className="bg-white/5 backdrop-blur-md border border-white/10 rounded-xl overflow-hidden group hover:border-white/20 transition-colors flex flex-col"
+                      className="bg-white/[0.01] border border-white/[0.04] rounded-xl overflow-hidden group hover:border-white/[0.08] transition-colors flex flex-col"
                     >
                       <div className="p-6 flex-1">
                         <div className="flex justify-between items-start mb-4">
@@ -1552,7 +1554,7 @@ className="p-2 hover:bg-white/10 rounded-lg text-blue-400"
           {activeTab === 'skills' && (
             <div className="space-y-6">
               {editingSkill && !editingSkill.id && (
-                <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} className="bg-white/5 backdrop-blur-md border border-white/10 rounded-xl p-6 mb-6">
+                <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} className="bg-white/[0.01] border border-white/[0.04] rounded-xl p-6 mb-6">
                   <h3 className="font-semibold mb-4 text-gray-200">{editingSkill.id ? 'Edit Skill' : 'Add New Skill'}</h3>
                   <div className="grid grid-cols-1 md:grid-cols-5 gap-4 items-end">
                     <div className="col-span-2">
@@ -1567,7 +1569,7 @@ className="p-2 hover:bg-white/10 rounded-lg text-blue-400"
                       <input
                         value={editingSkill.name}
                         onChange={e => setEditingSkill({ ...editingSkill, name: e.target.value })}
-                        className="w-full px-3 py-2 bg-black/40 border border-white/10 rounded-lg outline-none focus:border-blue-500"
+                        className="w-full px-3 py-2 bg-white/[0.01] border border-white/[0.06] rounded-lg focus:outline-none focus:border-white/20 transition-all font-mono text-xs"
                       />
                     </div>
                     <div>
@@ -1575,7 +1577,7 @@ className="p-2 hover:bg-white/10 rounded-lg text-blue-400"
                       <input
                         value={editingSkill.icon || ''}
                         onChange={e => setEditingSkill({ ...editingSkill, icon: e.target.value })}
-                        className="w-full px-3 py-2 bg-black/40 border border-white/10 rounded-lg outline-none focus:border-blue-500"
+                        className="w-full px-3 py-2 bg-white/[0.01] border border-white/[0.06] rounded-lg focus:outline-none focus:border-white/20 transition-all font-mono text-xs"
                         placeholder="e.g. ⚛️"
                       />
                     </div>
@@ -1584,7 +1586,7 @@ className="p-2 hover:bg-white/10 rounded-lg text-blue-400"
                       <select
                         value={editingSkill.category}
                         onChange={e => setEditingSkill({ ...editingSkill, category: e.target.value })}
-                        className="w-full px-3 py-2 bg-black/40 border border-white/10 rounded-lg outline-none focus:border-blue-500"
+                        className="w-full px-3 py-2 bg-white/[0.01] border border-white/[0.06] rounded-lg focus:outline-none focus:border-white/20 transition-all font-mono text-xs"
                       >
                         {skillCategories.map((category) => (
                           <option key={category.value} value={category.value}>{category.label}</option>
@@ -1633,7 +1635,7 @@ className="p-2 hover:bg-white/10 rounded-lg text-blue-400"
                       <div className="space-y-2">
                         {catSkills.map(skill => (
                           editingSkill?.id === skill.id ? (
-                            <motion.div key={skill.id} initial={{ opacity: 0, y: -8 }} animate={{ opacity: 1, y: 0 }} className="bg-white/5 backdrop-blur-md border border-blue-500/40 rounded-lg p-4">
+                            <motion.div key={skill.id} initial={{ opacity: 0, y: -8 }} animate={{ opacity: 1, y: 0 }} className="bg-white/[0.01] border border-white/[0.06] rounded-lg p-4">
                               <div className="grid grid-cols-1 md:grid-cols-5 gap-3 items-end">
                                 <div className="md:col-span-2">
                                   <div className="flex items-center justify-between mb-1">
@@ -1647,7 +1649,7 @@ className="p-2 hover:bg-white/10 rounded-lg text-blue-400"
                                   <input
                                     value={editingSkill!.name}
                                     onChange={e => setEditingSkill({ ...editingSkill!, name: e.target.value })}
-                                    className="w-full px-3 py-2 bg-black/40 border border-white/10 rounded-lg outline-none focus:border-blue-500"
+                                    className="w-full px-3 py-2 bg-white/[0.01] border border-white/[0.06] rounded-lg focus:outline-none focus:border-white/20 transition-all font-mono text-xs"
                                   />
                                 </div>
                                 <div>
@@ -1655,7 +1657,7 @@ className="p-2 hover:bg-white/10 rounded-lg text-blue-400"
                                   <input
                                     value={editingSkill!.icon || ''}
                                     onChange={e => setEditingSkill({ ...editingSkill!, icon: e.target.value })}
-                                    className="w-full px-3 py-2 bg-black/40 border border-white/10 rounded-lg outline-none focus:border-blue-500"
+                                    className="w-full px-3 py-2 bg-white/[0.01] border border-white/[0.06] rounded-lg focus:outline-none focus:border-white/20 transition-all font-mono text-xs"
                                     placeholder="e.g. ⚛️"
                                   />
                                 </div>
@@ -1664,7 +1666,7 @@ className="p-2 hover:bg-white/10 rounded-lg text-blue-400"
                                   <select
                                     value={editingSkill!.category}
                                     onChange={e => setEditingSkill({ ...editingSkill!, category: e.target.value })}
-                                    className="w-full px-3 py-2 bg-black/40 border border-white/10 rounded-lg outline-none focus:border-blue-500"
+                                    className="w-full px-3 py-2 bg-white/[0.01] border border-white/[0.06] rounded-lg focus:outline-none focus:border-white/20 transition-all font-mono text-xs"
                                   >
                                     {skillCategories.map((category) => (
                                       <option key={category.value} value={category.value}>{category.label}</option>
@@ -1756,7 +1758,7 @@ className="w-4 h-4 rounded border-white/20 bg-white/5"
               </div>
 
               {editingExperience && (
-                <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} className="bg-white/5 backdrop-blur-md border border-white/10 rounded-xl p-6 mb-6">
+                <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} className="bg-white/[0.01] border border-white/[0.04] rounded-xl p-6 mb-6">
                   <h3 className="font-semibold mb-4 text-gray-200">{editingExperience.id ? 'Edit Experience' : 'Add New Experience'}</h3>
                   <div className="space-y-4">
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -1771,7 +1773,7 @@ className="w-4 h-4 rounded border-white/20 bg-white/5"
                         <input
                           value={editingExperience.company}
                           onChange={e => setEditingExperience({ ...editingExperience, company: e.target.value })}
-                          className="w-full px-3 py-2 bg-black/40 border border-white/10 rounded-lg outline-none focus:border-blue-500"
+                          className="w-full px-3 py-2 bg-white/[0.01] border border-white/[0.06] rounded-lg focus:outline-none focus:border-white/20 transition-all font-mono text-xs"
                         />
                       </div>
                       <div>
@@ -1785,7 +1787,7 @@ className="w-4 h-4 rounded border-white/20 bg-white/5"
                         <input
                           value={editingExperience.position}
                           onChange={e => setEditingExperience({ ...editingExperience, position: e.target.value })}
-                          className="w-full px-3 py-2 bg-black/40 border border-white/10 rounded-lg outline-none focus:border-blue-500"
+                          className="w-full px-3 py-2 bg-white/[0.01] border border-white/[0.06] rounded-lg focus:outline-none focus:border-white/20 transition-all font-mono text-xs"
                         />
                       </div>
                     </div>
@@ -1800,7 +1802,7 @@ className="w-4 h-4 rounded border-white/20 bg-white/5"
                       <textarea
                         value={editingExperience.description}
                         onChange={e => setEditingExperience({ ...editingExperience, description: e.target.value })}
-                        className="w-full px-3 py-2 bg-black/40 border border-white/10 rounded-lg outline-none focus:border-blue-500 min-h-[100px]"
+                        className="w-full px-3 py-2 bg-white/[0.01] border border-white/[0.06] rounded-lg focus:outline-none focus:border-white/20 transition-all font-mono text-xs min-h-[100px]"
                       />
                     </div>
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -1810,7 +1812,7 @@ className="w-4 h-4 rounded border-white/20 bg-white/5"
                           type="date"
                           value={editingExperience.startDate ? new Date(editingExperience.startDate).toISOString().split('T')[0] : ''}
                           onChange={e => setEditingExperience({ ...editingExperience, startDate: e.target.value })}
-                          className="w-full px-3 py-2 bg-black/40 border border-white/10 rounded-lg outline-none focus:border-blue-500"
+                          className="w-full px-3 py-2 bg-white/[0.01] border border-white/[0.06] rounded-lg focus:outline-none focus:border-white/20 transition-all font-mono text-xs"
                         />
                       </div>
                       <div>
@@ -1820,7 +1822,7 @@ className="w-4 h-4 rounded border-white/20 bg-white/5"
                           value={editingExperience.endDate ? new Date(editingExperience.endDate).toISOString().split('T')[0] : ''}
                           onChange={e => setEditingExperience({ ...editingExperience, endDate: e.target.value })}
                           disabled={editingExperience.current}
-                          className={`w-full px-3 py-2 bg-black/40 border border-white/10 rounded-lg outline-none focus:border-blue-500 ${editingExperience.current ? 'opacity-50' : ''}`}
+                          className={`w-full px-3 py-2 bg-white/[0.01] border border-white/[0.06] rounded-lg focus:outline-none focus:border-white/20 transition-all font-mono text-xs ${editingExperience.current ? 'opacity-50' : ''}`}
                         />
                       </div>
                       <div className="flex items-center pt-6">
@@ -1840,7 +1842,7 @@ className="w-4 h-4 rounded border-white/20 bg-white/5"
                       <input
                         value={editingExperience.location || ''}
                         onChange={e => setEditingExperience({ ...editingExperience, location: e.target.value })}
-                        className="w-full px-3 py-2 bg-black/40 border border-white/10 rounded-lg outline-none focus:border-blue-500"
+                        className="w-full px-3 py-2 bg-white/[0.01] border border-white/[0.06] rounded-lg focus:outline-none focus:border-white/20 transition-all font-mono text-xs"
                       />
                     </div>
                   </div>
@@ -1858,25 +1860,32 @@ className="w-4 h-4 rounded border-white/20 bg-white/5"
                   <motion.div
                     key={exp.id}
                     layout
-                    className="bg-white/5 backdrop-blur-md border border-white/10 rounded-xl p-6 group hover:border-white/20 transition-colors"
+                    className="bg-white/[0.01] border border-white/[0.04] rounded-xl p-6 group hover:border-white/[0.08] transition-colors"
                   >
                     <div className="flex justify-between items-start">
                       <div>
-                        <h4 className="text-xl font-bold text-white mb-1">{exp.position}</h4>
-                        <h5 className="text-lg text-blue-400 mb-2">{exp.company}</h5>
-                        <div className="flex items-center gap-4 text-sm text-gray-400 mb-4">
-                          <span>{new Date(exp.startDate).toLocaleDateString()} - {exp.current ? 'Present' : new Date(exp.endDate!).toLocaleDateString()}</span>
+                        <h4 className="text-lg font-bold text-white mb-1 font-mono uppercase tracking-wider">{exp.position}</h4>
+                        <h5 className="text-sm text-zinc-400 mb-2 font-mono">{exp.company}</h5>
+                        <div className="flex items-center gap-4 text-xs text-zinc-500 font-mono mb-4">
+                          <span>{new Date(exp.startDate).toLocaleDateString('en-US', { year: 'numeric', month: 'short' })} - {exp.current ? 'Present' : new Date(exp.endDate!).toLocaleDateString('en-US', { year: 'numeric', month: 'short' })}</span>
                           {exp.location && <span>• {exp.location}</span>}
                         </div>
-                        <p className="text-gray-300 whitespace-pre-line">{exp.description}</p>
+                        <p className="text-xs text-zinc-450 whitespace-pre-line leading-relaxed">{exp.description}</p>
                       </div>
-                      <div className="flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                        <button onClick={() => setEditingExperience(exp)} className="p-2 hover:bg-white/10 rounded-lg text-blue-400"><Edit size={16} /></button>
-                        <button onClick={() => deleteExperience(exp.id!)} className="p-2 hover:bg-white/10 rounded-lg text-red-400"><Trash2 size={16} /></button>
+                      <div className="flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity ml-4 shrink-0">
+                        <button onClick={() => setEditingExperience(exp)} className="p-2 hover:bg-white/[0.06] rounded-lg text-zinc-400 hover:text-white"><Edit size={14} /></button>
+                        <button onClick={() => deleteExperience(exp.id!)} className="p-2 hover:bg-white/[0.06] rounded-lg text-zinc-500 hover:text-red-400"><Trash2 size={14} /></button>
                       </div>
                     </div>
                   </motion.div>
                 ))}
+                {experiences.length === 0 && !editingExperience && (
+                  <div className="text-center py-16 border border-dashed border-white/[0.06] rounded-xl bg-white/[0.005]">
+                    <Briefcase size={32} className="mx-auto mb-3 text-zinc-600" />
+                    <h4 className="text-white text-xs font-semibold tracking-wider uppercase font-mono mb-1">No Experience Found</h4>
+                    <p className="text-zinc-500 text-[10px] font-mono">Add your professional experience items to display them.</p>
+                  </div>
+                )}
               </div>
             </div>
           )}
@@ -1900,7 +1909,7 @@ className="w-4 h-4 rounded border-white/20 bg-white/5"
               </div>
 
               {editingEducation && (
-                <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} className="bg-white/5 backdrop-blur-md border border-white/10 rounded-xl p-6 mb-6">
+                <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} className="bg-white/[0.01] border border-white/[0.04] rounded-xl p-6 mb-6">
                   <h3 className="font-semibold mb-4 text-gray-200">{editingEducation.id ? 'Edit Education' : 'Add New Education'}</h3>
                   <div className="space-y-4">
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -1915,7 +1924,7 @@ className="w-4 h-4 rounded border-white/20 bg-white/5"
                         <input
                           value={editingEducation.institution}
                           onChange={e => setEditingEducation({ ...editingEducation, institution: e.target.value })}
-                          className="w-full px-3 py-2 bg-black/40 border border-white/10 rounded-lg outline-none focus:border-blue-500"
+                          className="w-full px-3 py-2 bg-white/[0.01] border border-white/[0.06] rounded-lg focus:outline-none focus:border-white/20 transition-all font-mono text-xs"
                         />
                       </div>
                       <div>
@@ -1929,7 +1938,7 @@ className="w-4 h-4 rounded border-white/20 bg-white/5"
                         <input
                           value={editingEducation.degree}
                           onChange={e => setEditingEducation({ ...editingEducation, degree: e.target.value })}
-                          className="w-full px-3 py-2 bg-black/40 border border-white/10 rounded-lg outline-none focus:border-blue-500"
+                          className="w-full px-3 py-2 bg-white/[0.01] border border-white/[0.06] rounded-lg focus:outline-none focus:border-white/20 transition-all font-mono text-xs"
                         />
                       </div>
                     </div>
@@ -1938,7 +1947,7 @@ className="w-4 h-4 rounded border-white/20 bg-white/5"
                       <input
                         value={editingEducation.field || ''}
                         onChange={e => setEditingEducation({ ...editingEducation, field: e.target.value })}
-                        className="w-full px-3 py-2 bg-black/40 border border-white/10 rounded-lg outline-none focus:border-blue-500"
+                        className="w-full px-3 py-2 bg-white/[0.01] border border-white/[0.06] rounded-lg focus:outline-none focus:border-white/20 transition-all font-mono text-xs"
                       />
                     </div>
                     <div>
@@ -1952,7 +1961,7 @@ className="w-4 h-4 rounded border-white/20 bg-white/5"
                       <textarea
                         value={editingEducation.description || ''}
                         onChange={e => setEditingEducation({ ...editingEducation, description: e.target.value })}
-                        className="w-full px-3 py-2 bg-black/40 border border-white/10 rounded-lg outline-none focus:border-blue-500 min-h-[100px]"
+                        className="w-full px-3 py-2 bg-white/[0.01] border border-white/[0.06] rounded-lg focus:outline-none focus:border-white/20 transition-all font-mono text-xs min-h-[100px]"
                       />
                     </div>
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -1962,7 +1971,7 @@ className="w-4 h-4 rounded border-white/20 bg-white/5"
                           type="date"
                           value={editingEducation.startDate ? new Date(editingEducation.startDate).toISOString().split('T')[0] : ''}
                           onChange={e => setEditingEducation({ ...editingEducation, startDate: e.target.value })}
-                          className="w-full px-3 py-2 bg-black/40 border border-white/10 rounded-lg outline-none focus:border-blue-500"
+                          className="w-full px-3 py-2 bg-white/[0.01] border border-white/[0.06] rounded-lg focus:outline-none focus:border-white/20 transition-all font-mono text-xs"
                         />
                       </div>
                       <div>
@@ -1972,7 +1981,7 @@ className="w-4 h-4 rounded border-white/20 bg-white/5"
                           value={editingEducation.endDate ? new Date(editingEducation.endDate).toISOString().split('T')[0] : ''}
                           onChange={e => setEditingEducation({ ...editingEducation, endDate: e.target.value })}
                           disabled={editingEducation.current}
-                          className={`w-full px-3 py-2 bg-black/40 border border-white/10 rounded-lg outline-none focus:border-blue-500 ${editingEducation.current ? 'opacity-50' : ''}`}
+                          className={`w-full px-3 py-2 bg-white/[0.01] border border-white/[0.06] rounded-lg focus:outline-none focus:border-white/20 transition-all font-mono text-xs ${editingEducation.current ? 'opacity-50' : ''}`}
                         />
                       </div>
                       <div className="flex items-center pt-6">
@@ -1992,7 +2001,7 @@ className="w-4 h-4 rounded border-white/20 bg-white/5"
                       <input
                         value={editingEducation.gpa || ''}
                         onChange={e => setEditingEducation({ ...editingEducation, gpa: e.target.value })}
-                        className="w-full px-3 py-2 bg-black/40 border border-white/10 rounded-lg outline-none focus:border-blue-500"
+                        className="w-full px-3 py-2 bg-white/[0.01] border border-white/[0.06] rounded-lg focus:outline-none focus:border-white/20 transition-all font-mono text-xs"
                       />
                     </div>
                   </div>
@@ -2010,25 +2019,32 @@ className="w-4 h-4 rounded border-white/20 bg-white/5"
                   <motion.div
                     key={edu.id}
                     layout
-                    className="bg-white/5 backdrop-blur-md border border-white/10 rounded-xl p-6 group hover:border-white/20 transition-colors"
+                    className="bg-white/[0.01] border border-white/[0.04] rounded-xl p-6 group hover:border-white/[0.08] transition-colors"
                   >
                     <div className="flex justify-between items-start">
                       <div>
-                        <h4 className="text-xl font-bold text-white mb-1">{edu.degree} {edu.field && `in ${edu.field}`}</h4>
-                        <h5 className="text-lg text-blue-400 mb-2">{edu.institution}</h5>
-                        <div className="flex items-center gap-4 text-sm text-gray-400 mb-4">
-                          <span>{new Date(edu.startDate).toLocaleDateString()} - {edu.current ? 'Present' : new Date(edu.endDate!).toLocaleDateString()}</span>
+                        <h4 className="text-lg font-bold text-white mb-1 font-mono uppercase tracking-wider">{edu.degree} {edu.field && `in ${edu.field}`}</h4>
+                        <h5 className="text-sm text-zinc-400 mb-2 font-mono">{edu.institution}</h5>
+                        <div className="flex items-center gap-4 text-xs text-zinc-500 font-mono mb-4">
+                          <span>{new Date(edu.startDate).toLocaleDateString('en-US', { year: 'numeric', month: 'short' })} - {edu.current ? 'Present' : new Date(edu.endDate!).toLocaleDateString('en-US', { year: 'numeric', month: 'short' })}</span>
                           {edu.gpa && <span>• GPA: {edu.gpa}</span>}
                         </div>
-                        <p className="text-gray-200 whitespace-pre-line">{edu.description}</p>
+                        <p className="text-xs text-zinc-450 whitespace-pre-line leading-relaxed">{edu.description}</p>
                       </div>
-                      <div className="flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                        <button onClick={() => setEditingEducation(edu)} className="p-2 hover:bg-white/10 rounded-lg text-blue-400"><Edit size={16} /></button>
-                        <button onClick={() => deleteEducation(edu.id!)} className="p-2 hover:bg-white/10 rounded-lg text-red-400"><Trash2 size={16} /></button>
+                      <div className="flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity ml-4 shrink-0">
+                        <button onClick={() => setEditingEducation(edu)} className="p-2 hover:bg-white/[0.06] rounded-lg text-zinc-400 hover:text-white"><Edit size={14} /></button>
+                        <button onClick={() => deleteEducation(edu.id!)} className="p-2 hover:bg-white/[0.06] rounded-lg text-zinc-500 hover:text-red-400"><Trash2 size={14} /></button>
                       </div>
                     </div>
                   </motion.div>
                 ))}
+                {educations.length === 0 && !editingEducation && (
+                  <div className="text-center py-16 border border-dashed border-white/[0.06] rounded-xl bg-white/[0.005]">
+                    <GraduationCap size={32} className="mx-auto mb-3 text-zinc-650" />
+                    <h4 className="text-white text-xs font-semibold tracking-wider uppercase font-mono mb-1">No Education Found</h4>
+                    <p className="text-zinc-500 text-[10px] font-mono">Add your academic background milestones to display them.</p>
+                  </div>
+                )}
               </div>
             </div>
           )}
@@ -2051,7 +2067,7 @@ className="w-4 h-4 rounded border-white/20 bg-white/5"
               </div>
 
               {editingCertification && (
-                <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} className="bg-white/5 backdrop-blur-md border border-white/10 rounded-xl p-6 mb-6">
+                <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} className="bg-white/[0.01] border border-white/[0.04] rounded-xl p-6 mb-6">
                   <h3 className="font-semibold mb-4 text-gray-200">{editingCertification.id ? 'Edit Certification' : 'Add New Certification'}</h3>
                   <div className="space-y-4">
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -2066,7 +2082,7 @@ className="w-4 h-4 rounded border-white/20 bg-white/5"
                         <input
                           value={editingCertification.name}
                           onChange={e => setEditingCertification({ ...editingCertification, name: e.target.value })}
-                          className="w-full px-3 py-2 bg-black/40 border border-white/10 rounded-lg outline-none focus:border-blue-500"
+                          className="w-full px-3 py-2 bg-white/[0.01] border border-white/[0.06] rounded-lg focus:outline-none focus:border-white/20 transition-all font-mono text-xs"
                           placeholder="e.g. AWS Solutions Architect"
                         />
                       </div>
@@ -2081,7 +2097,7 @@ className="w-4 h-4 rounded border-white/20 bg-white/5"
                         <input
                           value={editingCertification.issuer}
                           onChange={e => setEditingCertification({ ...editingCertification, issuer: e.target.value })}
-                          className="w-full px-3 py-2 bg-black/40 border border-white/10 rounded-lg outline-none focus:border-blue-500"
+                          className="w-full px-3 py-2 bg-white/[0.01] border border-white/[0.06] rounded-lg focus:outline-none focus:border-white/20 transition-all font-mono text-xs"
                           placeholder="e.g. Amazon Web Services"
                         />
                       </div>
@@ -2093,7 +2109,7 @@ className="w-4 h-4 rounded border-white/20 bg-white/5"
                           type="date"
                           value={editingCertification.date ? new Date(editingCertification.date).toISOString().split('T')[0] : ''}
                           onChange={e => setEditingCertification({ ...editingCertification, date: e.target.value })}
-                          className="w-full px-3 py-2 bg-black/40 border border-white/10 rounded-lg outline-none focus:border-blue-500"
+                          className="w-full px-3 py-2 bg-white/[0.01] border border-white/[0.06] rounded-lg focus:outline-none focus:border-white/20 transition-all font-mono text-xs"
                         />
                       </div>
                       <div>
@@ -2102,7 +2118,7 @@ className="w-4 h-4 rounded border-white/20 bg-white/5"
                           type="url"
                           value={editingCertification.url || ''}
                           onChange={e => setEditingCertification({ ...editingCertification, url: e.target.value })}
-                          className="w-full px-3 py-2 bg-black/40 border border-white/10 rounded-lg outline-none focus:border-blue-500"
+                          className="w-full px-3 py-2 bg-white/[0.01] border border-white/[0.06] rounded-lg focus:outline-none focus:border-white/20 transition-all font-mono text-xs"
                           placeholder="https://..."
                         />
                       </div>
@@ -2118,7 +2134,7 @@ className="w-4 h-4 rounded border-white/20 bg-white/5"
                       <textarea
                         value={editingCertification.description || ''}
                         onChange={e => setEditingCertification({ ...editingCertification, description: e.target.value })}
-                        className="w-full px-3 py-2 bg-black/40 border border-white/10 rounded-lg outline-none focus:border-blue-500 min-h-[100px]"
+                        className="w-full px-3 py-2 bg-white/[0.01] border border-white/[0.06] rounded-lg focus:outline-none focus:border-white/20 transition-all font-mono text-xs min-h-[100px]"
                         placeholder="Brief description of the certification..."
                       />
                     </div>
@@ -2179,9 +2195,10 @@ className="w-4 h-4 rounded border-white/20 bg-white/5"
                   </motion.div>
                 ))}
                 {certifications.length === 0 && !editingCertification && (
-                  <div className="col-span-full text-center py-12 text-gray-400">
-                    <Award size={48} className="mx-auto mb-4 opacity-50" />
-                    <p>No certifications yet. Click "Add Certification" to add your first one.</p>
+                  <div className="col-span-full text-center py-16 border border-dashed border-white/[0.06] rounded-xl bg-white/[0.005]">
+                    <Award size={32} className="mx-auto mb-3 text-zinc-650" />
+                    <h4 className="text-white text-xs font-semibold tracking-wider uppercase font-mono mb-1">No Certifications Found</h4>
+                    <p className="text-zinc-500 text-[10px] font-mono">Add your professional certifications or credentials to display them.</p>
                   </div>
                 )}
               </div>
@@ -2192,11 +2209,17 @@ className="w-4 h-4 rounded border-white/20 bg-white/5"
           {activeTab === 'messages' && (
             <div className="space-y-6">
               <div className="flex justify-between items-center">
-                <h3 className="text-2xl font-bold text-gray-200">Messages</h3>
-                {unreadCount > 0 && <span className="text-sm bg-blue-500/20 text-blue-400 px-3 py-1 rounded-full">{unreadCount} unread</span>}
+                <h3 className="text-lg font-semibold uppercase tracking-wider text-white font-mono">Messages</h3>
+                {unreadCount > 0 && <span className="text-[10px] font-semibold font-mono uppercase tracking-wider bg-white/[0.04] border border-white/[0.08] text-white px-2.5 py-0.5 rounded-md">{unreadCount} unread</span>}
               </div>
               <div className="space-y-4">
-                {messages.length === 0 && <p className="text-gray-400">No messages yet.</p>}
+                {messages.length === 0 && (
+                  <div className="text-center py-16 border border-dashed border-white/[0.06] rounded-xl bg-white/[0.005]">
+                    <Mail size={32} className="mx-auto mb-3 text-zinc-600" />
+                    <h4 className="text-white text-xs font-semibold tracking-wider uppercase font-mono mb-1">No Messages Found</h4>
+                    <p className="text-zinc-500 text-[10px] font-mono">You will see incoming client contact messages here.</p>
+                  </div>
+                )}
                 {messages.map((msg) => {
                   const isExpanded = expandedMessages[msg.id] ?? false
                   return (
@@ -2204,19 +2227,16 @@ className="w-4 h-4 rounded border-white/20 bg-white/5"
                       key={msg.id}
                       initial={{ opacity: 0 }}
                       animate={{ opacity: 1 }}
-                      className={`bg-white/5 backdrop-blur-md border ${msg.status === 'unread' ? 'border-blue-500/50' : 'border-white/10'} rounded-xl p-6`}
+                      className={`bg-white/[0.01] border ${msg.status === 'unread' ? 'border-white/[0.12] bg-white/[0.02]' : 'border-white/[0.04]'} rounded-xl p-6`}
                     >
                     <div className="flex justify-between items-start mb-4">
                       <div>
-                        <h4 className="text-lg font-bold text-white">{msg.name}</h4>
-                        <p className="text-gray-300 text-sm">{msg.email}</p>
+                        <h4 className="text-base font-bold text-white mb-1 font-mono uppercase tracking-wider">{msg.name}</h4>
+                        <p className="text-zinc-500 text-xs font-mono">{msg.email}</p>
                       </div>
                       <div className="flex items-center gap-2 flex-wrap justify-end">
-                        <span className={`text-[10px] px-2 py-0.5 rounded-full font-medium ${msg.status === 'unread' ? 'bg-blue-500/20 text-blue-400' :
-                            msg.status === 'replied' ? 'bg-green-500/20 text-green-400' :
-                              'bg-white/10 text-gray-300'
-                          }`}>{msg.status}</span>
-                        <span className="text-xs text-gray-400">{new Date(msg.createdAt).toLocaleDateString()}</span>
+                        <span className={`text-[10px] px-2 py-0.5 rounded-md font-mono uppercase tracking-wider border ${msg.status === 'unread' ? 'bg-white/[0.08] text-white border-white/[0.08]' : msg.status === 'replied' ? 'bg-white/[0.03] text-zinc-400 border-white/[0.04]' : 'bg-white/[0.01] text-zinc-650 border-white/[0.03]'}`}>{msg.status}</span>
+                        <span className="text-[10px] text-zinc-500 font-mono">{new Date(msg.createdAt).toLocaleDateString()}</span>
                         <button
                           onClick={() => setExpandedMessages((prev) => ({ ...prev, [msg.id]: !isExpanded }))}
                           className="text-xs px-3 py-1.5 bg-white/10 hover:bg-white/20 text-gray-300 rounded-lg transition-colors inline-flex items-center gap-1"
@@ -2261,7 +2281,7 @@ className="w-4 h-4 rounded border-white/20 bg-white/5"
             <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="max-w-4xl mx-auto space-y-6">
 
               {/* ── Site Settings Card ── */}
-              <div className="bg-white/5 backdrop-blur-md border border-white/10 rounded-xl overflow-hidden">
+              <div className="bg-white/[0.01] border border-white/[0.04] rounded-xl overflow-hidden">
                 <div className="p-6 border-b border-white/10 flex justify-between items-center">
                   <h3 className="font-semibold text-lg">Site Settings</h3>
                   {!editingSettings ? (
@@ -2287,7 +2307,7 @@ className="w-4 h-4 rounded border-white/20 bg-white/5"
                       )}
                     </div>
                     {editingSettings ? (
-                      <input type="text" value={settingsForm.siteTitle} onChange={e => setSettingsForm({ ...settingsForm, siteTitle: e.target.value })} className="w-full px-3 py-2 bg-black/40 border border-white/10 rounded-lg focus:ring-1 focus:ring-blue-500 outline-none" placeholder="My Portfolio" />
+                      <input type="text" value={settingsForm.siteTitle} onChange={e => setSettingsForm({ ...settingsForm, siteTitle: e.target.value })} className="w-full px-3 py-2 bg-white/[0.01] border border-white/[0.06] rounded-lg focus:outline-none focus:border-white/20 transition-all font-mono text-xs" placeholder="My Portfolio" />
                     ) : (
                       <p className="p-2 text-gray-300">{settings.siteTitle || 'Not set'}</p>
                     )}
@@ -2303,7 +2323,7 @@ className="w-4 h-4 rounded border-white/20 bg-white/5"
                       )}
                     </div>
                     {editingSettings ? (
-                      <textarea value={settingsForm.siteDescription} onChange={e => setSettingsForm({ ...settingsForm, siteDescription: e.target.value })} rows={3} className="w-full px-3 py-2 bg-black/40 border border-white/10 rounded-lg focus:ring-1 focus:ring-blue-500 outline-none resize-none" placeholder="Meta description for search engines" />
+                      <textarea value={settingsForm.siteDescription} onChange={e => setSettingsForm({ ...settingsForm, siteDescription: e.target.value })} rows={3} className="w-full px-3 py-2 bg-white/[0.01] border border-white/[0.06] rounded-lg focus:outline-none focus:border-white/20 transition-all font-mono text-xs resize-none" placeholder="Meta description for search engines" />
                     ) : (
                       <p className="p-2 text-gray-300">{settings.siteDescription || 'Not set'}</p>
                     )}
@@ -2319,7 +2339,7 @@ className="w-4 h-4 rounded border-white/20 bg-white/5"
                       )}
                     </div>
                     {editingSettings ? (
-                      <input type="text" value={settingsForm.copyrightText} onChange={e => setSettingsForm({ ...settingsForm, copyrightText: e.target.value })} className="w-full px-3 py-2 bg-black/40 border border-white/10 rounded-lg focus:ring-1 focus:ring-blue-500 outline-none" placeholder="All rights reserved." />
+                      <input type="text" value={settingsForm.copyrightText} onChange={e => setSettingsForm({ ...settingsForm, copyrightText: e.target.value })} className="w-full px-3 py-2 bg-white/[0.01] border border-white/[0.06] rounded-lg focus:outline-none focus:border-white/20 transition-all font-mono text-xs" placeholder="All rights reserved." />
                     ) : (
                       <p className="p-2 text-gray-300">{settings.copyrightText || 'Not set'}</p>
                     )}
@@ -2374,7 +2394,7 @@ className="w-4 h-4 rounded border-white/20 bg-white/5"
                         type="password"
                         value={settingsForm.googleAiKey}
                         onChange={e => setSettingsForm({ ...settingsForm, googleAiKey: e.target.value })}
-                        className="w-full px-3 py-2 bg-black/40 border border-white/10 rounded-lg focus:ring-1 focus:ring-blue-500 outline-none font-mono text-sm"
+                        className="w-full px-3 py-2 bg-white/[0.01] border border-white/[0.06] rounded-lg focus:outline-none focus:border-white/20 transition-all font-mono text-xs font-mono text-sm"
                         placeholder="AIzaSy..."
                       />
                     ) : (
@@ -2397,7 +2417,7 @@ className="w-4 h-4 rounded border-white/20 bg-white/5"
                         type="password"
                         value={settingsForm.openRouterKey}
                         onChange={e => setSettingsForm({ ...settingsForm, openRouterKey: e.target.value })}
-                        className="w-full px-3 py-2 bg-black/40 border border-white/10 rounded-lg focus:ring-1 focus:ring-blue-500 outline-none font-mono text-sm"
+                        className="w-full px-3 py-2 bg-white/[0.01] border border-white/[0.06] rounded-lg focus:outline-none focus:border-white/20 transition-all font-mono text-xs font-mono text-sm"
                         placeholder="sk-or-v1-..."
                       />
                     ) : (

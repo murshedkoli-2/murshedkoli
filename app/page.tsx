@@ -67,43 +67,40 @@ export default async function Home() {
       <Hero profile={profile} projectCount={projects.length} skillCount={skills.length} />
       <section
         aria-labelledby="portfolio-summary"
-        className="relative z-10 px-4 pb-6 sm:px-6 lg:px-8"
+        className="relative z-10 px-6 pb-12"
       >
-        <div className="mx-auto max-w-6xl rounded-3xl border border-white/10 bg-white/[0.03] px-6 py-8 backdrop-blur-sm">
-          <h2 id="portfolio-summary" className="text-2xl font-semibold text-white">
+        <div className="mx-auto max-w-5xl rounded-2xl border border-white/[0.04] bg-white/[0.01] px-8 py-10 backdrop-blur-sm">
+          <h2 id="portfolio-summary" className="text-xl font-semibold text-white tracking-tight">
             Portfolio Summary
           </h2>
-          <p className="mt-4 max-w-4xl text-sm leading-7 text-gray-300 sm:text-base">
-            {siteName} is the portfolio website of {profile.name}, a {profile.title}. This site
-            highlights professional experience, technical skills, education, certifications,
-            selected projects, and contact details in a structured format for both human visitors
-            and machine readers. The portfolio currently includes {projects.length} published
-            projects, {skills.length} listed skills, {experiences.length} experience entries,
-            {education.length} education entries, and {certifications.length} certifications.
+          <p className="mt-4 max-w-3xl text-[13px] leading-relaxed text-zinc-400">
+            {siteName} is the professional portfolio of {profile.name}, a {profile.title}. This digital space
+            highlights professional projects, technical skill structures, education records, and contact details
+            curated for both human visitors and index systems. The space currently includes {projects.length} published
+            projects, {skills.length} skills, and {experiences.length} experience milestones.
           </p>
-          <div className="mt-6 grid gap-6 md:grid-cols-3">
+          <div className="mt-8 grid gap-8 md:grid-cols-3 pt-8 border-t border-white/[0.04]">
             <div>
-              <h3 className="text-sm font-semibold uppercase tracking-[0.2em] text-blue-300">
+              <h3 className="text-[10px] font-semibold uppercase tracking-[0.2em] text-zinc-300">
                 Focus Areas
               </h3>
-              <p className="mt-3 text-sm leading-7 text-gray-400">
-                Full-stack web development, responsive user interfaces, API development,
-                performance optimization, SEO, and AI-enhanced digital products.
+              <p className="mt-2 text-[12px] leading-relaxed text-zinc-500">
+                Full-stack web architectures, clean design systems, responsive UI interfaces, and high-performance API structures.
               </p>
             </div>
             <div>
-              <h3 className="text-sm font-semibold uppercase tracking-[0.2em] text-cyan-300">
-                Core Technologies
+              <h3 className="text-[10px] font-semibold uppercase tracking-[0.2em] text-zinc-300">
+                Core Stack
               </h3>
-              <p className="mt-3 text-sm leading-7 text-gray-400">
+              <p className="mt-2 text-[12px] leading-relaxed text-zinc-500">
                 {featuredSkills.map((skill) => skill.name).join(', ') || siteDescription}
               </p>
             </div>
             <div>
-              <h3 className="text-sm font-semibold uppercase tracking-[0.2em] text-emerald-300">
-                Contact
+              <h3 className="text-[10px] font-semibold uppercase tracking-[0.2em] text-zinc-300">
+                Contact details
               </h3>
-              <p className="mt-3 text-sm leading-7 text-gray-400">
+              <p className="mt-2 text-[12px] leading-relaxed text-zinc-500">
                 Email: {profile.email}
                 {profile.phone ? ` | Phone: ${profile.phone}` : ''}
                 {profile.location ? ` | Location: ${profile.location}` : ''}
