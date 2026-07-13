@@ -1,10 +1,29 @@
-import { Inter } from 'next/font/google'
+import { Archivo, Inter, IBM_Plex_Mono } from 'next/font/google'
 import './globals.css'
 import { Metadata, Viewport } from 'next'
 import ToasterProvider from '@/components/ToasterProvider'
 import { getPublicProfile, getSettingsMap } from '@/lib/site-data'
 
-const inter = Inter({ subsets: ['latin'] })
+const archivo = Archivo({
+  subsets: ['latin'],
+  weight: ['600', '700', '800'],
+  variable: '--font-archivo',
+  display: 'swap',
+})
+
+const inter = Inter({
+  subsets: ['latin'],
+  weight: ['400', '500', '600'],
+  variable: '--font-inter',
+  display: 'swap',
+})
+
+const plexMono = IBM_Plex_Mono({
+  subsets: ['latin'],
+  weight: ['400', '500'],
+  variable: '--font-mono',
+  display: 'swap',
+})
 
 const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://murshedkoli.com'
 
@@ -159,7 +178,10 @@ export default async function RootLayout({
   }
 
   return (
-    <html lang="en" className="theme-dark">
+    <html
+      lang="en"
+      className={`theme-dark ${archivo.variable} ${inter.variable} ${plexMono.variable}`}
+    >
       <head>
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />

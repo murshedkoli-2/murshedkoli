@@ -224,3 +224,267 @@ html.theme-light #contact textarea {
   color: #18181b !important;
   border-color: rgba(0, 0, 0, 0.08) !important;
 }
+
+/* ═══════════════════════════════════════════════════════════
+   THE BLUEPRINT — portfolio v3 design system
+   Self-contained under .blueprint-page so it never touches the
+   legacy dark theme or the admin surface.
+   ═══════════════════════════════════════════════════════════ */
+:root {
+  --ink: #0b1c30;        /* drafting blue — page bg */
+  --ink-2: #0f2440;      /* raised surface / cells */
+  --paper: #e8f0f7;      /* primary text */
+  --muted: #8fa9c4;      /* secondary text */
+  --amber: #f2b33d;      /* accent — CTAs, eyebrows, numbers */
+  --shipped: #63d6a3;    /* status green */
+  --bp-line: rgba(146, 180, 215, 0.32);  /* 1px borders */
+  --bp-grid: rgba(146, 180, 215, 0.14);  /* faint grid lines */
+
+  --bp-fs-hero: clamp(2.75rem, 1.2rem + 6.4vw, 6.5rem);
+  --bp-fs-h2: clamp(1.75rem, 1.1rem + 2.4vw, 3rem);
+  --bp-fs-num: clamp(2.25rem, 1.4rem + 3vw, 4rem);
+
+  --bp-font-display: var(--font-archivo), 'Archivo', system-ui, sans-serif;
+  --bp-font-body: var(--font-inter), 'Inter', system-ui, sans-serif;
+  --bp-font-mono: var(--font-mono), 'IBM Plex Mono', ui-monospace, monospace;
+}
+
+/* Page shell: drafting-blue ground with a 56px engineering grid */
+.blueprint-page {
+  min-height: 100vh;
+  background-color: var(--ink);
+  background-image:
+    linear-gradient(to right, var(--bp-grid) 1px, transparent 1px),
+    linear-gradient(to bottom, var(--bp-grid) 1px, transparent 1px);
+  background-size: 56px 56px;
+  color: var(--paper);
+  font-family: var(--bp-font-body);
+  -webkit-font-smoothing: antialiased;
+}
+
+.blueprint-page ::selection {
+  background: var(--amber);
+  color: var(--ink);
+}
+
+/* No border-radius anywhere on the public site (technical-drawing feel) */
+.blueprint-page *,
+.blueprint-page *::before,
+.blueprint-page *::after {
+  border-radius: 0 !important;
+}
+
+/* Layout container */
+.bp-container {
+  width: 100%;
+  max-width: 1120px;
+  margin-inline: auto;
+  padding-inline: 24px;
+}
+
+/* Mono utility label — eyebrows, spec metadata, buttons */
+.bp-mono {
+  font-family: var(--bp-font-mono);
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  font-size: 12px;
+  line-height: 1.4;
+}
+
+/* Section heading: "// EYEBROW" in amber mono + Archivo title */
+.bp-eyebrow {
+  font-family: var(--bp-font-mono);
+  text-transform: uppercase;
+  letter-spacing: 0.18em;
+  font-size: 12px;
+  color: var(--amber);
+}
+
+.bp-h2 {
+  font-family: var(--bp-font-display);
+  font-weight: 800;
+  font-size: var(--bp-fs-h2);
+  line-height: 1.02;
+  letter-spacing: -0.01em;
+  color: var(--paper);
+}
+
+/* Buttons */
+.bp-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-family: var(--bp-font-mono);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-size: 12.5px;
+  font-weight: 500;
+  padding: 13px 22px;
+  border: 1px solid var(--bp-line);
+  cursor: pointer;
+  transition: background 180ms ease, color 180ms ease, border-color 180ms ease, transform 180ms ease;
+  text-decoration: none;
+}
+
+.bp-btn-primary {
+  background: var(--amber);
+  border-color: var(--amber);
+  color: var(--ink);
+  font-weight: 600;
+}
+
+.bp-btn-primary:hover {
+  background: #ffc659;
+}
+
+.bp-btn-ghost {
+  background: transparent;
+  color: var(--paper);
+}
+
+.bp-btn-ghost:hover {
+  border-color: var(--amber);
+  color: var(--amber);
+}
+
+.bp-btn:focus-visible {
+  outline: 2px solid var(--amber);
+  outline-offset: 2px;
+}
+
+/* Cell / surface used across the title block and spec sheets */
+.bp-cell {
+  border: 1px solid var(--bp-line);
+  background: rgba(15, 36, 64, 0.5);
+}
+
+/* Status dot */
+.bp-dot {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  background: var(--shipped);
+  box-shadow: 0 0 0 0 rgba(99, 214, 163, 0.6);
+}
+
+.bp-dot-live {
+  animation: bpPulse 2.4s ease-out infinite;
+}
+
+@keyframes bpPulse {
+  0% { box-shadow: 0 0 0 0 rgba(99, 214, 163, 0.5); }
+  70% { box-shadow: 0 0 0 7px rgba(99, 214, 163, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(99, 214, 163, 0); }
+}
+
+/* Focus visibility across interactive elements */
+.blueprint-page a:focus-visible,
+.blueprint-page button:focus-visible {
+  outline: 2px solid var(--amber);
+  outline-offset: 3px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .blueprint-page *,
+  .blueprint-page *::before,
+  .blueprint-page *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+  }
+}
+
+/* ── Blueprint layout: title block ─────────────────────────── */
+.bp-title-toprow {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+}
+.bp-title-cell {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 14px 22px;
+  margin: -1px -1px 0 0; /* collapse shared borders */
+}
+.bp-title-main {
+  padding: clamp(28px, 4vw, 56px);
+  margin-top: -1px;
+}
+.bp-title-stats {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+}
+.bp-stat-cell {
+  display: flex;
+  flex-direction: column;
+  padding: 22px;
+  margin: -1px -1px 0 0;
+}
+
+/* ── Spec sheets ───────────────────────────────────────────── */
+.bp-spec-sheet {
+  padding: clamp(24px, 3vw, 40px);
+}
+.bp-spec-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+.bp-spec-grid {
+  display: grid;
+  gap: 12px;
+  border-top: 1px solid var(--bp-line);
+  border-bottom: 1px solid var(--bp-line);
+  padding-block: 18px;
+}
+.bp-spec-row {
+  display: flex;
+  gap: 16px;
+  align-items: baseline;
+}
+.bp-spec-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 24px;
+  margin-top: 20px;
+}
+
+/* ── Skills / timeline / certs / contact grids ─────────────── */
+.bp-skills-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+}
+.bp-timeline-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 40px;
+}
+.bp-certs-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 18px;
+}
+.bp-contact-grid {
+  display: grid;
+  grid-template-columns: 1.3fr 1fr;
+  gap: 40px;
+}
+
+/* ── Responsive ────────────────────────────────────────────── */
+@media (max-width: 860px) {
+  .bp-skills-grid { grid-template-columns: 1fr; }
+  .bp-certs-grid { grid-template-columns: repeat(2, 1fr); }
+  .bp-timeline-grid { grid-template-columns: 1fr; gap: 32px; }
+  .bp-contact-grid { grid-template-columns: 1fr; gap: 28px; }
+}
+
+@media (max-width: 640px) {
+  .bp-nav-links { display: none !important; }
+  .bp-title-stats { grid-template-columns: repeat(2, 1fr); }
+  .bp-certs-grid { grid-template-columns: 1fr; }
+  .bp-spec-header { flex-wrap: wrap; gap: 10px; }
+  .bp-spec-row { flex-direction: column; gap: 2px; }
+}
