@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Murshed Al Main — Portfolio Redesign Mockup</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,300..900&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ink:#0B1C30;          /* drafting blue */
+  --ink-2:#0F2440;
+  --line:rgba(146,180,215,.14);
+  --line-strong:rgba(146,180,215,.32);
+  --paper:#E8F0F7;        /* text on blue */
+  --muted:#8FA9C4;
+  --amber:#F2B33D;        /* drafting amber accent */
+  --amber-dim:rgba(242,179,61,.14);
+  --shipped:#63D6A3;
+  --max:1120px;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  font-family:'Inter',sans-serif;color:var(--paper);background:var(--ink);
+  background-image:
+    linear-gradient(var(--line) 1px, transparent 1px),
+    linear-gradient(90deg, var(--line) 1px, transparent 1px);
+  background-size:56px 56px;
+  line-height:1.6;
+}
+.wrap{max-width:var(--max);margin:0 auto;padding:0 24px}
+a{color:inherit;text-decoration:none}
+.mono{font-family:'IBM Plex Mono',monospace}
+
+/* ---------- nav ---------- */
+nav{position:sticky;top:0;z-index:10;background:rgba(11,28,48,.88);backdrop-filter:blur(8px);border-bottom:1px solid var(--line-strong)}
+.nav-in{display:flex;align-items:center;justify-content:space-between;height:64px}
+.logo{font-family:'Archivo',sans-serif;font-weight:800;letter-spacing:.04em;font-size:15px}
+.logo span{color:var(--amber)}
+.nav-links{display:flex;gap:28px;font-size:13px;color:var(--muted)}
+.nav-links a:hover{color:var(--paper)}
+.resume-btn{font-family:'IBM Plex Mono',monospace;font-size:12px;border:1px solid var(--amber);color:var(--amber);padding:8px 16px;transition:.2s}
+.resume-btn:hover{background:var(--amber);color:var(--ink)}
+
+/* ---------- hero: title block ---------- */
+.hero{padding:96px 0 72px;border-bottom:1px solid var(--line-strong)}
+.titleblock{border:1px solid var(--line-strong);background:rgba(15,36,64,.55)}
+.tb-row{display:grid;grid-template-columns:1fr auto;border-bottom:1px solid var(--line-strong)}
+.tb-cell{padding:14px 20px;border-left:1px solid var(--line-strong)}
+.tb-cell:first-child{border-left:none}
+.tb-label{font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.14em;color:var(--muted);text-transform:uppercase;display:block;margin-bottom:4px}
+.tb-main{padding:44px 20px 40px}
+h1{font-family:'Archivo',sans-serif;font-weight:850;font-stretch:112%;font-size:clamp(40px,7vw,72px);line-height:1.02;letter-spacing:-.01em}
+h1 em{font-style:normal;color:var(--amber)}
+.hero-sub{max-width:560px;color:var(--muted);margin-top:20px;font-size:16px}
+.hero-cta{display:flex;gap:14px;margin-top:32px;flex-wrap:wrap}
+.btn{font-family:'IBM Plex Mono',monospace;font-size:13px;padding:13px 26px;border:1px solid var(--line-strong);transition:.2s}
+.btn.primary{background:var(--amber);border-color:var(--amber);color:var(--ink);font-weight:500}
+.btn.primary:hover{filter:brightness(1.08)}
+.btn.ghost:hover{border-color:var(--paper)}
+.tb-foot{display:grid;grid-template-columns:repeat(4,1fr)}
+.tb-foot .tb-cell{border-top:1px solid var(--line-strong);border-bottom:none}
+.tb-foot strong{font-family:'Archivo',sans-serif;font-size:22px;font-weight:800}
+.avail{display:inline-flex;align-items:center;gap:8px;color:var(--shipped);font-family:'IBM Plex Mono',monospace;font-size:12px}
+.dot{width:7px;height:7px;border-radius:50%;background:var(--shipped);box-shadow:0 0 8px var(--shipped)}
+
+/* ---------- sections ---------- */
+section{padding:80px 0;border-bottom:1px solid var(--line-strong)}
+.sec-head{display:flex;align-items:baseline;justify-content:space-between;margin-bottom:40px;gap:16px;flex-wrap:wrap}
+.sec-eyebrow{font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.18em;color:var(--amber);text-transform:uppercase}
+h2{font-family:'Archivo',sans-serif;font-weight:800;font-stretch:110%;font-size:clamp(26px,4vw,38px);margin-top:8px}
+.sec-note{color:var(--muted);font-size:13px;font-family:'IBM Plex Mono',monospace}
+
+/* ---------- project spec sheets ---------- */
+.sheet{border:1px solid var(--line-strong);background:rgba(15,36,64,.45);margin-bottom:28px;display:grid;grid-template-columns:220px 1fr;transition:.2s}
+.sheet:hover{border-color:var(--amber);background:rgba(15,36,64,.7)}
+.sheet-no{border-right:1px solid var(--line-strong);padding:26px 22px;display:flex;flex-direction:column;justify-content:space-between}
+.sheet-no .num{font-family:'Archivo',sans-serif;font-weight:850;font-size:44px;color:var(--amber)}
+.status{font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.1em;color:var(--shipped)}
+.sheet-body{padding:26px 28px}
+.sheet-body h3{font-family:'Archivo',sans-serif;font-weight:750;font-size:22px;margin-bottom:8px}
+.sheet-body p{color:var(--muted);font-size:14.5px;max-width:620px}
+.spec-row{display:flex;gap:32px;margin-top:18px;flex-wrap:wrap}
+.spec .tb-label{margin-bottom:2px}
+.spec span.v{font-family:'IBM Plex Mono',monospace;font-size:12.5px}
+.sheet-links{margin-top:18px;display:flex;gap:18px}
+.sheet-links a{font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--amber);border-bottom:1px dashed var(--amber)}
+
+/* ---------- skills ---------- */
+.skill-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--line-strong);border:1px solid var(--line-strong)}
+.skill-col{background:var(--ink-2);padding:26px 24px}
+.skill-col h4{font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--amber);margin-bottom:16px}
+.skill-col li{list-style:none;font-size:14px;color:var(--paper);padding:7px 0;border-bottom:1px dashed var(--line);display:flex;justify-content:space-between}
+.skill-col li span{color:var(--muted);font-family:'IBM Plex Mono',monospace;font-size:11px}
+
+/* ---------- certificates ---------- */
+.cert-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}
+.cert{border:1px solid var(--line-strong);padding:22px;background:rgba(15,36,64,.45)}
+.cert .tb-label{color:var(--amber)}
+.cert h4{font-family:'Archivo',sans-serif;font-size:16px;font-weight:700;margin:6px 0 4px}
+.cert p{font-size:12.5px;color:var(--muted);font-family:'IBM Plex Mono',monospace}
+.cert a{font-family:'IBM Plex Mono',monospace;font-size:11.5px;color:var(--amber);display:inline-block;margin-top:12px;border-bottom:1px dashed var(--amber)}
+
+/* ---------- contact ---------- */
+.contact{display:grid;grid-template-columns:1.1fr .9fr;gap:48px}
+.field{margin-bottom:16px}
+.field label{font-family:'IBM Plex Mono',monospace;font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);display:block;margin-bottom:6px}
+.field input,.field textarea{width:100%;background:var(--ink-2);border:1px solid var(--line-strong);color:var(--paper);padding:12px 14px;font-family:'Inter',sans-serif;font-size:14px}
+.field input:focus,.field textarea:focus{outline:none;border-color:var(--amber)}
+.contact-meta p{margin-bottom:14px;font-size:14px;color:var(--muted)}
+.contact-meta .mono{color:var(--paper)}
+
+footer{padding:36px 0;color:var(--muted);font-family:'IBM Plex Mono',monospace;font-size:12px;display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px}
+
+@media(max-width:820px){
+  .sheet{grid-template-columns:1fr}
+  .sheet-no{border-right:none;border-bottom:1px solid var(--line-strong);flex-direction:row;align-items:center}
+  .skill-grid,.cert-grid{grid-template-columns:1fr}
+  .contact{grid-template-columns:1fr}
+  .tb-foot{grid-template-columns:repeat(2,1fr)}
+  .nav-links{display:none}
+}
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="wrap nav-in">
+    <a class="logo" href="#">MURSHED<span>.</span>AL MAIN</a>
+    <div class="nav-links">
+      <a href="#work">Work</a><a href="#skills">Skills</a><a href="#certs">Certificates</a><a href="#contact">Contact</a>
+    </div>
+    <a class="resume-btn" href="#">RESUME.PDF ↓</a>
+  </div>
+</nav>
+
+<header class="hero">
+  <div class="wrap">
+    <div class="titleblock">
+      <div class="tb-row">
+        <div class="tb-cell"><span class="tb-label">Sheet</span><span class="mono" style="font-size:12px">PORTFOLIO / REV 3.0</span></div>
+        <div class="tb-cell"><span class="tb-label">Status</span><span class="avail"><span class="dot"></span>AVAILABLE FOR WORK</span></div>
+      </div>
+      <div class="tb-main">
+        <h1>Full-stack developer who <em>plans, specs, and ships</em> AI-integrated products.</h1>
+        <p class="hero-sub">I'm Murshed Al Main — a MERN / Next.js developer from Bangladesh. I design products as blueprints first, then build them end-to-end: SaaS platforms, content pipelines, and internal tools that run real businesses.</p>
+        <div class="hero-cta">
+          <a class="btn primary" href="#work">VIEW SHIPPED WORK →</a>
+          <a class="btn ghost" href="#contact">GET IN TOUCH</a>
+        </div>
+      </div>
+      <div class="tb-foot">
+        <div class="tb-cell"><span class="tb-label">Projects shipped</span><strong>10</strong></div>
+        <div class="tb-cell"><span class="tb-label">Years building</span><strong>4+</strong></div>
+        <div class="tb-cell"><span class="tb-label">Core stack</span><strong style="font-size:14px" class="mono">Next.js · Node · MongoDB</strong></div>
+        <div class="tb-cell"><span class="tb-label">Location</span><strong style="font-size:14px" class="mono">Bangladesh · Remote</strong></div>
+      </div>
+    </div>
+  </div>
+</header>
+
+<section id="work">
+  <div class="wrap">
+    <div class="sec-head">
+      <div><div class="sec-eyebrow">// Shipped work</div><h2>Project Spec Sheets</h2></div>
+      <div class="sec-note">EACH PROJECT: PROBLEM → STACK → OUTCOME</div>
+    </div>
+
+    <div class="sheet">
+      <div class="sheet-no"><span class="num">01</span><span class="status">● SHIPPED · IN PRODUCTION</span></div>
+      <div class="sheet-body">
+        <h3>ServiceDesk BD — Multi-tenant SaaS for repair shops</h3>
+        <p>B2B platform for computer service shops in Bangladesh: customer &amp; device tracking, bKash/Nagad payment verification, subscription billing, and a built-in knowledge base. Each shop runs on its own tenant.</p>
+        <div class="spec-row">
+          <div class="spec"><span class="tb-label">Stack</span><span class="v">Next.js · MongoDB · BullMQ</span></div>
+          <div class="spec"><span class="tb-label">Role</span><span class="v">Solo — design → deploy</span></div>
+          <div class="spec"><span class="tb-label">Outcome</span><span class="v">Live tenants onboarded</span></div>
+        </div>
+        <div class="sheet-links"><a href="#">CASE STUDY →</a><a href="#">LIVE SITE ↗</a><a href="#">GITHUB ↗</a></div>
+      </div>
+    </div>
+
+    <div class="sheet">
+      <div class="sheet-no"><span class="num">02</span><span class="status">● SHIPPED · IN PRODUCTION</span></div>
+      <div class="sheet-body">
+        <h3>Muktir Kantho — Bengali news platform</h3>
+        <p>Full news publishing system: reader-facing site plus a role-based editorial admin panel with scheduling, categories, and media management. Serves a live audience daily.</p>
+        <div class="spec-row">
+          <div class="spec"><span class="tb-label">Stack</span><span class="v">Next.js · MongoDB · S3</span></div>
+          <div class="spec"><span class="tb-label">Role</span><span class="v">Founder &amp; developer</span></div>
+          <div class="spec"><span class="tb-label">Outcome</span><span class="v">Daily published articles</span></div>
+        </div>
+        <div class="sheet-links"><a href="#">CASE STUDY →</a><a href="#">LIVE SITE ↗</a></div>
+      </div>
+    </div>
+
+    <div class="sheet">
+      <div class="sheet-no"><span class="num">03</span><span class="status">● SHIPPED · INTERNAL TOOL</span></div>
+      <div class="sheet-body">
+        <h3>ANA Studio — AI content pipeline dashboard</h3>
+        <p>Semi-automated production pipeline for an AI virtual influencer: idea → script → prompt → render → publish, with BullMQ job queues, Redis, and copy-ready AI generation workflows.</p>
+        <div class="spec-row">
+          <div class="spec"><span class="tb-label">Stack</span><span class="v">Next.js 14 · BullMQ · Redis</span></div>
+          <div class="spec"><span class="tb-label">Role</span><span class="v">Solo — architecture &amp; build</span></div>
+          <div class="spec"><span class="tb-label">Outcome</span><span class="v">Cut production time ~60%</span></div>
+        </div>
+        <div class="sheet-links"><a href="#">CASE STUDY →</a></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="skills">
+  <div class="wrap">
+    <div class="sec-head">
+      <div><div class="sec-eyebrow">// Capabilities</div><h2>Skills, With Proof</h2></div>
+      <div class="sec-note">EVERY SKILL LINKS TO A PROJECT THAT USES IT</div>
+    </div>
+    <div class="skill-grid">
+      <div class="skill-col">
+        <h4>Frontend</h4>
+        <ul>
+          <li>Next.js / React <span>→ 01, 02, 03</span></li>
+          <li>TypeScript <span>→ 01, 03</span></li>
+          <li>Tailwind CSS <span>→ 01, 02</span></li>
+          <li>Flutter <span>→ campaign app</span></li>
+        </ul>
+      </div>
+      <div class="skill-col">
+        <h4>Backend & Data</h4>
+        <ul>
+          <li>Node.js / Express <span>→ 01, 02</span></li>
+          <li>MongoDB / Mongoose <span>→ all</span></li>
+          <li>BullMQ / Redis <span>→ 03</span></li>
+          <li>Firebase <span>→ campaign app</span></li>
+        </ul>
+      </div>
+      <div class="skill-col">
+        <h4>AI & Workflow</h4>
+        <ul>
+          <li>AI agent-driven dev <span>→ all</span></li>
+          <li>LLM API integration <span>→ 03</span></li>
+          <li>PRD & system design <span>→ all</span></li>
+          <li>Prompt pipelines <span>→ 03</span></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="certs">
+  <div class="wrap">
+    <div class="sec-head">
+      <div><div class="sec-eyebrow">// Credentials</div><h2>Certificates & Education</h2></div>
+    </div>
+    <div class="cert-grid">
+      <div class="cert">
+        <span class="tb-label">Certificate</span>
+        <h4>Full Stack Web Development</h4>
+        <p>Issuing Org · 2024 · ID #XXXX</p>
+        <a href="#">VERIFY / VIEW PDF ↗</a>
+      </div>
+      <div class="cert">
+        <span class="tb-label">Certificate</span>
+        <h4>Certificate Title Here</h4>
+        <p>Issuing Org · Year · Credential ID</p>
+        <a href="#">VERIFY / VIEW PDF ↗</a>
+      </div>
+      <div class="cert">
+        <span class="tb-label">Education</span>
+        <h4>Degree / Institution</h4>
+        <p>Field of study · Years</p>
+        <a href="#">DETAILS →</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="contact" style="border-bottom:none">
+  <div class="wrap">
+    <div class="sec-head">
+      <div><div class="sec-eyebrow">// Contact</div><h2>Start a Conversation</h2></div>
+      <div class="sec-note">TYPICAL RESPONSE: WITHIN 24H</div>
+    </div>
+    <div class="contact">
+      <div>
+        <div class="field"><label>Name</label><input placeholder="Your name"></div>
+        <div class="field"><label>Email</label><input placeholder="you@company.com"></div>
+        <div class="field"><label>Message</label><textarea rows="5" placeholder="Tell me about the role or project"></textarea></div>
+        <a class="btn primary" href="#" style="display:inline-block">SEND MESSAGE →</a>
+      </div>
+      <div class="contact-meta">
+        <p><span class="tb-label">Email</span><span class="mono">murshedkoli@gmail.com</span></p>
+        <p><span class="tb-label">Phone / WhatsApp</span><span class="mono">+880 1781 981486</span></p>
+        <p><span class="tb-label">Elsewhere</span><span class="mono">GitHub · LinkedIn · X</span></p>
+        <p><span class="tb-label">Prefer a call?</span><span class="mono">Book a 15-min intro ↗</span></p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer class="wrap">
+  <span>© 2026 MURSHED AL MAIN</span>
+  <span>DRAWN &amp; BUILT WITH NEXT.JS — REV 3.0</span>
+</footer>
+
+</body>
+</html>
