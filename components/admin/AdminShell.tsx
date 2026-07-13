@@ -25,20 +25,20 @@ interface NavItem {
 
 const CONTENT: NavItem[] = [
   { key: 'projects', label: 'Projects', icon: '▤', href: '/admin/dashboard', badgeKey: 'projects' },
-  { key: 'skills', label: 'Skills', icon: '⬡', href: '/admin/manage?tab=skills', badgeKey: 'skills' },
-  { key: 'certificates', label: 'Certificates', icon: '✦', href: '/admin/manage?tab=certifications', badgeKey: 'certificates' },
-  { key: 'experience', label: 'Experience', icon: '≡', href: '/admin/manage?tab=experience' },
-  { key: 'about', label: 'About & Hero', icon: '✎', href: '/admin/manage?tab=profile' },
-  { key: 'resume', label: 'Resume File', icon: '⤓', href: '/admin/manage?tab=profile' },
+  { key: 'skills', label: 'Skills', icon: '⬡', href: '/admin/skills', badgeKey: 'skills' },
+  { key: 'certificates', label: 'Certificates', icon: '✦', href: '/admin/certificates', badgeKey: 'certificates' },
+  { key: 'experience', label: 'Experience', icon: '≡', href: '/admin/experience' },
+  { key: 'about', label: 'About & Hero', icon: '✎', href: '/admin/about' },
+  { key: 'resume', label: 'Resume File', icon: '⤓', href: '/admin/about#resume' },
 ]
 
 const INBOX: NavItem[] = [
-  { key: 'messages', label: 'Messages', icon: '✉', href: '/admin/manage?tab=messages', badgeKey: 'messages' },
+  { key: 'messages', label: 'Messages', icon: '✉', href: '/admin/messages', badgeKey: 'messages' },
 ]
 
 const SYSTEM: NavItem[] = [
-  { key: 'seo', label: 'SEO & Metadata', icon: '◎', href: '/admin/manage?tab=settings' },
-  { key: 'settings', label: 'Settings', icon: '⚙', href: '/admin/manage?tab=settings' },
+  { key: 'seo', label: 'SEO & Metadata', icon: '◎', href: '/admin/settings#seo' },
+  { key: 'settings', label: 'Settings', icon: '⚙', href: '/admin/settings' },
 ]
 
 export interface AdminBadges {

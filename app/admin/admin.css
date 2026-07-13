@@ -449,3 +449,240 @@
     grid-template-columns: 1fr;
   }
 }
+
+/* ── Forms & manager primitives ──────────────────────────── */
+.adm-body {
+  padding: 18px;
+}
+.adm-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-bottom: 14px;
+}
+.adm-label {
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--muted);
+  font-weight: 600;
+}
+.adm-input,
+.adm-textarea,
+.adm-select {
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 9px 12px;
+  font-size: 13.5px;
+  font-family: var(--adm-sans);
+  color: var(--ink);
+  background: #fff;
+  width: 100%;
+}
+.adm-input:focus,
+.adm-textarea:focus,
+.adm-select:focus {
+  outline: none;
+  border-color: var(--amber);
+  box-shadow: 0 0 0 3px rgba(232, 163, 43, 0.15);
+}
+.adm-textarea {
+  resize: vertical;
+  min-height: 90px;
+}
+.adm-form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0 18px;
+}
+.adm-form-grid .adm-col-2 {
+  grid-column: 1 / -1;
+}
+@media (max-width: 620px) {
+  .adm-form-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Toggle switch */
+.adm-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  cursor: pointer;
+  user-select: none;
+}
+.adm-toggle input {
+  position: absolute;
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+.adm-toggle .track {
+  width: 38px;
+  height: 22px;
+  border-radius: 20px;
+  background: #cdd6e2;
+  position: relative;
+  transition: background 160ms ease;
+  flex: none;
+}
+.adm-toggle .track::after {
+  content: '';
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: #fff;
+  transition: transform 160ms ease;
+  box-shadow: 0 1px 2px rgba(11, 28, 48, 0.25);
+}
+.adm-toggle input:checked + .track {
+  background: var(--green);
+}
+.adm-toggle input:checked + .track::after {
+  transform: translateX(16px);
+}
+
+/* Generic list rows (skills, timeline, certs) */
+.adm-rows {
+  display: flex;
+  flex-direction: column;
+}
+.adm-list-row {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 12px 18px;
+  border-bottom: 1px solid var(--border);
+}
+.adm-list-row:last-child {
+  border-bottom: none;
+}
+.adm-list-row .grow {
+  flex: 1;
+  min-width: 0;
+}
+.adm-list-row b {
+  font-weight: 600;
+}
+.adm-list-row .sub {
+  font-size: 12px;
+  color: var(--muted);
+  margin-top: 2px;
+}
+.adm-cat {
+  font-size: 10.5px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--muted);
+  background: #eef1f5;
+  border-radius: 6px;
+  padding: 2px 8px;
+  white-space: nowrap;
+}
+
+/* Editor drawer inside a panel */
+.adm-editor {
+  border-bottom: 1px solid var(--border);
+  background: #fafbfd;
+  padding: 18px;
+}
+.adm-editor h3 {
+  font-family: var(--adm-display);
+  font-size: 14px;
+  font-weight: 700;
+  margin-bottom: 14px;
+}
+.adm-editor-actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 6px;
+}
+
+/* Messages */
+.adm-msg {
+  display: flex;
+  gap: 14px;
+  padding: 14px 18px;
+  border-bottom: 1px solid var(--border);
+  align-items: flex-start;
+}
+.adm-msg:last-child {
+  border-bottom: none;
+}
+.adm-msg.unread {
+  background: #f6f9ff;
+}
+.adm-msg .dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--amber);
+  margin-top: 6px;
+  flex: none;
+}
+.adm-msg.read .dot {
+  background: transparent;
+}
+.adm-msg .body {
+  flex: 1;
+  min-width: 0;
+}
+.adm-msg .meta {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  align-items: baseline;
+}
+.adm-msg .name {
+  font-weight: 600;
+}
+.adm-msg .time {
+  font-size: 11.5px;
+  color: var(--muted);
+  white-space: nowrap;
+}
+.adm-msg .subject {
+  font-size: 13px;
+  color: var(--ink);
+  margin-top: 2px;
+}
+.adm-msg .text {
+  font-size: 13px;
+  color: var(--muted);
+  margin-top: 6px;
+  line-height: 1.5;
+  white-space: pre-wrap;
+}
+.adm-msg .msg-actions {
+  display: flex;
+  gap: 8px;
+  margin-top: 10px;
+  flex-wrap: wrap;
+}
+.adm-linkbtn {
+  background: none;
+  border: none;
+  color: var(--blue);
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 0;
+  text-decoration: underline;
+}
+.adm-linkbtn.danger {
+  color: var(--red);
+}
+
+/* Warning inline note */
+.adm-note {
+  font-size: 12px;
+  color: var(--muted);
+  margin-top: 8px;
+}
+.adm-note.warn {
+  color: #b27b14;
+}
