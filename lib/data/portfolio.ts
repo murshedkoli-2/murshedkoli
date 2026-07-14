@@ -35,6 +35,8 @@ export interface FeaturedProject {
   status: string // e.g. "SHIPPED · IN PRODUCTION"
   isLive: boolean
   coverImage: string | null
+  gallery: string[]
+  longDescription: string | null
   links: SpecSheetLinks
 }
 
@@ -51,6 +53,9 @@ export interface CertificateView {
   date: string // formatted
   credentialId: string | null
   verifyUrl: string | null
+  description: string | null
+  fileUrl: string | null
+  fileType: string | null
 }
 
 export interface TimelineEntry {
@@ -92,13 +97,17 @@ function mapProjectToSpecSheet(
     title: string
     slug: string
     description: string
+    longDescription: string | null
     coverImage: string | null
+    gallery: string[]
     technologies: string[]
     techStack: { name: string }[]
     demoUrl: string | null
     clientLiveUrl: string | null
     githubUrl: string | null
     lifecycleStatus: string
+    outcome?: string | null
+    role?: string | null
   },
   index: number
 ): FeaturedProject {
@@ -113,16 +122,16 @@ function mapProjectToSpecSheet(
     title: project.title,
     slug: project.slug,
     summary: truncate(project.description, 160),
-    // No `outcome` field exists in the legacy schema yet — surfaced as null so
-    // the UI shows a clear placeholder instead of inventing a result.
-    outcome: null,
+    outcome: project.outcome || null,
     stack: stack.slice(0, 6),
-    role: null,
+    role: project.role || null,
     status: isLive
       ? 'SHIPPED · IN PRODUCTION'
       : `● ${project.lifecycleStatus?.toUpperCase() || 'IN PROGRESS'}`,
     isLive,
     coverImage: project.coverImage,
+    gallery: project.gallery ?? [],
+    longDescription: project.longDescription || null,
     links: {
       live,
       github: project.githubUrl || undefined,
@@ -182,6 +191,31 @@ export const getAllPublishedProjects = cache(async (): Promise<FeaturedProject[]
   }
 })
 
+export const getProjectBySlug = cache(async (slug: string) => {
+  try {
+    const project = await prisma.project.findFirst({
+      where: { slug, publishStatus: 'published' },
+    })
+    return project
+  } catch (error) {
+    console.error('getProjectBySlug failed:', error)
+    return null
+  }
+})
+
+export const getAllPublishedSlugs = cache(async (): Promise<string[]> => {
+  try {
+    const projects = await prisma.project.findMany({
+      where: { publishStatus: 'published' },
+      select: { slug: true },
+    })
+    return projects.map((p) => p.slug)
+  } catch (error) {
+    console.error('getAllPublishedSlugs failed:', error)
+    return []
+  }
+})
+
 // ── Skills (grouped into the three Blueprint columns) ───────────────
 
 const SKILL_COLUMNS: { key: string; label: string; categories: string[] }[] = [
@@ -225,6 +259,9 @@ export const getCertificates = cache(async (): Promise<CertificateView[]> => {
       date: formatMonthYear(c.date),
       credentialId: null,
       verifyUrl: c.url || null,
+      description: (c as unknown as { description?: string }).description || null,
+      fileUrl: (c as unknown as { fileUrl?: string }).fileUrl || null,
+      fileType: (c as unknown as { fileType?: string }).fileType || null,
     }))
   } catch (error) {
     console.error('getCertificates failed:', error)
