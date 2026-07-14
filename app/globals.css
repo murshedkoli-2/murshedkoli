@@ -467,6 +467,25 @@ html.theme-light #contact textarea {
   grid-template-columns: repeat(3, 1fr);
   gap: 18px;
 }
+.bp-cert-view-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-family: var(--bp-font-mono);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  color: var(--ink);
+  background: var(--amber);
+  border: none;
+  padding: 5px 12px;
+  text-decoration: none;
+  cursor: pointer;
+  transition: opacity 150ms ease;
+}
+.bp-cert-view-btn:hover {
+  opacity: 0.85;
+}
 .bp-contact-grid {
   display: grid;
   grid-template-columns: 1.3fr 1fr;
@@ -481,10 +500,27 @@ html.theme-light #contact textarea {
   .bp-contact-grid { grid-template-columns: 1fr; gap: 28px; }
 }
 
+.bp-all-projects-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+}
+.bp-compact-card {
+  padding: 16px 18px;
+  transition: border-color 160ms ease;
+}
+.bp-compact-card:hover {
+  border-color: rgba(146, 180, 215, 0.6);
+}
+@media (max-width: 860px) {
+  .bp-all-projects-grid { grid-template-columns: repeat(2, 1fr); }
+}
+
 @media (max-width: 640px) {
   .bp-nav-links { display: none !important; }
   .bp-title-stats { grid-template-columns: repeat(2, 1fr); }
   .bp-certs-grid { grid-template-columns: 1fr; }
   .bp-spec-header { flex-wrap: wrap; gap: 10px; }
   .bp-spec-row { flex-direction: column; gap: 2px; }
+  .bp-all-projects-grid { grid-template-columns: 1fr; }
 }

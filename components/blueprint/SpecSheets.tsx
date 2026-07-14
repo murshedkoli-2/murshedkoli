@@ -1,9 +1,12 @@
+'use client'
+
 import Link from 'next/link'
 import { SectionHeading } from './primitives'
 import type { FeaturedProject } from '@/lib/data/portfolio'
 
 interface SpecSheetsProps {
   projects: FeaturedProject[]
+  allProjects: FeaturedProject[]
 }
 
 function SpecRow({ label, value }: { label: string; value: string }) {
@@ -19,9 +22,21 @@ function SpecRow({ label, value }: { label: string; value: string }) {
   )
 }
 
+function openModal(project: FeaturedProject) {
+  window.dispatchEvent(new CustomEvent('open-project-modal', { detail: project }))
+}
+
 function SpecSheet({ project }: { project: FeaturedProject }) {
   return (
-    <article className="bp-cell bp-spec-sheet">
+    <article
+      className="bp-cell bp-spec-sheet"
+      onClick={() => openModal(project)}
+      style={{ cursor: 'pointer' }}
+      role="button"
+      tabIndex={0}
+      onKeyDown={(e) => e.key === 'Enter' && openModal(project)}
+      aria-label={`View details for ${project.title}`}
+    >
       <div className="bp-spec-header">
         <span
           style={{
@@ -75,7 +90,7 @@ function SpecSheet({ project }: { project: FeaturedProject }) {
         <SpecRow label="Outcome" value={project.outcome || 'Case study →'} />
       </div>
 
-      <div className="bp-spec-links">
+      <div className="bp-spec-links" onClick={(e) => e.stopPropagation()}>
         <Link
           href={project.links.caseStudy}
           className="bp-mono"
@@ -110,8 +125,80 @@ function SpecSheet({ project }: { project: FeaturedProject }) {
   )
 }
 
-export function SpecSheets({ projects }: SpecSheetsProps) {
-  if (!projects.length) return null
+function CompactCard({ project }: { project: FeaturedProject }) {
+  return (
+    <article
+      className="bp-cell bp-compact-card"
+      onClick={() => openModal(project)}
+      style={{ cursor: 'pointer' }}
+      role="button"
+      tabIndex={0}
+      onKeyDown={(e) => e.key === 'Enter' && openModal(project)}
+      aria-label={`View details for ${project.title}`}
+    >
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 8 }}>
+        <span
+          className="bp-mono"
+          style={{
+            color: project.isLive ? 'var(--shipped)' : 'var(--muted)',
+            fontSize: 10,
+            display: 'inline-flex',
+            alignItems: 'center',
+            gap: 6,
+          }}
+        >
+          <span
+            className="bp-dot"
+            style={{ background: project.isLive ? 'var(--shipped)' : 'var(--muted)', width: 6, height: 6 }}
+            aria-hidden
+          />
+          {project.status}
+        </span>
+        <span className="bp-mono" style={{ color: 'var(--amber)', fontSize: 11 }}>
+          VIEW →
+        </span>
+      </div>
+      <h4
+        style={{
+          fontFamily: 'var(--bp-font-display)',
+          fontWeight: 700,
+          fontSize: 15,
+          color: 'var(--paper)',
+          marginBottom: 4,
+          lineHeight: 1.2,
+        }}
+      >
+        {project.title}
+      </h4>
+      {project.role && (
+        <p className="bp-mono" style={{ color: 'var(--muted)', fontSize: 11, marginBottom: 8 }}>
+          {project.role}
+        </p>
+      )}
+      <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
+        {project.stack.slice(0, 3).map((tech) => (
+          <span
+            key={tech}
+            className="bp-mono"
+            style={{
+              fontSize: 10,
+              color: 'var(--muted)',
+              border: '1px solid var(--bp-line)',
+              padding: '2px 7px',
+            }}
+          >
+            {tech}
+          </span>
+        ))}
+      </div>
+    </article>
+  )
+}
+
+export function SpecSheets({ projects, allProjects }: SpecSheetsProps) {
+  if (!projects.length && !allProjects.length) return null
+
+  const nonFeatured = allProjects.filter((p) => !projects.find((f) => f.id === p.id))
 
   return (
     <section id="work" aria-labelledby="work-heading" className="bp-container" style={{ paddingBlock: 64 }}>
@@ -125,6 +212,19 @@ export function SpecSheets({ projects }: SpecSheetsProps) {
           <SpecSheet key={project.id} project={project} />
         ))}
       </div>
+
+      {nonFeatured.length > 0 && (
+        <>
+          <div style={{ marginTop: 56, marginBottom: 24, borderTop: '1px solid var(--bp-line)', paddingTop: 32 }}>
+            <span className="bp-eyebrow">All Projects · {nonFeatured.length}</span>
+          </div>
+          <div className="bp-all-projects-grid">
+            {nonFeatured.map((project) => (
+              <CompactCard key={project.id} project={project} />
+            ))}
+          </div>
+        </>
+      )}
     </section>
   )
 }

@@ -10,6 +10,7 @@ import {
   getProfile,
   getHeroStats,
   getFeaturedProjects,
+  getAllPublishedProjects,
   getSkillsGrouped,
   getExperience,
   getEducation,
@@ -24,11 +25,12 @@ const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://murshedkoli.com'
  * client-side fetching and no "Loading…" state on this page.
  */
 export default async function Home() {
-  const [profile, stats, featured, skills, experience, education, certificates] =
+  const [profile, stats, featured, allProjects, skills, experience, education, certificates] =
     await Promise.all([
       getProfile(),
       getHeroStats(),
       getFeaturedProjects(4),
+      getAllPublishedProjects(),
       getSkillsGrouped(16),
       getExperience(),
       getEducation(),
@@ -54,7 +56,7 @@ export default async function Home() {
       <Nav resumeUrl={profile.resume} />
       <main>
         <HeroTitleBlock profile={profile} stats={stats} />
-        <SpecSheets projects={featured} />
+        <SpecSheets projects={featured} allProjects={allProjects} />
         <SkillsWithProof columns={skills} />
         <TimelineSection experience={experience} education={education} />
         <CertificatesGrid certificates={certificates} />
