@@ -34,6 +34,8 @@ export const FeatureItemSchema = z.object({
   title: z.string().min(1, 'Feature title is required'),
   description: z.string().optional(),
   status: FeatureStatus,
+  storyPoints: z.number().int().min(1).max(13).default(1),
+  priorityScore: z.number().int().min(1).max(10).default(5),
   order: z.number().int().default(0)
 })
 
@@ -128,6 +130,8 @@ export const CreateProjectSchema = z.object({
   slug: z.string().min(1, 'Slug is required').max(200).regex(/^[a-z0-9-]+$/, 'Slug must be lowercase with hyphens only'),
   description: z.string().min(1, 'Description is required'),
   longDescription: z.string().optional(),
+  outcome: z.string().optional(),
+  role: z.string().optional(),
   projectType: z.string().default('webapp'),
   lifecycleStatus: ProjectLifecycleStatus.default('idea'),
   publishStatus: z.enum(['draft', 'published', 'archived']).default('draft'),

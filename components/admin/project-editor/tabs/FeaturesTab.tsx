@@ -39,6 +39,8 @@ export function FeaturesTab({ features, onChange, onSave, isLoading }: FeaturesT
       title: newFeature.title,
       description: newFeature.description,
       status: newFeature.status,
+      storyPoints: 1,
+      priorityScore: 5,
       order: features.length
     }
 
