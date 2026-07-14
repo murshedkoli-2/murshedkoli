@@ -6,6 +6,7 @@ import { TimelineSection } from '@/components/blueprint/TimelineSection'
 import { CertificatesGrid } from '@/components/blueprint/CertificatesGrid'
 import { ContactSection } from '@/components/blueprint/ContactSection'
 import { BlueprintFooter } from '@/components/blueprint/BlueprintFooter'
+import { ProjectModalProvider } from '@/components/blueprint/ProjectModalProvider'
 import {
   getProfile,
   getHeroStats,
@@ -49,20 +50,22 @@ export default async function Home() {
 
   return (
     <div className="blueprint-page">
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(personJsonLd) }}
-      />
-      <Nav resumeUrl={profile.resume} />
-      <main>
-        <HeroTitleBlock profile={profile} stats={stats} />
-        <SpecSheets projects={featured} allProjects={allProjects} />
-        <SkillsWithProof columns={skills} />
-        <TimelineSection experience={experience} education={education} />
-        <CertificatesGrid certificates={certificates} />
-        <ContactSection profile={profile} />
-      </main>
-      <BlueprintFooter />
+      <ProjectModalProvider>
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(personJsonLd) }}
+        />
+        <Nav resumeUrl={profile.resume} />
+        <main>
+          <HeroTitleBlock profile={profile} stats={stats} />
+          <SpecSheets projects={featured} allProjects={allProjects} />
+          <SkillsWithProof columns={skills} />
+          <TimelineSection experience={experience} education={education} />
+          <CertificatesGrid certificates={certificates} />
+          <ContactSection profile={profile} />
+        </main>
+        <BlueprintFooter />
+      </ProjectModalProvider>
     </div>
   )
 }
