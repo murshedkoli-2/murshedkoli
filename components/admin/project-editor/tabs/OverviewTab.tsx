@@ -138,6 +138,44 @@ function Section({
 }
 
 // ────────────────────────────────────────────────────────────────────────────
+// GalleryUploadButton
+// ────────────────────────────────────────────────────────────────────────────
+function GalleryUploadButton({ onUpload }: { onUpload: (url: string) => void }) {
+  const ref = useRef<HTMLInputElement>(null)
+  const [uploading, setUploading] = useState(false)
+
+  const handleFile = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (!file) return
+    setUploading(true)
+    try {
+      const form = new FormData()
+      form.append('file', file)
+      const res = await fetch('/api/upload', { method: 'POST', body: form })
+      const data = await res.json()
+      if (data.success) onUpload(data.url)
+    } finally {
+      setUploading(false)
+      if (ref.current) ref.current.value = ''
+    }
+  }
+
+  return (
+    <>
+      <input ref={ref} type="file" accept="image/*" className="hidden" onChange={handleFile} />
+      <button
+        type="button"
+        onClick={() => ref.current?.click()}
+        disabled={uploading}
+        className="text-xs text-zinc-400 border border-dashed border-zinc-700 rounded-lg px-3 py-2 hover:border-zinc-500 hover:text-zinc-300 transition-colors disabled:opacity-50"
+      >
+        {uploading ? 'Uploading…' : '+ Add gallery image'}
+      </button>
+    </>
+  )
+}
+
+// ────────────────────────────────────────────────────────────────────────────
 // OverviewTab
 // ────────────────────────────────────────────────────────────────────────────
 export const OverviewTab = forwardRef<OverviewTabHandle, OverviewTabProps>(
@@ -170,6 +208,9 @@ export const OverviewTab = forwardRef<OverviewTabHandle, OverviewTabProps>(
       androidDownloadUrlEnabled: project?.androidDownloadUrlEnabled ?? false,
       featured: project?.featured || false,
       order: project?.order || 0,
+      outcome: project?.outcome || '',
+      role: project?.role || '',
+      gallery: (project?.gallery as string[]) || [] as string[],
     })
 
     // Expose submit method to parent via ref
@@ -366,6 +407,21 @@ export const OverviewTab = forwardRef<OverviewTabHandle, OverviewTabProps>(
               placeholder="Detailed description with features, goals, tech highlights…"
               rows={6}
             />
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <Input
+                label="Outcome"
+                value={formData.outcome}
+                onChange={(e) => handleChange('outcome', e.target.value)}
+                placeholder="e.g. Shipped to 12K users · Reduced load time 60%"
+              />
+              <Input
+                label="Your Role"
+                value={formData.role}
+                onChange={(e) => handleChange('role', e.target.value)}
+                placeholder="e.g. Lead Full-Stack Engineer"
+              />
+            </div>
           </Section>
 
           {/* ── Status ── */}
@@ -400,6 +456,29 @@ export const OverviewTab = forwardRef<OverviewTabHandle, OverviewTabProps>(
                 value={formData.logoUrl}
                 onChange={(url) => handleChange('logoUrl', url)}
                 previewSize="medium"
+              />
+            </div>
+
+            {/* Gallery */}
+            <div>
+              <p className="text-xs text-zinc-400 mb-3">Gallery Images</p>
+              <div className="grid grid-cols-3 sm:grid-cols-4 gap-2 mb-3">
+                {(formData.gallery as string[]).map((url, i) => (
+                  <div key={i} className="relative group aspect-video bg-zinc-800 rounded-lg overflow-hidden">
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img src={url} alt={`Gallery ${i + 1}`} className="w-full h-full object-cover" />
+                    <button
+                      type="button"
+                      onClick={() => handleChange('gallery', (formData.gallery as string[]).filter((_, idx) => idx !== i))}
+                      className="absolute top-1 right-1 w-5 h-5 rounded-full bg-red-500 text-white text-xs flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
+                    >
+                      ✕
+                    </button>
+                  </div>
+                ))}
+              </div>
+              <GalleryUploadButton
+                onUpload={(url) => handleChange('gallery', [...(formData.gallery as string[]), url])}
               />
             </div>
           </Section>
