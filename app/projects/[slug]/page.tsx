@@ -1,101 +1,80 @@
-import { Metadata } from 'next'
 import { notFound } from 'next/navigation'
-import { getProjectBySlug } from '@/lib/actions/project-actions'
-import { ProjectDetailView } from '@/components/project/ProjectDetailView'
+import { Nav } from '@/components/blueprint/Nav'
+import { BlueprintFooter } from '@/components/blueprint/BlueprintFooter'
+import { getAllPublishedSlugs, getProjectBySlug, getProfile } from '@/lib/data/portfolio'
+import { ProjectDetailBlueprint } from './ProjectDetailBlueprint'
 
-interface ProjectPageProps {
-  params: Promise<{ slug: string }>
+export async function generateStaticParams() {
+  const slugs = await getAllPublishedSlugs()
+  return slugs.map((slug) => ({ slug }))
 }
 
-export async function generateMetadata({ params }: ProjectPageProps): Promise<Metadata> {
+export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params
-  const result = await getProjectBySlug(slug)
-  
-  if (!result.success || !result.data) {
-    return {
-      title: 'Project Not Found'
-    }
-  }
-
-  const project = result.data as any
-  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://murshedkoli.com'
-
+  const project = await getProjectBySlug(slug)
+  if (!project) return { title: 'Project Not Found' }
   return {
-    title: `${project.title} | Portfolio`,
+    title: `${project.title} — Murshed Al Main`,
     description: project.description,
-    keywords: project.techStack ? project.techStack.map((tech: any) => tech.name).join(', ') : '',
     openGraph: {
       title: project.title,
       description: project.description,
-      url: `${baseUrl}/projects/${project.slug}`,
-      type: 'article',
-      publishedTime: project.createdAt instanceof Date ? project.createdAt.toISOString() : project.createdAt,
-      modifiedTime: project.updatedAt instanceof Date ? project.updatedAt.toISOString() : project.updatedAt,
-      images: project.coverImage ? [
-        {
-          url: project.coverImage,
-          width: 1200,
-          height: 630,
-          alt: `${project.title} Project Cover`
-        }
-      ] : [],
+      images: project.coverImage ? [{ url: project.coverImage }] : [],
     },
-    twitter: {
-      card: 'summary_large_image',
-      title: project.title,
-      description: project.description,
-      images: project.coverImage ? [project.coverImage] : [],
-    }
   }
 }
 
-export default async function ProjectPage({ params }: ProjectPageProps) {
+export default async function ProjectDetailPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params
-  const result = await getProjectBySlug(slug)
+  const [project, profile] = await Promise.all([
+    getProjectBySlug(slug),
+    getProfile(),
+  ])
 
-  if (!result.success || !result.data) {
-    notFound()
-  }
+  if (!project) notFound()
 
-  const project = result.data as any
+  const isLive = Boolean(
+    (project.demoUrlEnabled && project.demoUrl) ||
+    (project.clientLiveUrlEnabled && project.clientLiveUrl)
+  )
 
-  // Only show published projects to public
-  if (project.publishStatus !== 'published') {
-    notFound()
-  }
-
-  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://murshedkoli.com'
-
-  // Structured Data for the specific project
-  const jsonLd = {
-    '@context': 'https://schema.org',
-    '@type': 'SoftwareApplication',
-    name: project.title,
+  const data = {
+    id: project.id,
+    title: project.title,
+    slug: project.slug,
     description: project.description,
-    applicationCategory: project.projectType === 'webapp' ? 'WebApplication' : 'DesktopApplication',
-    operatingSystem: 'All',
-    url: project.demoUrl || `${baseUrl}/projects/${project.slug}`,
-    image: project.coverImage || undefined,
-    author: {
-      '@type': 'Person',
-      name: 'Murshed Koli',
-    },
-    datePublished: project.createdAt,
-    dateModified: project.updatedAt,
-    offers: {
-      '@type': 'Offer',
-      price: '0',
-      priceCurrency: 'USD',
-    }
+    longDescription: project.longDescription,
+    outcome: (project as unknown as { outcome?: string }).outcome || null,
+    role: (project as unknown as { role?: string }).role || null,
+    coverImage: project.coverImage,
+    gallery: project.gallery,
+    lifecycleStatus: project.lifecycleStatus,
+    projectType: project.projectType || 'webapp',
+    overallProgress: project.overallProgress,
+    isLive,
+    features: project.features as unknown as any[],
+    roadmap: project.roadmap as unknown as any[],
+    techStack: project.techStack as unknown as any[],
+    technologies: project.technologies,
+    modules: project.modules as unknown as any[],
+    deployment: project.deployment as unknown as any,
+    createdAt: project.createdAt.toISOString(),
+    updatedAt: project.updatedAt.toISOString(),
+    demoUrl: project.demoUrl,
+    githubUrl: project.githubUrl,
+    clientLiveUrl: project.clientLiveUrl,
+    demoUrlEnabled: project.demoUrlEnabled,
+    githubUrlEnabled: project.githubUrlEnabled,
+    clientLiveUrlEnabled: project.clientLiveUrlEnabled,
   }
 
   return (
-    <>
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
-      />
-      <ProjectDetailView project={result.data} />
-    </>
+    <div className="blueprint-page">
+      <Nav resumeUrl={profile.resume} />
+      <main>
+        <ProjectDetailBlueprint project={data} />
+      </main>
+      <BlueprintFooter />
+    </div>
   )
 }
