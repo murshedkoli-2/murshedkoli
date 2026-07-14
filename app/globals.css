@@ -524,3 +524,116 @@ html.theme-light #contact textarea {
   .bp-spec-row { flex-direction: column; gap: 2px; }
   .bp-all-projects-grid { grid-template-columns: 1fr; }
 }
+
+/* ── Project Modal ──────────────────────────────────────── */
+.bp-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(11, 28, 48, 0.85);
+  backdrop-filter: blur(4px);
+  z-index: 900;
+}
+.bp-modal-panel {
+  position: fixed;
+  top: 0;
+  right: 0;
+  width: min(520px, 100vw);
+  height: 100dvh;
+  background: var(--ink-2);
+  border-left: 1px solid var(--bp-line);
+  z-index: 901;
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+  animation: slideInRight 200ms ease;
+}
+@keyframes slideInRight {
+  from { transform: translateX(100%); }
+  to { transform: translateX(0); }
+}
+@media (max-width: 640px) {
+  .bp-modal-panel {
+    top: auto;
+    bottom: 0;
+    right: 0;
+    left: 0;
+    width: 100%;
+    height: 90dvh;
+    border-left: none;
+    border-top: 1px solid var(--bp-line);
+    animation: slideInUp 200ms ease;
+  }
+}
+@keyframes slideInUp {
+  from { transform: translateY(100%); }
+  to { transform: translateY(0); }
+}
+.bp-modal-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 24px 24px 16px;
+  position: sticky;
+  top: 0;
+  background: var(--ink-2);
+  z-index: 1;
+  border-bottom: 1px solid var(--bp-line);
+}
+.bp-modal-close {
+  background: none;
+  border: 1px solid var(--bp-line);
+  color: var(--muted);
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  flex-shrink: 0;
+  font-size: 14px;
+  transition: color 150ms ease, border-color 150ms ease;
+}
+.bp-modal-close:hover {
+  color: var(--paper);
+  border-color: var(--paper);
+}
+.bp-modal-body {
+  padding: 20px 24px 32px;
+  flex: 1;
+}
+.bp-modal-cover {
+  width: 100%;
+  height: 180px;
+  object-fit: cover;
+  margin-bottom: 16px;
+  display: block;
+}
+.bp-modal-gallery {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 6px;
+  margin-bottom: 16px;
+}
+.bp-modal-thumb {
+  aspect-ratio: 16/9;
+  overflow: hidden;
+  background: var(--ink);
+  border: 1px solid var(--bp-line);
+  cursor: pointer;
+  padding: 0;
+  transition: border-color 150ms ease;
+}
+.bp-modal-thumb:hover {
+  border-color: var(--amber);
+}
+.bp-modal-thumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.bp-modal-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
