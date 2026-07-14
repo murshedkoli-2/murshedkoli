@@ -9,23 +9,19 @@ import { SaveBar } from './SaveBar'
 import { EditorSidebar, SidebarItem } from './EditorSidebar'
 import { OverviewTab, OverviewTabHandle } from './tabs/OverviewTab'
 import { FeaturesTab } from './tabs/FeaturesTab'
-import { ModulesTab } from './tabs/ModulesTab'
 import { TechStackTab } from './tabs/TechStackTab'
 import {
   updateProject,
   updateProjectFeatures,
-  updateProjectModules,
   updateProjectTechStack,
 } from '@/lib/actions/project-actions'
 import {
   FeatureItemType,
-  ModuleItemType,
   TechStackItemType,
 } from '@/lib/validations/project'
 import {
   LayoutDashboard,
-  Target,
-  FolderKanban,
+  CheckSquare,
   Cpu,
   FileDown,
   CheckCircle2,
@@ -53,7 +49,6 @@ export function ProjectEditor({ project }: ProjectEditorProps) {
 
   // Section data state
   const [features, setFeatures] = useState<FeatureItemType[]>(project?.features || [])
-  const [modules, setModules] = useState<ModuleItemType[]>(project?.modules || [])
   const [techStack, setTechStack] = useState<TechStackItemType[]>(project?.techStack || [])
 
   // Helpers
@@ -105,16 +100,6 @@ export function ProjectEditor({ project }: ProjectEditorProps) {
     finally { setIsSaving(false) }
   }
 
-  const saveModules = async () => {
-    setIsSaving(true)
-    try {
-      const result = await updateProjectModules({ projectId: project.id, modules })
-      if (result.success) { setLastSaved(new Date()); markClean('modules'); toast.success('Modules saved') }
-      else toast.error(result.error || 'Failed to save modules')
-    } catch { toast.error('An error occurred') }
-    finally { setIsSaving(false) }
-  }
-
   const saveTechStack = async () => {
     setIsSaving(true)
     try {
@@ -130,7 +115,6 @@ export function ProjectEditor({ project }: ProjectEditorProps) {
     switch (activeSection) {
       case 'overview':  return saveOverview()
       case 'features':  return saveFeatures()
-      case 'modules':   return saveModules()
       case 'techstack': return saveTechStack()
     }
   }
@@ -153,10 +137,9 @@ export function ProjectEditor({ project }: ProjectEditorProps) {
   // ── Sidebar items ──────────────────────────────────────────────────────────
 
   const sidebarItems: SidebarItem[] = [
-    { id: 'overview',  label: 'Overview',       icon: <LayoutDashboard size={16} />, hasChanges: dirty.overview },
-    { id: 'features',  label: 'Features',        icon: <Target size={16} />,          badge: features.length,   hasChanges: dirty.features },
-    { id: 'modules',   label: 'Modules & Tasks', icon: <FolderKanban size={16} />,    badge: modules.length,    hasChanges: dirty.modules },
-    { id: 'techstack', label: 'Tech Stack',      icon: <Cpu size={16} />,             badge: techStack.length,  hasChanges: dirty.techstack },
+    { id: 'overview',  label: 'Overview',   icon: <LayoutDashboard size={16} />, hasChanges: dirty.overview },
+    { id: 'features',  label: 'Features',   icon: <CheckSquare size={16} />,     badge: features.length,  hasChanges: dirty.features },
+    { id: 'techstack', label: 'Tech Stack', icon: <Cpu size={16} />,             badge: techStack.length, hasChanges: dirty.techstack },
   ]
 
   return (
@@ -269,15 +252,6 @@ export function ProjectEditor({ project }: ProjectEditorProps) {
                     features={features}
                     onChange={(f) => { setFeatures(f); markDirty('features') }}
                     onSave={saveFeatures}
-                    isLoading={isSaving}
-                  />
-                )}
-
-                {activeSection === 'modules' && (
-                  <ModulesTab
-                    modules={modules}
-                    onChange={(m) => { setModules(m); markDirty('modules') }}
-                    onSave={saveModules}
                     isLoading={isSaving}
                   />
                 )}

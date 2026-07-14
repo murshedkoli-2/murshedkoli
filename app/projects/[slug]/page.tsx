@@ -38,33 +38,33 @@ export default async function ProjectDetailPage({ params }: { params: Promise<{ 
     (project.clientLiveUrlEnabled && project.clientLiveUrl)
   )
 
+  const rawFeatures = (project.features as unknown as { id: string; title: string; done?: boolean; status?: string }[]) ?? []
+
   const data = {
     id: project.id,
     title: project.title,
     slug: project.slug,
     description: project.description,
     longDescription: project.longDescription,
-    outcome: (project as unknown as { outcome?: string }).outcome || null,
-    role: (project as unknown as { role?: string }).role || null,
     coverImage: project.coverImage,
     gallery: project.gallery,
-    lifecycleStatus: project.lifecycleStatus,
     projectType: project.projectType || 'webapp',
-    overallProgress: project.overallProgress,
     isLive,
-    features: project.features as unknown as any[],
-    roadmap: project.roadmap as unknown as any[],
-    techStack: project.techStack as unknown as any[],
+    // Normalise features — old records may have status instead of done
+    features: rawFeatures.map(f => ({
+      id: f.id,
+      title: f.title,
+      done: f.done ?? f.status === 'completed',
+    })),
+    techStack: project.techStack as unknown as { name: string; category: string }[],
     technologies: project.technologies,
-    modules: project.modules as unknown as any[],
-    deployment: project.deployment as unknown as any,
-    createdAt: project.createdAt.toISOString(),
-    updatedAt: project.updatedAt.toISOString(),
     demoUrl: project.demoUrl,
     githubUrl: project.githubUrl,
+    androidDownloadUrl: (project as unknown as { androidDownloadUrl?: string }).androidDownloadUrl || null,
     clientLiveUrl: project.clientLiveUrl,
     demoUrlEnabled: project.demoUrlEnabled,
     githubUrlEnabled: project.githubUrlEnabled,
+    androidDownloadUrlEnabled: (project as unknown as { androidDownloadUrlEnabled?: boolean }).androidDownloadUrlEnabled ?? false,
     clientLiveUrlEnabled: project.clientLiveUrlEnabled,
   }
 

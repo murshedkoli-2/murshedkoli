@@ -99,13 +99,10 @@ type TechStackItem {
 }
 
 type FeatureItem {
-  id            String
-  title         String
-  description   String?
-  status        FeatureStatus
-  storyPoints   Int           @default(1)
-  priorityScore Int           @default(5)
-  order         Int
+  id          String
+  title       String
+  done        Boolean       @default(false)
+  order       Int
 }
 
 type TaskItem {

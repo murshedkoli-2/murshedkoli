@@ -749,3 +749,15 @@ html.theme-light #contact textarea {
 @media (max-width: 640px) {
   .bp-detail-gallery { grid-template-columns: repeat(2, 1fr); }
 }
+
+/* Simplified project showcase body */
+.bp-project-body {
+  display: grid;
+  grid-template-columns: 1fr 260px;
+  gap: 40px;
+  align-items: start;
+}
+@media (max-width: 860px) {
+  .bp-project-body { grid-template-columns: 1fr; }
+  .bp-project-body aside { order: -1; }
+}

@@ -31,14 +31,8 @@ export function calculateModuleProgress(module: ModuleItemType): number {
  */
 export function calculateFeaturesProgress(features: FeatureItemType[]): number {
   if (!features || features.length === 0) return 0
-  
-  const completedFeatures = features.filter(f => f.status === 'completed').length
-  const inProgressFeatures = features.filter(f => f.status === 'in_progress').length
-  
-  // Completed features count as 100%, in-progress as 50%
-  const totalProgress = (completedFeatures * 100) + (inProgressFeatures * 50)
-  
-  return Math.round(totalProgress / features.length)
+  const done = features.filter(f => f.done).length
+  return Math.round((done / features.length) * 100)
 }
 
 /**
@@ -139,9 +133,9 @@ export function getFeatureStats(features: FeatureItemType[]): {
 } {
   return {
     total: features.length,
-    planned: features.filter(f => f.status === 'planned').length,
-    inProgress: features.filter(f => f.status === 'in_progress').length,
-    completed: features.filter(f => f.status === 'completed').length
+    planned: features.filter(f => !f.done).length,
+    inProgress: 0,
+    completed: features.filter(f => f.done).length
   }
 }
 

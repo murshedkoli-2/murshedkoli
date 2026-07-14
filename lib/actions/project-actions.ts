@@ -128,7 +128,7 @@ export async function createProject(input: CreateProjectInput): Promise<ActionRe
 
     const project = await prisma.project.create({
       data: {
-        ...validated,
+        ...(validated as any),
         overallProgress,
         githubUrl: validated.githubUrl || null,
         demoUrl: validated.demoUrl || null
@@ -186,7 +186,7 @@ export async function updateProject(input: UpdateProjectInput): Promise<ActionRe
     const project = await prisma.project.update({
       where: { id },
       data: {
-        ...updateData,
+        ...(updateData as any),
         ...(overallProgress !== undefined && { overallProgress }),
         githubUrl: updateData.githubUrl || null,
         demoUrl: updateData.demoUrl || null
@@ -253,7 +253,7 @@ export async function updateProjectFeatures(input: {
     const project = await prisma.project.update({
       where: { id: validated.projectId },
       data: {
-        features: validated.features,
+        features: validated.features as any,
         overallProgress
       }
     })

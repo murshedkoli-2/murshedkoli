@@ -279,27 +279,24 @@ export function ProjectDetailView({ project }: ProjectDetailViewProps) {
                 </div>
 
                 <div className="space-y-3">
-                  {project.features.map((feature: FeatureItemType) => (
-                    <div
-                      key={feature.id}
-                      className="flex items-start gap-3 p-3 bg-zinc-900/50 rounded-lg"
-                    >
-                      {feature.status === 'completed' ? (
-                        <CheckCircle2 className="text-emerald-400 shrink-0 mt-0.5" size={18} />
-                      ) : (
-                        <Circle className="text-gray-500 shrink-0 mt-0.5" size={18} />
-                      )}
-                      <div>
-                        <p className={`font-medium ${feature.status === 'completed' ? 'text-white' : 'text-gray-300'}`}>
+                  {project.features.map((feature: FeatureItemType) => {
+                    const isDone = (feature as any).done ?? (feature as any).status === 'completed'
+                    return (
+                      <div
+                        key={feature.id}
+                        className="flex items-start gap-3 p-3 bg-zinc-900/50 rounded-lg"
+                      >
+                        {isDone ? (
+                          <CheckCircle2 className="text-emerald-400 shrink-0 mt-0.5" size={18} />
+                        ) : (
+                          <Circle className="text-gray-500 shrink-0 mt-0.5" size={18} />
+                        )}
+                        <p className={`font-medium ${isDone ? 'text-white' : 'text-gray-300'}`}>
                           {feature.title}
                         </p>
-                        {feature.description && (
-                          <p className="text-sm text-gray-500 mt-1">{feature.description}</p>
-                        )}
                       </div>
-                      <StatusBadge status={feature.status} className="ml-auto shrink-0" />
-                    </div>
-                  ))}
+                    )
+                  })}
                 </div>
               </Card>
             )}

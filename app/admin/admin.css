@@ -504,6 +504,114 @@
   }
 }
 
+/* Certificate file upload */
+.cert-drop-zone {
+  border: 2px dashed var(--border);
+  border-radius: 10px;
+  padding: 28px 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+  transition: border-color 160ms ease, background 160ms ease;
+  background: #fafafa;
+  text-align: center;
+  user-select: none;
+}
+.cert-drop-zone:hover,
+.cert-drop-zone.drag-over {
+  border-color: var(--amber);
+  background: rgba(232, 163, 43, 0.05);
+}
+.cert-drop-zone.uploading {
+  opacity: 0.6;
+  pointer-events: none;
+}
+.cert-file-input {
+  display: none;
+}
+.cert-drop-icon {
+  font-size: 22px;
+  color: var(--muted);
+}
+.cert-drop-hint {
+  font-size: 13px;
+  color: var(--ink);
+  font-weight: 500;
+}
+.cert-drop-sub {
+  font-size: 11px;
+  color: var(--muted);
+  letter-spacing: 0.04em;
+}
+
+/* Uploaded file states */
+.cert-file-preview {
+  display: flex;
+  align-items: flex-start;
+}
+.cert-file-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 8px 12px;
+  background: #fff;
+}
+.cert-file-icon {
+  font-size: 18px;
+}
+.cert-file-link {
+  font-size: 13px;
+  color: var(--amber);
+  font-weight: 600;
+  text-decoration: none;
+}
+.cert-file-link:hover {
+  text-decoration: underline;
+}
+.cert-file-remove {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--muted);
+  font-size: 14px;
+  padding: 0 2px;
+  line-height: 1;
+}
+.cert-file-remove:hover {
+  color: #e55;
+}
+.cert-img-preview-wrap {
+  position: relative;
+  display: inline-block;
+}
+.cert-img-preview {
+  max-width: 260px;
+  max-height: 160px;
+  object-fit: contain;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  display: block;
+}
+.cert-img-remove {
+  position: absolute;
+  top: -8px;
+  right: -8px;
+  background: #fff;
+  border: 1px solid var(--border) !important;
+  border-radius: 50%;
+  width: 22px;
+  height: 22px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px !important;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.1);
+}
+
 /* Toggle switch */
 .adm-toggle {
   display: inline-flex;

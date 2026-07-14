@@ -30,6 +30,8 @@ export async function POST(request: NextRequest) {
         issuer: data.issuer,
         date: date,
         url: data.url,
+        fileUrl: data.fileUrl,
+        fileType: data.fileType,
         description: data.description,
         order: data.order || 0
       }

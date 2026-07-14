@@ -32,10 +32,7 @@ export const TechStackItemSchema = z.object({
 export const FeatureItemSchema = z.object({
   id: z.string(),
   title: z.string().min(1, 'Feature title is required'),
-  description: z.string().optional(),
-  status: FeatureStatus,
-  storyPoints: z.number().int().min(1).max(13).default(1),
-  priorityScore: z.number().int().min(1).max(10).default(5),
+  done: z.boolean().default(false),
   order: z.number().int().default(0)
 })
 
