@@ -83,9 +83,30 @@ function statusIcon(status: string) {
   return '○'
 }
 
+type FeatureFilter = 'all' | 'planned' | 'in_progress' | 'completed'
+
+function statusBorderColor(s: string) {
+  if (s === 'completed') return 'var(--shipped)'
+  if (s === 'in_progress') return 'var(--amber)'
+  return 'rgba(146,180,215,0.25)'
+}
+
+function statusLabel(s: string) {
+  if (s === 'completed') return 'COMPLETED'
+  if (s === 'in_progress') return 'IN PROGRESS'
+  return 'PLANNED'
+}
+
+function statusTextColor(s: string) {
+  if (s === 'completed') return 'var(--shipped)'
+  if (s === 'in_progress') return 'var(--amber)'
+  return 'var(--muted)'
+}
+
 export function ProjectDetailBlueprint({ project }: { project: ProjectDetailData }) {
   const [lightboxIndex, setLightboxIndex] = useState<number | null>(null)
   const [expandedModules, setExpandedModules] = useState<Set<string>>(new Set())
+  const [featureFilter, setFeatureFilter] = useState<FeatureFilter>('all')
 
   const toggleModule = (id: string) =>
     setExpandedModules((prev) => {
@@ -228,35 +249,143 @@ export function ProjectDetailBlueprint({ project }: { project: ProjectDetailData
 
           {project.features.length > 0 && (
             <section style={{ marginBottom: 40 }}>
-              <div style={{ display: 'flex', alignItems: 'baseline', gap: 16, marginBottom: 16 }}>
+              {/* Header row */}
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 20 }}>
                 <span className="bp-eyebrow">Features</span>
-                <span className="bp-mono" style={{ color: 'var(--muted)', fontSize: 10 }}>
-                  {totalSP} SP · {quickWins} quick wins
-                </span>
+                <div style={{ display: 'flex', gap: 20 }}>
+                  <span className="bp-mono" style={{ color: 'var(--muted)', fontSize: 10 }}>
+                    <span style={{ color: 'var(--paper)', fontWeight: 700 }}>{totalSP}</span> SP
+                  </span>
+                  <span className="bp-mono" style={{ color: 'var(--shipped)', fontSize: 10 }}>
+                    <span style={{ fontWeight: 700 }}>{quickWins}</span> QUICK WINS
+                  </span>
+                  <span className="bp-mono" style={{ color: 'var(--muted)', fontSize: 10 }}>
+                    <span style={{ color: 'var(--paper)', fontWeight: 700 }}>
+                      {project.features.filter(f => f.status === 'completed').length}
+                    </span>/{project.features.length} DONE
+                  </span>
+                </div>
               </div>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-                {project.features.map((f) => (
-                  <div key={f.id} className="bp-cell" style={{ padding: '12px 16px', display: 'flex', alignItems: 'flex-start', gap: 12 }}>
-                    <span style={{ color: f.status === 'completed' ? 'var(--shipped)' : 'var(--muted)', fontSize: 14, marginTop: 1, flexShrink: 0 }}>
-                      {statusIcon(f.status)}
-                    </span>
-                    <div style={{ flex: 1, minWidth: 0 }}>
-                      <span style={{ color: 'var(--paper)', fontSize: 13, fontWeight: 600 }}>{f.title}</span>
-                      {f.description && (
-                        <p style={{ color: 'var(--muted)', fontSize: 12, marginTop: 3, lineHeight: 1.5 }}>{f.description}</p>
-                      )}
-                    </div>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexShrink: 0 }}>
-                      <span className="bp-mono" style={{ fontSize: 10, color: 'var(--muted)', border: '1px solid var(--bp-line)', padding: '1px 6px' }}>
-                        SP {f.storyPoints ?? 1}
-                      </span>
-                      <span
-                        style={{ width: 8, height: 8, borderRadius: '50%', background: priorityDot(f.priorityScore ?? 5), flexShrink: 0 }}
-                        title={`Priority: ${f.priorityScore ?? 5}/10`}
-                      />
-                    </div>
-                  </div>
-                ))}
+
+              {/* Filter tabs */}
+              <div style={{ display: 'flex', borderBottom: '1px solid var(--bp-line)', marginBottom: 0 }}>
+                {(['all', 'planned', 'in_progress', 'completed'] as FeatureFilter[]).map((filter) => {
+                  const labels: Record<FeatureFilter, string> = { all: 'ALL', planned: 'PLANNED', in_progress: 'IN PROGRESS', completed: 'COMPLETED' }
+                  const count = filter === 'all' ? project.features.length : project.features.filter(f => f.status === filter).length
+                  const active = featureFilter === filter
+                  return (
+                    <button
+                      key={filter}
+                      onClick={() => setFeatureFilter(filter)}
+                      className="bp-mono"
+                      style={{
+                        background: 'none',
+                        border: 'none',
+                        borderBottom: active ? '2px solid var(--amber)' : '2px solid transparent',
+                        cursor: 'pointer',
+                        padding: '8px 14px',
+                        fontSize: 10,
+                        color: active ? 'var(--amber)' : 'var(--muted)',
+                        marginBottom: -1,
+                        transition: 'color 140ms ease',
+                        whiteSpace: 'nowrap',
+                      }}
+                    >
+                      {labels[filter]}{count > 0 ? ` (${count})` : ''}
+                    </button>
+                  )
+                })}
+              </div>
+
+              {/* BOM list */}
+              <div>
+                {(featureFilter === 'all' ? project.features : project.features.filter(f => f.status === featureFilter))
+                  .map((f) => {
+                    const globalIdx = project.features.indexOf(f)
+                    const sp = f.storyPoints ?? 1
+                    const priority = f.priorityScore ?? 5
+                    const pFill = priority >= 7 ? 'var(--shipped)' : priority >= 4 ? 'var(--amber)' : '#e55'
+                    return (
+                      <div
+                        key={f.id}
+                        style={{
+                          display: 'grid',
+                          gridTemplateColumns: '44px 1fr 72px',
+                          gap: '0 14px',
+                          padding: '18px 16px 18px 0',
+                          borderBottom: '1px solid var(--bp-line)',
+                          borderLeft: `3px solid ${statusBorderColor(f.status)}`,
+                          paddingLeft: 14,
+                          alignItems: 'start',
+                        }}
+                      >
+                        {/* Sequence number */}
+                        <div style={{ paddingTop: 2 }}>
+                          <span
+                            className="bp-mono"
+                            style={{ color: 'var(--amber)', fontSize: 18, fontWeight: 800, lineHeight: 1, display: 'block' }}
+                          >
+                            {String(globalIdx + 1).padStart(2, '0')}
+                          </span>
+                          <span className="bp-mono" style={{ color: 'var(--muted)', fontSize: 9, marginTop: 4, display: 'block' }}>
+                            SP·{sp}
+                          </span>
+                        </div>
+
+                        {/* Content */}
+                        <div>
+                          <span
+                            style={{
+                              color: 'var(--paper)',
+                              fontSize: 14,
+                              fontWeight: 700,
+                              fontFamily: 'var(--bp-font-display)',
+                              display: 'block',
+                              marginBottom: f.description ? 5 : 8,
+                              lineHeight: 1.2,
+                            }}
+                          >
+                            {f.title}
+                          </span>
+                          {f.description && (
+                            <p style={{ color: 'var(--muted)', fontSize: 12, lineHeight: 1.55, marginBottom: 8 }}>
+                              {f.description}
+                            </p>
+                          )}
+                          <span
+                            className="bp-mono"
+                            style={{ color: statusTextColor(f.status), fontSize: 9, letterSpacing: '0.08em' }}
+                          >
+                            {statusIcon(f.status)} {statusLabel(f.status)}
+                          </span>
+                        </div>
+
+                        {/* Priority meter */}
+                        <div style={{ paddingTop: 4 }}>
+                          <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 5 }}>
+                            <span className="bp-mono" style={{ color: 'var(--muted)', fontSize: 9 }}>PRIORITY</span>
+                            <span className="bp-mono" style={{ color: pFill, fontSize: 10, fontWeight: 800 }}>{priority}</span>
+                          </div>
+                          <div style={{ height: 2, background: 'var(--bp-line)' }}>
+                            <div style={{ height: '100%', width: `${(priority / 10) * 100}%`, background: pFill }} />
+                          </div>
+                          {/* 5-segment signal bars */}
+                          <div style={{ display: 'flex', gap: 2, marginTop: 5 }}>
+                            {[2, 4, 6, 8, 10].map((threshold) => (
+                              <div
+                                key={threshold}
+                                style={{
+                                  flex: 1,
+                                  height: 4,
+                                  background: priority >= threshold ? pFill : 'var(--bp-line)',
+                                }}
+                              />
+                            ))}
+                          </div>
+                        </div>
+                      </div>
+                    )
+                  })}
               </div>
             </section>
           )}
