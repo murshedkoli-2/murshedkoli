@@ -4,9 +4,7 @@ import { useState, useEffect, useRef } from 'react'
 import { useSearchParams } from 'next/navigation'
 import { motion, AnimatePresence } from 'framer-motion'
 import { toast } from 'sonner'
-import { Button } from '@/components/ui/FormElements'
-import { SaveBar } from './SaveBar'
-import { EditorSidebar, SidebarItem } from './EditorSidebar'
+import { AdminShell } from '@/components/admin/AdminShell'
 import { OverviewTab, OverviewTabHandle } from './tabs/OverviewTab'
 import { FeaturesTab } from './tabs/FeaturesTab'
 import { TechStackTab } from './tabs/TechStackTab'
@@ -19,13 +17,15 @@ import {
   FeatureItemType,
   TechStackItemType,
 } from '@/lib/validations/project'
-import {
-  LayoutDashboard,
-  CheckSquare,
-  Cpu,
-  FileDown,
-  CheckCircle2,
-} from 'lucide-react'
+import { CheckCircle2 } from 'lucide-react'
+
+interface TabItem {
+  id: string
+  label: string
+  icon: string
+  badge?: number
+  hasChanges?: boolean
+}
 
 interface ProjectEditorProps {
   project: any
@@ -136,36 +136,47 @@ export function ProjectEditor({ project }: ProjectEditorProps) {
 
   // ── Sidebar items ──────────────────────────────────────────────────────────
 
-  const sidebarItems: SidebarItem[] = [
-    { id: 'overview',  label: 'Overview',   icon: <LayoutDashboard size={16} />, hasChanges: dirty.overview },
-    { id: 'features',  label: 'Features',   icon: <CheckSquare size={16} />,     badge: features.length,  hasChanges: dirty.features },
-    { id: 'techstack', label: 'Tech Stack', icon: <Cpu size={16} />,             badge: techStack.length, hasChanges: dirty.techstack },
+  const sidebarItems: TabItem[] = [
+    { id: 'overview',  label: 'Overview',   icon: '▤', hasChanges: dirty.overview },
+    { id: 'features',  label: 'Features',   icon: '✦', badge: features.length,  hasChanges: dirty.features },
+    { id: 'techstack', label: 'Tech Stack', icon: '⬡', badge: techStack.length, hasChanges: dirty.techstack },
   ]
 
-  return (
-    <div className="min-h-screen bg-zinc-950 flex flex-col">
-      {/* Sticky SaveBar */}
-      <SaveBar
-        title={project?.title || 'Project'}
-        slug={project?.slug}
-        isSaving={isSaving}
-        hasUnsavedChanges={hasAnyDirty}
-        lastSaved={lastSaved}
-        onSave={handleSave}
-        extraActions={
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={handleDownloadMarkdown}
-            leftIcon={<FileDown size={14} />}
-            className="text-zinc-500 hover:text-zinc-200 hidden sm:flex"
-            title="Download AI context markdown"
-          >
-            AI Context
-          </Button>
-        }
-      />
+  const saveActions = (
+    <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+      {hasAnyDirty && !isSaving && (
+        <span style={{ fontSize: 12, color: '#e8a32b', display: 'flex', alignItems: 'center', gap: 4 }}>
+          <span style={{ width: 6, height: 6, borderRadius: '50%', background: '#e8a32b', display: 'inline-block' }} />
+          Unsaved
+        </span>
+      )}
+      {isSaving && (
+        <span style={{ fontSize: 12, color: '#66788f' }}>Saving…</span>
+      )}
+      <button
+        className="adm-btn"
+        onClick={handleDownloadMarkdown}
+        title="Download AI context markdown"
+      >
+        AI Context
+      </button>
+      <button
+        className="adm-btn amber"
+        onClick={handleSave}
+        disabled={isSaving}
+      >
+        {isSaving ? 'Saving…' : 'Save'}
+      </button>
+    </div>
+  )
 
+  return (
+    <AdminShell
+      active="projects"
+      title={project?.title || 'Edit Project'}
+      subtitle={project?.slug ? `/${project.slug}` : undefined}
+      actions={saveActions}
+    >
       {/* "Just created" success banner */}
       <AnimatePresence>
         {showCreatedBanner && (
@@ -174,16 +185,17 @@ export function ProjectEditor({ project }: ProjectEditorProps) {
             animate={{ height: 'auto', opacity: 1 }}
             exit={{ height: 0, opacity: 0 }}
             className="overflow-hidden"
+            style={{ marginBottom: 16 }}
           >
-            <div className="px-6 py-3 bg-emerald-500/10 border-b border-emerald-500/20 flex items-center gap-3">
-              <CheckCircle2 size={16} className="text-emerald-400 shrink-0" />
-              <p className="text-sm text-emerald-300">
+            <div style={{ padding: '12px 16px', background: '#e7f7f0', border: '1px solid #a3dfc4', borderRadius: 10, display: 'flex', alignItems: 'center', gap: 12 }}>
+              <CheckCircle2 size={16} style={{ color: '#1b9c6e', flexShrink: 0 }} />
+              <p style={{ fontSize: 13, color: '#14202e' }}>
                 <strong>Project created!</strong>{' '}
-                Now fill in the details below — every section has its own save button in the top bar.
+                Fill in the details below and click Save.
               </p>
               <button
                 onClick={() => setShowCreatedBanner(false)}
-                className="ml-auto text-emerald-500 hover:text-emerald-300 text-xs"
+                style={{ marginLeft: 'auto', background: 'none', border: 'none', cursor: 'pointer', color: '#66788f', fontSize: 13 }}
               >
                 Dismiss
               </button>
@@ -192,83 +204,64 @@ export function ProjectEditor({ project }: ProjectEditorProps) {
         )}
       </AnimatePresence>
 
-      {/* Main layout: sidebar + content */}
-      <div className="flex-1 flex flex-col lg:flex-row overflow-hidden">
-        {/* Sidebar – desktop only */}
-        <div className="hidden lg:block border-r border-zinc-800/60 px-3 shrink-0">
-          <EditorSidebar
-            items={sidebarItems}
-            activeId={activeSection}
-            onChange={setActiveSection}
-          />
-        </div>
-
-        {/* Mobile tab strip – stacks above content on small screens */}
-        <div className="lg:hidden w-full bg-zinc-950/95 backdrop-blur border-b border-zinc-800/60 overflow-x-auto shrink-0">
-          <div className="flex gap-1 p-2">
-            {sidebarItems.map((item) => (
-              <button
-                key={item.id}
-                onClick={() => setActiveSection(item.id)}
-                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium whitespace-nowrap transition-colors shrink-0 ${
-                  activeSection === item.id
-                    ? 'bg-blue-600/15 text-blue-400 border border-blue-500/20'
-                    : 'text-zinc-500 hover:text-zinc-200'
-                }`}
-              >
-                {item.icon}
-                {item.label}
-                {item.hasChanges && (
-                  <span className="w-1.5 h-1.5 rounded-full bg-amber-400" />
-                )}
-              </button>
-            ))}
-          </div>
-        </div>
-
-        {/* Content area */}
-        <div className="flex-1 min-w-0 overflow-y-auto">
-          <div className="max-w-4xl mx-auto px-4 lg:px-8 py-8">
-            <AnimatePresence mode="wait">
-              <motion.div
-                key={activeSection}
-                initial={{ opacity: 0, x: 8 }}
-                animate={{ opacity: 1, x: 0 }}
-                exit={{ opacity: 0, x: -8 }}
-                transition={{ duration: 0.18 }}
-              >
-                {activeSection === 'overview' && (
-                  <OverviewTab
-                    ref={overviewRef}
-                    project={project}
-                    onUpdate={handleOverviewSave}
-                    onAnyChange={() => markDirty('overview')}
-                    isLoading={isSaving}
-                  />
-                )}
-
-                {activeSection === 'features' && (
-                  <FeaturesTab
-                    features={features}
-                    onChange={(f) => { setFeatures(f); markDirty('features') }}
-                    onSave={saveFeatures}
-                    isLoading={isSaving}
-                  />
-                )}
-
-                {activeSection === 'techstack' && (
-                  <TechStackTab
-                    techStack={techStack}
-                    onChange={(t) => { setTechStack(t); markDirty('techstack') }}
-                    onSave={saveTechStack}
-                    isLoading={isSaving}
-                  />
-                )}
-              </motion.div>
-            </AnimatePresence>
-          </div>
-        </div>
+      {/* Section tabs */}
+      <div className="adm-editor-tabs">
+        {sidebarItems.map((item) => (
+          <button
+            key={item.id}
+            onClick={() => setActiveSection(item.id)}
+            className={`adm-editor-tab ${activeSection === item.id ? 'active' : ''}`}
+          >
+            <span style={{ opacity: 0.7 }}>{item.icon}</span>
+            {item.label}
+            {item.hasChanges && (
+              <span style={{ width: 6, height: 6, borderRadius: '50%', background: '#e8a32b', display: 'inline-block', marginLeft: 4 }} />
+            )}
+            {item.badge !== undefined && item.badge > 0 && !item.hasChanges && (
+              <span className="adm-badge" style={{ background: '#eef1f5', color: '#66788f', borderRadius: 10 }}>{item.badge}</span>
+            )}
+          </button>
+        ))}
       </div>
-    </div>
+
+      {/* Tab content */}
+      <div style={{ marginTop: 20 }}>
+        <AnimatePresence mode="wait">
+          <motion.div
+            key={activeSection}
+            initial={{ opacity: 0, y: 6 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -6 }}
+            transition={{ duration: 0.15 }}
+          >
+            {activeSection === 'overview' && (
+              <OverviewTab
+                ref={overviewRef}
+                project={project}
+                onUpdate={handleOverviewSave}
+                onAnyChange={() => markDirty('overview')}
+                isLoading={isSaving}
+              />
+            )}
+            {activeSection === 'features' && (
+              <FeaturesTab
+                features={features}
+                onChange={(f) => { setFeatures(f); markDirty('features') }}
+                onSave={saveFeatures}
+                isLoading={isSaving}
+              />
+            )}
+            {activeSection === 'techstack' && (
+              <TechStackTab
+                techStack={techStack}
+                onChange={(t) => { setTechStack(t); markDirty('techstack') }}
+                onSave={saveTechStack}
+                isLoading={isSaving}
+              />
+            )}
+          </motion.div>
+        </AnimatePresence>
+      </div>
+    </AdminShell>
   )
 }

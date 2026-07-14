@@ -10,9 +10,7 @@ export type AdminNavKey =
   | 'certificates'
   | 'experience'
   | 'about'
-  | 'resume'
   | 'messages'
-  | 'seo'
   | 'settings'
 
 interface NavItem {
@@ -24,12 +22,11 @@ interface NavItem {
 }
 
 const CONTENT: NavItem[] = [
-  { key: 'projects', label: 'Projects', icon: '▤', href: '/admin/dashboard', badgeKey: 'projects' },
-  { key: 'skills', label: 'Skills', icon: '⬡', href: '/admin/skills', badgeKey: 'skills' },
-  { key: 'certificates', label: 'Certificates', icon: '✦', href: '/admin/certificates', badgeKey: 'certificates' },
-  { key: 'experience', label: 'Experience', icon: '≡', href: '/admin/experience' },
-  { key: 'about', label: 'About & Hero', icon: '✎', href: '/admin/about' },
-  { key: 'resume', label: 'Resume File', icon: '⤓', href: '/admin/about#resume' },
+  { key: 'projects',      label: 'Projects',      icon: '▤', href: '/admin/dashboard',    badgeKey: 'projects' },
+  { key: 'skills',        label: 'Skills',         icon: '⬡', href: '/admin/skills',       badgeKey: 'skills' },
+  { key: 'certificates',  label: 'Certificates',   icon: '✦', href: '/admin/certificates', badgeKey: 'certificates' },
+  { key: 'experience',    label: 'Experience',     icon: '≡', href: '/admin/experience' },
+  { key: 'about',         label: 'About & Hero',   icon: '✎', href: '/admin/about' },
 ]
 
 const INBOX: NavItem[] = [
@@ -37,7 +34,6 @@ const INBOX: NavItem[] = [
 ]
 
 const SYSTEM: NavItem[] = [
-  { key: 'seo', label: 'SEO & Metadata', icon: '◎', href: '/admin/settings#seo' },
   { key: 'settings', label: 'Settings', icon: '⚙', href: '/admin/settings' },
 ]
 
