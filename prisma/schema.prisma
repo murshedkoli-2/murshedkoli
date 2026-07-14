@@ -99,11 +99,13 @@ type TechStackItem {
 }
 
 type FeatureItem {
-  id          String
-  title       String
-  description String?
-  status      FeatureStatus
-  order       Int
+  id            String
+  title         String
+  description   String?
+  status        FeatureStatus
+  storyPoints   Int           @default(1)
+  priorityScore Int           @default(5)
+  order         Int
 }
 
 type TaskItem {
@@ -193,7 +195,9 @@ model Project {
   slug              String                  @unique
   description       String
   longDescription   String?
-  
+  outcome           String?
+  role              String?
+
   // Project type and status
   projectType       String?                 @default("webapp") // webapp, android, desktop, api
   lifecycleStatus   ProjectLifecycleStatus  @default(idea)
@@ -341,6 +345,8 @@ model Certification {
   issuer      String
   date        DateTime
   url         String?
+  fileUrl     String?
+  fileType    String?  // "image" | "pdf"
   description String?
   order       Int      @default(0)
   createdAt   DateTime @default(now())
