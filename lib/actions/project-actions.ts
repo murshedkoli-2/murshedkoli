@@ -2,6 +2,7 @@
 
 import { prisma } from '@/lib/prisma'
 import { revalidatePath } from 'next/cache'
+import { isAdmin } from '@/lib/auth/require-admin'
 import {
   CreateProjectSchema,
   UpdateProjectSchema,
@@ -107,6 +108,7 @@ export async function getProjectBySlug(slug: string): Promise<ActionResponse> {
  * Create a new project
  */
 export async function createProject(input: CreateProjectInput): Promise<ActionResponse> {
+  if (!(await isAdmin())) return { success: false, error: 'Unauthorized' }
   try {
     const validated = CreateProjectSchema.parse(input)
     
@@ -152,6 +154,7 @@ export async function createProject(input: CreateProjectInput): Promise<ActionRe
  * Update a project
  */
 export async function updateProject(input: UpdateProjectInput): Promise<ActionResponse> {
+  if (!(await isAdmin())) return { success: false, error: 'Unauthorized' }
   try {
     const validated = UpdateProjectSchema.parse(input)
     const { id, ...updateData } = validated
@@ -211,6 +214,7 @@ export async function updateProject(input: UpdateProjectInput): Promise<ActionRe
  * Delete a project
  */
 export async function deleteProject(id: string): Promise<ActionResponse> {
+  if (!(await isAdmin())) return { success: false, error: 'Unauthorized' }
   try {
     await prisma.project.delete({
       where: { id }
@@ -233,6 +237,7 @@ export async function updateProjectFeatures(input: {
   projectId: string
   features: any[]
 }): Promise<ActionResponse> {
+  if (!(await isAdmin())) return { success: false, error: 'Unauthorized' }
   try {
     const validated = UpdateFeaturesSchema.parse(input)
     
@@ -275,6 +280,7 @@ export async function updateProjectModules(input: {
   projectId: string
   modules: any[]
 }): Promise<ActionResponse> {
+  if (!(await isAdmin())) return { success: false, error: 'Unauthorized' }
   try {
     const validated = UpdateModulesSchema.parse(input)
     
@@ -317,6 +323,7 @@ export async function updateProjectFlow(input: {
   projectId: string
   flowDiagram: { nodes: any[]; edges: any[] }
 }): Promise<ActionResponse> {
+  if (!(await isAdmin())) return { success: false, error: 'Unauthorized' }
   try {
     const validated = UpdateFlowSchema.parse(input)
     
@@ -344,6 +351,7 @@ export async function updateProjectTechStack(input: {
   projectId: string
   techStack: any[]
 }): Promise<ActionResponse> {
+  if (!(await isAdmin())) return { success: false, error: 'Unauthorized' }
   try {
     const validated = UpdateTechStackSchema.parse(input)
     
@@ -373,6 +381,7 @@ export async function updateProjectApiStructure(input: {
   projectId: string
   apiStructure: any[]
 }): Promise<ActionResponse> {
+  if (!(await isAdmin())) return { success: false, error: 'Unauthorized' }
   try {
     const validated = UpdateApiStructureSchema.parse(input)
     
@@ -400,6 +409,7 @@ export async function updateProjectDatabaseDesign(input: {
   projectId: string
   databaseDesign: any[]
 }): Promise<ActionResponse> {
+  if (!(await isAdmin())) return { success: false, error: 'Unauthorized' }
   try {
     const validated = UpdateDatabaseDesignSchema.parse(input)
     
@@ -427,6 +437,7 @@ export async function updateProjectDeployment(input: {
   projectId: string
   deployment: any
 }): Promise<ActionResponse> {
+  if (!(await isAdmin())) return { success: false, error: 'Unauthorized' }
   try {
     const validated = UpdateDeploymentSchema.parse(input)
     
@@ -454,6 +465,7 @@ export async function updateProjectLifecycleStatus(
   id: string,
   lifecycleStatus: string
 ): Promise<ActionResponse> {
+  if (!(await isAdmin())) return { success: false, error: 'Unauthorized' }
   try {
     const project = await prisma.project.update({
       where: { id },

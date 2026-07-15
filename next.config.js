@@ -5,9 +5,16 @@
 // Tailwind) require 'unsafe-inline'. Fonts are self-hosted by next/font, so no
 // external font origins are needed. A nonce-based policy is the stricter future
 // step; documented here intentionally.
+// 'unsafe-eval' is added only in development — Next/React dev tooling needs it,
+// and it must never ship to production.
+const scriptSrc =
+  process.env.NODE_ENV === 'production'
+    ? "script-src 'self' 'unsafe-inline'"
+    : "script-src 'self' 'unsafe-inline' 'unsafe-eval'"
+
 const csp = [
   "default-src 'self'",
-  "script-src 'self' 'unsafe-inline'",
+  scriptSrc,
   "style-src 'self' 'unsafe-inline'",
   "img-src 'self' data: blob: https:",
   "font-src 'self' data:",

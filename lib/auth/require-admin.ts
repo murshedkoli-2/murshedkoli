@@ -19,3 +19,13 @@ export async function requireAdmin() {
   }
   return payload
 }
+
+/**
+ * Boolean admin check for use inside Server Actions (which return their own
+ * result shape rather than a NextResponse).
+ */
+export async function isAdmin(): Promise<boolean> {
+  const cookieStore = await cookies()
+  const token = cookieStore.get(SESSION_COOKIE)?.value
+  return (await verifySessionToken(token)) !== null
+}
