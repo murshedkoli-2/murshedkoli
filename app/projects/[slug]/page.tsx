@@ -1,8 +1,8 @@
 import { notFound } from 'next/navigation'
-import { Nav } from '@/components/blueprint/Nav'
-import { BlueprintFooter } from '@/components/blueprint/BlueprintFooter'
+import { Nav } from '@/components/site/Nav'
+import { Footer } from '@/components/site/Footer'
 import { getAllPublishedSlugs, getProjectBySlug, getProfile } from '@/lib/data/portfolio'
-import { ProjectDetailBlueprint } from './ProjectDetailBlueprint'
+import { ProjectDetailView, type ProjectDetailData, type ProjectDetailLink } from './ProjectDetailView'
 
 export async function generateStaticParams() {
   const slugs = await getAllPublishedSlugs()
@@ -14,7 +14,7 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
   const project = await getProjectBySlug(slug)
   if (!project) return { title: 'Project Not Found' }
   return {
-    title: `${project.title} — Murshed Al Main`,
+    title: project.title,
     description: project.description,
     openGraph: {
       title: project.title,
@@ -26,55 +26,51 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
 
 export default async function ProjectDetailPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params
-  const [project, profile] = await Promise.all([
-    getProjectBySlug(slug),
-    getProfile(),
-  ])
+  const [project, profile] = await Promise.all([getProjectBySlug(slug), getProfile()])
 
   if (!project) notFound()
 
-  const isLive = Boolean(
-    (project.demoUrlEnabled && project.demoUrl) ||
-    (project.clientLiveUrlEnabled && project.clientLiveUrl)
-  )
+  const p = project as unknown as {
+    demoUrl?: string | null
+    demoUrlEnabled?: boolean
+    githubUrl?: string | null
+    githubUrlEnabled?: boolean
+    clientLiveUrl?: string | null
+    clientLiveUrlEnabled?: boolean
+    androidDownloadUrl?: string | null
+    androidDownloadUrlEnabled?: boolean
+  }
 
-  const rawFeatures = (project.features as unknown as { id: string; title: string; done?: boolean; status?: string }[]) ?? []
+  const links: ProjectDetailLink[] = []
+  if (p.clientLiveUrlEnabled && p.clientLiveUrl) links.push({ label: 'Visit site', url: p.clientLiveUrl, icon: 'live' })
+  if (p.demoUrlEnabled && p.demoUrl) links.push({ label: 'Live demo', url: p.demoUrl, icon: 'demo' })
+  if (p.androidDownloadUrlEnabled && p.androidDownloadUrl) links.push({ label: 'Download app', url: p.androidDownloadUrl, icon: 'android' })
+  if (p.githubUrlEnabled && p.githubUrl) links.push({ label: 'Source', url: p.githubUrl, icon: 'github' })
 
-  const data = {
-    id: project.id,
+  const stackFromTech = (project.techStack as unknown as { name: string }[] | undefined)?.map((t) => t.name).filter(Boolean) ?? []
+  const stack = stackFromTech.length ? stackFromTech : project.technologies
+
+  const data: ProjectDetailData = {
     title: project.title,
-    slug: project.slug,
     description: project.description,
     longDescription: project.longDescription,
-    coverImage: project.coverImage,
-    gallery: project.gallery,
+    outcome: project.outcome ?? null,
+    role: project.role ?? null,
     projectType: project.projectType || 'webapp',
-    isLive,
-    // Normalise features — old records may have status instead of done
-    features: rawFeatures.map(f => ({
-      id: f.id,
-      title: f.title,
-      done: f.done ?? f.status === 'completed',
-    })),
-    techStack: project.techStack as unknown as { name: string; category: string }[],
-    technologies: project.technologies,
-    demoUrl: project.demoUrl,
-    githubUrl: project.githubUrl,
-    androidDownloadUrl: (project as unknown as { androidDownloadUrl?: string }).androidDownloadUrl || null,
-    clientLiveUrl: project.clientLiveUrl,
-    demoUrlEnabled: project.demoUrlEnabled,
-    githubUrlEnabled: project.githubUrlEnabled,
-    androidDownloadUrlEnabled: (project as unknown as { androidDownloadUrlEnabled?: boolean }).androidDownloadUrlEnabled ?? false,
-    clientLiveUrlEnabled: project.clientLiveUrlEnabled,
+    isLive: Boolean((p.demoUrlEnabled && p.demoUrl) || (p.clientLiveUrlEnabled && p.clientLiveUrl)),
+    coverImage: project.coverImage,
+    gallery: project.gallery ?? [],
+    stack,
+    links,
   }
 
   return (
-    <div className="blueprint-page">
-      <Nav resumeUrl={profile.resume} />
+    <>
+      <Nav name={profile.name} resumeUrl={profile.resume} />
       <main>
-        <ProjectDetailBlueprint project={data} />
+        <ProjectDetailView project={data} />
       </main>
-      <BlueprintFooter />
-    </div>
+      <Footer name={profile.name} email={profile.email} socialLinks={profile.socialLinks} />
+    </>
   )
 }
