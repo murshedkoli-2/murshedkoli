@@ -145,8 +145,8 @@ export function ProjectEditor({ project }: ProjectEditorProps) {
   const saveActions = (
     <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
       {hasAnyDirty && !isSaving && (
-        <span style={{ fontSize: 12, color: '#e8a32b', display: 'flex', alignItems: 'center', gap: 4 }}>
-          <span style={{ width: 6, height: 6, borderRadius: '50%', background: '#e8a32b', display: 'inline-block' }} />
+        <span style={{ fontSize: 12, color: 'var(--accent)', display: 'flex', alignItems: 'center', gap: 4 }}>
+          <span style={{ width: 6, height: 6, borderRadius: '50%', background: 'var(--accent)', display: 'inline-block' }} />
           Unsaved
         </span>
       )}
@@ -187,15 +187,15 @@ export function ProjectEditor({ project }: ProjectEditorProps) {
             className="overflow-hidden"
             style={{ marginBottom: 16 }}
           >
-            <div style={{ padding: '12px 16px', background: '#e7f7f0', border: '1px solid #a3dfc4', borderRadius: 10, display: 'flex', alignItems: 'center', gap: 12 }}>
-              <CheckCircle2 size={16} style={{ color: '#1b9c6e', flexShrink: 0 }} />
-              <p style={{ fontSize: 13, color: '#14202e' }}>
+            <div style={{ padding: '12px 16px', background: 'var(--green-bg)', border: '1px solid color-mix(in oklch, var(--green) 30%, var(--line))', borderRadius: 10, display: 'flex', alignItems: 'center', gap: 12 }}>
+              <CheckCircle2 size={16} style={{ color: 'var(--green)', flexShrink: 0 }} />
+              <p style={{ fontSize: 13, color: 'var(--ink)' }}>
                 <strong>Project created!</strong>{' '}
                 Fill in the details below and click Save.
               </p>
               <button
                 onClick={() => setShowCreatedBanner(false)}
-                style={{ marginLeft: 'auto', background: 'none', border: 'none', cursor: 'pointer', color: '#66788f', fontSize: 13 }}
+                style={{ marginLeft: 'auto', background: 'none', border: 'none', cursor: 'pointer', color: 'var(--muted)', fontSize: 13 }}
               >
                 Dismiss
               </button>
@@ -215,10 +215,10 @@ export function ProjectEditor({ project }: ProjectEditorProps) {
             <span style={{ opacity: 0.7 }}>{item.icon}</span>
             {item.label}
             {item.hasChanges && (
-              <span style={{ width: 6, height: 6, borderRadius: '50%', background: '#e8a32b', display: 'inline-block', marginLeft: 4 }} />
+              <span style={{ width: 6, height: 6, borderRadius: '50%', background: 'var(--accent)', display: 'inline-block', marginLeft: 4 }} />
             )}
             {item.badge !== undefined && item.badge > 0 && !item.hasChanges && (
-              <span className="adm-badge" style={{ background: '#eef1f5', color: '#66788f', borderRadius: 10 }}>{item.badge}</span>
+              <span className="adm-badge" style={{ background: 'var(--surface-2)', color: 'var(--muted)', borderRadius: 10 }}>{item.badge}</span>
             )}
           </button>
         ))}
