@@ -32,6 +32,7 @@ export interface FeaturedProject {
   outcome: string | null
   stack: string[]
   role: string | null
+  projectType: string // webapp | android | desktop | api
   status: string // e.g. "SHIPPED · IN PRODUCTION"
   isLive: boolean
   coverImage: string | null
@@ -108,6 +109,7 @@ function mapProjectToSpecSheet(
     lifecycleStatus: string
     outcome?: string | null
     role?: string | null
+    projectType?: string | null
   },
   index: number
 ): FeaturedProject {
@@ -125,6 +127,7 @@ function mapProjectToSpecSheet(
     outcome: project.outcome || null,
     stack: stack.slice(0, 6),
     role: project.role || null,
+    projectType: project.projectType || 'webapp',
     status: isLive
       ? 'SHIPPED · IN PRODUCTION'
       : `● ${project.lifecycleStatus?.toUpperCase() || 'IN PROGRESS'}`,
