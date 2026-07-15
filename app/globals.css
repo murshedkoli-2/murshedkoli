@@ -42,6 +42,16 @@ a { color: inherit; text-decoration: none; }
 ::-webkit-scrollbar-thumb { background: var(--line); border-radius: 6px; }
 ::-webkit-scrollbar-thumb:hover { background: var(--ink-muted); }
 
+/* Nav responsive behaviour (mobile-first; desktop rules use !important to beat inline base styles) */
+.site-nav-desktop { display: none !important; }
+.site-nav-link { transition: color 160ms var(--ease); }
+.site-nav-link:hover { color: var(--ink) !important; }
+@media (min-width: 900px) {
+  .site-nav-desktop { display: flex !important; }
+  .site-nav-burger { display: none !important; }
+  .site-nav-resume { display: inline-flex !important; }
+}
+
 .site-card { transition: box-shadow 260ms var(--ease), transform 260ms var(--ease), border-color 260ms var(--ease); }
 .site-card--interactive:hover {
   box-shadow: var(--shadow-md);
