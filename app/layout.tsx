@@ -1,13 +1,15 @@
-import { Archivo, Inter, IBM_Plex_Mono } from 'next/font/google'
+import { Fraunces, Inter } from 'next/font/google'
 import './globals.css'
 import { Metadata, Viewport } from 'next'
 import ToasterProvider from '@/components/ToasterProvider'
+import { ThemeProvider } from '@/components/site/ThemeProvider'
+import { themeInitScript } from '@/lib/theme'
 import { getPublicProfile, getSettingsMap } from '@/lib/site-data'
 
-const archivo = Archivo({
+const fraunces = Fraunces({
   subsets: ['latin'],
-  weight: ['600', '700', '800'],
-  variable: '--font-archivo',
+  weight: ['400', '500', '600'],
+  variable: '--font-fraunces',
   display: 'swap',
 })
 
@@ -15,13 +17,6 @@ const inter = Inter({
   subsets: ['latin'],
   weight: ['400', '500', '600'],
   variable: '--font-inter',
-  display: 'swap',
-})
-
-const plexMono = IBM_Plex_Mono({
-  subsets: ['latin'],
-  weight: ['400', '500'],
-  variable: '--font-mono',
   display: 'swap',
 })
 
@@ -102,7 +97,10 @@ export async function generateMetadata(): Promise<Metadata> {
 export const viewport: Viewport = {
   width: 'device-width',
   initialScale: 1,
-  themeColor: '#0f0f23',
+  themeColor: [
+    { media: '(prefers-color-scheme: light)', color: '#f6f2ea' },
+    { media: '(prefers-color-scheme: dark)', color: '#2b2622' },
+  ],
 }
 
 export default async function RootLayout({
@@ -180,9 +178,11 @@ export default async function RootLayout({
   return (
     <html
       lang="en"
-      className={`theme-dark ${archivo.variable} ${inter.variable} ${plexMono.variable}`}
+      className={`${fraunces.variable} ${inter.variable}`}
+      suppressHydrationWarning
     >
       <head>
+        <script dangerouslySetInnerHTML={{ __html: themeInitScript }} />
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
         <script
@@ -191,8 +191,10 @@ export default async function RootLayout({
         />
       </head>
       <body className={`${inter.className} overflow-x-hidden`} suppressHydrationWarning>
-        {children}
-        <ToasterProvider />
+        <ThemeProvider>
+          {children}
+          <ToasterProvider />
+        </ThemeProvider>
       </body>
     </html>
   )
