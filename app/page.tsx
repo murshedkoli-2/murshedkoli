@@ -1,16 +1,35 @@
 import { Nav } from '@/components/site/Nav'
 import { Footer } from '@/components/site/Footer'
 import { Hero } from '@/components/site/home/Hero'
+import { AboutTeaser } from '@/components/site/home/AboutTeaser'
+import { FeaturedProjects } from '@/components/site/home/FeaturedProjects'
+import { SkillsSection } from '@/components/site/home/SkillsSection'
+import { TimelineSection } from '@/components/site/home/TimelineSection'
+import { CertificatesSection } from '@/components/site/home/CertificatesSection'
+import { ContactSection } from '@/components/site/home/ContactSection'
 import {
   getProfile,
   getHeroStats,
+  getFeaturedProjects,
+  getSkillsGrouped,
+  getExperience,
+  getEducation,
+  getCertificates,
 } from '@/lib/data/portfolio'
 
 const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://murshedkoli.com'
 
 /** Soft-luxury homepage — fully server-rendered; sections receive data as props. */
 export default async function Home() {
-  const [profile, stats] = await Promise.all([getProfile(), getHeroStats()])
+  const [profile, stats, featured, skills, experience, education, certificates] = await Promise.all([
+    getProfile(),
+    getHeroStats(),
+    getFeaturedProjects(6),
+    getSkillsGrouped(24),
+    getExperience(),
+    getEducation(),
+    getCertificates(),
+  ])
 
   const personJsonLd = {
     '@context': 'https://schema.org',
@@ -31,6 +50,12 @@ export default async function Home() {
       <Nav name={profile.name} resumeUrl={profile.resume} />
       <main>
         <Hero profile={profile} stats={stats} />
+        <AboutTeaser profile={profile} />
+        <FeaturedProjects projects={featured} />
+        <SkillsSection columns={skills} />
+        <TimelineSection experience={experience} education={education} />
+        <CertificatesSection certificates={certificates} />
+        <ContactSection profile={profile} />
       </main>
       <Footer name={profile.name} email={profile.email} socialLinks={profile.socialLinks} />
     </>
