@@ -3,9 +3,11 @@
 import { useState, type ReactNode } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
+import { ThemeToggle } from '@/components/site/ThemeToggle'
 
 export type AdminNavKey =
   | 'projects'
+  | 'services'
   | 'skills'
   | 'certificates'
   | 'experience'
@@ -23,6 +25,7 @@ interface NavItem {
 
 const CONTENT: NavItem[] = [
   { key: 'projects',      label: 'Projects',      icon: '▤', href: '/admin/dashboard',    badgeKey: 'projects' },
+  { key: 'services',      label: 'Services',       icon: '◈', href: '/admin/services' },
   { key: 'skills',        label: 'Skills',         icon: '⬡', href: '/admin/skills',       badgeKey: 'skills' },
   { key: 'certificates',  label: 'Certificates',   icon: '✦', href: '/admin/certificates', badgeKey: 'certificates' },
   { key: 'experience',    label: 'Experience',     icon: '≡', href: '/admin/experience' },
@@ -102,7 +105,7 @@ export function AdminShell({ active, title, subtitle, actions, badges = {}, chil
           <div style={{ flex: 1 }}>
             Murshed Al Main
             <br />
-            <span style={{ color: '#5f7896', fontSize: 11 }}>Admin</span>
+            <span style={{ color: '#9c8f82', fontSize: 11 }}>Admin</span>
           </div>
           <button
             className="adm-link"
@@ -132,7 +135,10 @@ export function AdminShell({ active, title, subtitle, actions, badges = {}, chil
               {subtitle ? <div className="adm-sub">{subtitle}</div> : null}
             </div>
           </div>
-          {actions ? <div className="adm-top-actions">{actions}</div> : null}
+          <div className="adm-top-actions" style={{ alignItems: 'center' }}>
+            <ThemeToggle />
+            {actions}
+          </div>
         </div>
 
         {children}
