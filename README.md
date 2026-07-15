@@ -4,19 +4,24 @@ A modern, responsive portfolio website built with Next.js, TypeScript, and Mongo
 
 ## 🚀 Features
 
-- **Modern Design**: Clean, professional layout with smooth animations
+- **Soft-luxury design**: Warm, muted, premium aesthetic with an editorial serif/sans pairing
+- **Light & dark themes**: Animated toggle with a no-flash pre-paint script; both themes are intentional
+- **Balanced motion**: Cinematic hero + smooth scroll reveals, with full `prefers-reduced-motion` support
 - **Responsive**: Optimized for all device sizes
-- **Admin Panel**: Content management system for projects, skills, and profile
-- **3D Elements**: Interactive particle background using Three.js
+- **Admin Panel**: Content management for projects, services, skills, experience, certificates, and profile
+- **Services section**: "What I do" capabilities, managed from the dashboard
+- **Minimal project case studies**: Visual `/projects/[slug]` pages with gallery lightbox
+- **Fast & secure**: Server-rendered pages, security headers/CSP, auth-guarded APIs, rate-limited public forms
 - **Database Integration**: MongoDB with Prisma ORM
 - **TypeScript**: Full type safety throughout the application
 
 ## 🛠️ Tech Stack
 
-- **Frontend**: Next.js 14, React 18, TypeScript
-- **Styling**: Tailwind CSS
+- **Frontend**: Next.js 16, React 18, TypeScript
+- **Styling**: Tailwind CSS + CSS custom-property design tokens (OKLCH)
+- **Fonts**: Fraunces (display) + Inter (body) via `next/font`
 - **Database**: MongoDB with Prisma
-- **Animations**: Framer Motion, Three.js
+- **Animations**: Framer Motion
 - **Icons**: Lucide React
 - **Deployment**: Vercel
 
