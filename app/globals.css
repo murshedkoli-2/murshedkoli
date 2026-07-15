@@ -64,6 +64,13 @@ a { color: inherit; text-decoration: none; }
   .contact-form-row { grid-template-columns: 1fr !important; }
 }
 
+/* About intro */
+.about-intro { display: grid; grid-template-columns: 1fr; gap: 2.5rem; align-items: center; }
+.about-intro > div:last-child { max-width: 380px; }
+@media (min-width: 860px) {
+  .about-intro { grid-template-columns: 1.3fr 0.7fr; gap: 3.5rem; }
+}
+
 /* Project detail */
 .detail-body { display: grid; grid-template-columns: 1fr; gap: 2.5rem; align-items: start; }
 .detail-gallery { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
