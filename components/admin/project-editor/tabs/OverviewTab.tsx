@@ -486,7 +486,7 @@ export const OverviewTab = forwardRef<OverviewTabHandle, OverviewTabProps>(
           {/* ── Links ── */}
           <Section title="Project Links" defaultOpen={false}>
             <p className="text-xs text-zinc-600 -mt-1 mb-2">
-              Toggle a link on to enable it. Disabled links won't appear on the public page.
+              Toggle a link on to enable it. Disabled links won&rsquo;t appear on the public page.
             </p>
 
             <div className="divide-y divide-zinc-800/60 rounded-lg border border-zinc-800/60 overflow-hidden">

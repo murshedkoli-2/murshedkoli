@@ -29,7 +29,7 @@ export function ContactSection({ profile }: ContactSectionProps) {
       <div className="contact-grid">
         <div>
           <p style={{ color: 'var(--ink-muted)', fontSize: '1.075rem', maxWidth: '30rem', marginBottom: '1.75rem' }}>
-            Have a project in mind or just want to say hello? Send a message and I'll get back to you.
+            Have a project in mind or just want to say hello? Send a message and I&rsquo;ll get back to you.
           </p>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 12, marginBottom: '1.75rem' }}>
             <a href={`mailto:${profile.email}`} style={{ display: 'inline-flex', alignItems: 'center', gap: 10 }}>

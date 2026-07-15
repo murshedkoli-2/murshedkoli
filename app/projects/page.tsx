@@ -26,7 +26,7 @@ export default async function ProjectsPage() {
               Projects
             </h1>
             <p style={{ color: 'var(--ink-muted)', fontSize: '1.075rem', maxWidth: '38rem', marginBottom: '2.5rem' }}>
-              Things I've designed and built. Filter by type or browse the full collection.
+              Things I&rsquo;ve designed and built. Filter by type or browse the full collection.
             </p>
             <Suspense fallback={null}>
               <ProjectsGrid projects={projects} />
