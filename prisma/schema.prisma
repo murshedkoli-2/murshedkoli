@@ -349,3 +349,14 @@ model Certification {
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 }
+
+model Service {
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  title       String
+  description String
+  icon        String?  // lucide icon name
+  order       Int      @default(0)
+  isEnabled   Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}

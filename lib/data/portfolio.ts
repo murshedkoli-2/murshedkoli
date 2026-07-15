@@ -312,6 +312,33 @@ export const getEducation = cache(async (): Promise<TimelineEntry[]> => {
   }
 })
 
+// ── Services ────────────────────────────────────────────────────────
+
+export interface ServiceView {
+  id: string
+  title: string
+  description: string
+  icon: string | null
+}
+
+export const getServices = cache(async (): Promise<ServiceView[]> => {
+  try {
+    const services = await prisma.service.findMany({
+      where: { isEnabled: true },
+      orderBy: [{ order: 'asc' }, { createdAt: 'asc' }],
+    })
+    return services.map((s) => ({
+      id: s.id,
+      title: s.title,
+      description: s.description,
+      icon: s.icon,
+    }))
+  } catch (error) {
+    console.error('getServices failed:', error)
+    return []
+  }
+})
+
 // ── Hero stats (never zero on public paint) ─────────────────────────
 
 export const getHeroStats = cache(async (): Promise<HeroStats> => {
