@@ -44,11 +44,11 @@ export function Hero({ profile, stats }: HeroProps) {
 
   const container = {
     hidden: {},
-    show: { transition: { staggerChildren: 0.08, delayChildren: 0.05 } },
+    show: { transition: { staggerChildren: 0.05, delayChildren: 0.02 } },
   }
   const item = {
-    hidden: reduce ? {} : { opacity: 0, y: 18 },
-    show: { opacity: 1, y: 0, transition: { duration: 0.6, ease: EASE } },
+    hidden: reduce ? {} : { opacity: 0, y: 12 },
+    show: { opacity: 1, y: 0, transition: { duration: 0.42, ease: EASE } },
   }
 
   return (

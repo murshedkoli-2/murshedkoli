@@ -1,4 +1,4 @@
-import { cache } from 'react'
+import { cached } from '@/lib/cache'
 import { prisma } from '@/lib/prisma'
 import { getPublicProfile, getSettingsMap } from '@/lib/site-data'
 import type { PublicProfile } from '@/lib/site-data'
@@ -11,8 +11,9 @@ import type { PublicProfile } from '@/lib/site-data'
  * the "Blueprint" view models; when the Mongoose migration lands, only this
  * file changes — the components stay untouched.
  *
- * All functions are server components only and wrapped in React `cache` so a
- * single request de-dupes repeated reads.
+ * All functions are server-only and wrapped in `cached` (Next Data Cache +
+ * React per-request dedupe), so repeated reads across navigations and renders
+ * are served from cache instead of re-hitting the database. See lib/cache.ts.
  */
 
 export type ProjectStatus = 'draft' | 'published'
@@ -150,7 +151,7 @@ export interface ProfileView extends PublicProfile {
   subheadline: string
 }
 
-export const getProfile = cache(async (): Promise<ProfileView> => {
+export const getProfile = cached('profile', async (): Promise<ProfileView> => {
   const [profile, settings] = await Promise.all([getPublicProfile(), getSettingsMap()])
   const availabilityRaw = settings.availability ?? settings.availableForWork
   const availability = availabilityRaw === undefined ? true : Boolean(availabilityRaw)
@@ -167,7 +168,7 @@ const publishedOrder = [
   { createdAt: 'desc' as const },
 ]
 
-export const getFeaturedProjects = cache(async (max = 4): Promise<FeaturedProject[]> => {
+export const getFeaturedProjects = cached('featured-projects', async (max = 4): Promise<FeaturedProject[]> => {
   try {
     const projects = await prisma.project.findMany({
       where: { publishStatus: 'published', featured: true },
@@ -181,7 +182,7 @@ export const getFeaturedProjects = cache(async (max = 4): Promise<FeaturedProjec
   }
 })
 
-export const getAllPublishedProjects = cache(async (): Promise<FeaturedProject[]> => {
+export const getAllPublishedProjects = cached('all-projects', async (): Promise<FeaturedProject[]> => {
   try {
     const projects = await prisma.project.findMany({
       where: { publishStatus: 'published' },
@@ -194,7 +195,7 @@ export const getAllPublishedProjects = cache(async (): Promise<FeaturedProject[]
   }
 })
 
-export const getProjectBySlug = cache(async (slug: string) => {
+export const getProjectBySlug = cached('project-by-slug', async (slug: string) => {
   try {
     const project = await prisma.project.findFirst({
       where: { slug, publishStatus: 'published' },
@@ -206,7 +207,7 @@ export const getProjectBySlug = cache(async (slug: string) => {
   }
 })
 
-export const getAllPublishedSlugs = cache(async (): Promise<string[]> => {
+export const getAllPublishedSlugs = cached('all-slugs', async (): Promise<string[]> => {
   try {
     const projects = await prisma.project.findMany({
       where: { publishStatus: 'published' },
@@ -227,7 +228,7 @@ const SKILL_COLUMNS: { key: string; label: string; categories: string[] }[] = [
   { key: 'ai', label: 'AI & Workflow', categories: ['ai', 'ai-workflow', 'tools', 'other'] },
 ]
 
-export const getSkillsGrouped = cache(async (max = 16): Promise<SkillColumn[]> => {
+export const getSkillsGrouped = cached('skills-grouped', async (max = 16): Promise<SkillColumn[]> => {
   try {
     const skills = await prisma.skill.findMany({
       where: { isEnabled: true },
@@ -250,7 +251,7 @@ export const getSkillsGrouped = cache(async (max = 16): Promise<SkillColumn[]> =
 
 // ── Certificates ────────────────────────────────────────────────────
 
-export const getCertificates = cache(async (): Promise<CertificateView[]> => {
+export const getCertificates = cached('certificates', async (): Promise<CertificateView[]> => {
   try {
     const certs = await prisma.certification.findMany({
       orderBy: [{ date: 'desc' }, { order: 'asc' }],
@@ -274,7 +275,7 @@ export const getCertificates = cache(async (): Promise<CertificateView[]> => {
 
 // ── Experience & Education ──────────────────────────────────────────
 
-export const getExperience = cache(async (): Promise<TimelineEntry[]> => {
+export const getExperience = cached('experience', async (): Promise<TimelineEntry[]> => {
   try {
     const rows = await prisma.experience.findMany({
       orderBy: [{ current: 'desc' }, { startDate: 'desc' }, { order: 'asc' }],
@@ -293,7 +294,7 @@ export const getExperience = cache(async (): Promise<TimelineEntry[]> => {
   }
 })
 
-export const getEducation = cache(async (): Promise<TimelineEntry[]> => {
+export const getEducation = cached('education', async (): Promise<TimelineEntry[]> => {
   try {
     const rows = await prisma.education.findMany({
       orderBy: [{ current: 'desc' }, { startDate: 'desc' }, { order: 'asc' }],
@@ -321,7 +322,7 @@ export interface ServiceView {
   icon: string | null
 }
 
-export const getServices = cache(async (): Promise<ServiceView[]> => {
+export const getServices = cached('services', async (): Promise<ServiceView[]> => {
   try {
     const services = await prisma.service.findMany({
       where: { isEnabled: true },
@@ -341,7 +342,7 @@ export const getServices = cache(async (): Promise<ServiceView[]> => {
 
 // ── Hero stats (never zero on public paint) ─────────────────────────
 
-export const getHeroStats = cache(async (): Promise<HeroStats> => {
+export const getHeroStats = cached('hero-stats', async (): Promise<HeroStats> => {
   try {
     const [projectsShipped, skills, certificates, firstExperience] = await Promise.all([
       prisma.project.count({ where: { publishStatus: 'published' } }),

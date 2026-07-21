@@ -24,6 +24,8 @@ export const metadata: Metadata = {
   description: 'Background, skills, experience, and credentials.',
 }
 
+export const revalidate = 600
+
 function initials(name: string): string {
   return name.split(' ').map((p) => p[0]).filter(Boolean).slice(0, 2).join('').toUpperCase()
 }

@@ -21,7 +21,10 @@ import {
 
 const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://murshedkoli.com'
 
-/** Soft-luxury homepage — fully server-rendered; sections receive data as props. */
+/** ISR: served static (instant navigation), regenerated in the background every 10 min. */
+export const revalidate = 600
+
+/** Dev-minimalist homepage — fully server-rendered; sections receive data as props. */
 export default async function Home() {
   const [profile, stats, featured, skills, experience, education, certificates, services] = await Promise.all([
     getProfile(),

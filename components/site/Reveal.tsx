@@ -15,7 +15,7 @@ interface RevealProps {
 }
 
 /** Fades + rises a block into view on scroll. Collapses to instant when the user prefers reduced motion. */
-export function Reveal({ children, delay = 0, y = 24, className }: RevealProps) {
+export function Reveal({ children, delay = 0, y = 14, className }: RevealProps) {
   const reduce = useReducedMotion()
 
   if (reduce) {
@@ -27,8 +27,8 @@ export function Reveal({ children, delay = 0, y = 24, className }: RevealProps) 
       className={className}
       initial={{ opacity: 0, y }}
       whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true, margin: '-10%' }}
-      transition={{ duration: 0.6, ease: EASE, delay }}
+      viewport={{ once: true, margin: '-12% 0px' }}
+      transition={{ duration: 0.4, ease: EASE, delay }}
     >
       {children}
     </motion.div>
@@ -50,8 +50,8 @@ const containerVariants: Variants = {
 }
 
 const itemVariants: Variants = {
-  hidden: { opacity: 0, y: 24 },
-  show: { opacity: 1, y: 0, transition: { duration: 0.6, ease: EASE } },
+  hidden: { opacity: 0, y: 14 },
+  show: { opacity: 1, y: 0, transition: { duration: 0.4, ease: EASE } },
 }
 
 /**

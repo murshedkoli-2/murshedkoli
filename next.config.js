@@ -37,6 +37,9 @@ const securityHeaders = [
 const nextConfig = {
   images: {
     formats: ['image/avif', 'image/webp'],
+    // Cache optimized remote images for 30 days so repeat page loads/navigations
+    // don't re-fetch and re-transcode the source every time.
+    minimumCacheTTL: 60 * 60 * 24 * 30,
     remotePatterns: [
       { protocol: 'https', hostname: 'images.unsplash.com' },
       { protocol: 'https', hostname: 'i.ibb.co' },

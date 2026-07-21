@@ -4,6 +4,8 @@ import { Footer } from '@/components/site/Footer'
 import { getAllPublishedSlugs, getProjectBySlug, getProfile } from '@/lib/data/portfolio'
 import { ProjectDetailView, type ProjectDetailData, type ProjectDetailLink } from './ProjectDetailView'
 
+export const revalidate = 600
+
 export async function generateStaticParams() {
   const slugs = await getAllPublishedSlugs()
   return slugs.map((slug) => ({ slug }))

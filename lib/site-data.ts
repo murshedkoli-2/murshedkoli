@@ -1,4 +1,4 @@
-import { cache } from 'react'
+import { cached } from '@/lib/cache'
 import { prisma } from '@/lib/prisma'
 
 export type SocialLinks = {
@@ -40,7 +40,7 @@ export const DEFAULT_PROFILE: PublicProfile = {
   },
 }
 
-export const getSettingsMap = cache(async (): Promise<PublicSettings> => {
+export const getSettingsMap = cached('settings', async (): Promise<PublicSettings> => {
   try {
     const settings = await prisma.settings.findMany()
     return settings.reduce<Record<string, unknown>>((acc, item) => {
@@ -53,7 +53,7 @@ export const getSettingsMap = cache(async (): Promise<PublicSettings> => {
   }
 })
 
-export const getPublicProfile = cache(async (): Promise<PublicProfile> => {
+export const getPublicProfile = cached('public-profile', async (): Promise<PublicProfile> => {
   try {
     const profile = await prisma.profile.findFirst({
       orderBy: { updatedAt: 'desc' },
@@ -82,7 +82,7 @@ export const getPublicProfile = cache(async (): Promise<PublicProfile> => {
   }
 })
 
-export const getHomePageData = cache(async () => {
+export const getHomePageData = cached('homepage-data', async () => {
   try {
     const [
       profile,

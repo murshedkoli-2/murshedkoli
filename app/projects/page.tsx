@@ -12,6 +12,8 @@ export const metadata: Metadata = {
   description: 'A selection of projects — web apps, mobile, and more.',
 }
 
+export const revalidate = 600
+
 export default async function ProjectsPage() {
   const [profile, projects] = await Promise.all([getProfile(), getAllPublishedProjects()])
 
