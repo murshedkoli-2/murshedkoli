@@ -68,46 +68,48 @@ export function ProjectsGrid({ projects }: ProjectsGridProps) {
                 onClick={() => setParam('type', f.key)}
                 aria-pressed={active}
                 style={{
-                  padding: '8px 16px',
-                  borderRadius: 999,
-                  border: '1px solid var(--line)',
-                  background: active ? 'var(--accent)' : 'transparent',
+                  padding: '7px 14px',
+                  borderRadius: 'var(--radius-sm)',
+                  border: `1px solid ${active ? 'var(--accent)' : 'var(--line-strong)'}`,
+                  background: active ? 'var(--accent)' : 'var(--surface)',
                   color: active ? 'var(--accent-ink)' : 'var(--ink-muted)',
-                  fontSize: '0.88rem',
-                  fontWeight: 600,
+                  fontFamily: 'var(--font-mono)',
+                  fontSize: '0.8rem',
+                  fontWeight: 500,
                   cursor: 'pointer',
-                  transition: 'background 180ms var(--ease), color 180ms var(--ease)',
+                  transition: 'background 180ms var(--ease), color 180ms var(--ease), border-color 180ms var(--ease)',
                 }}
               >
-                {f.label}
+                {f.label.toLowerCase()}
               </button>
             )
           })}
         </div>
 
-        <label style={{ display: 'inline-flex', alignItems: 'center', gap: 8, color: 'var(--ink-muted)', fontSize: '0.88rem' }}>
-          Sort
+        <label className="mono" style={{ display: 'inline-flex', alignItems: 'center', gap: 8, color: 'var(--ink-muted)', fontSize: '0.8rem' }}>
+          sort:
           <select
             value={sort}
             onChange={(e) => setParam('sort', e.target.value)}
             style={{
-              padding: '8px 12px',
+              padding: '7px 12px',
               borderRadius: 'var(--radius-sm)',
-              border: '1px solid var(--line)',
+              border: '1px solid var(--line-strong)',
               background: 'var(--surface)',
               color: 'var(--ink)',
-              fontSize: '0.88rem',
+              fontFamily: 'var(--font-mono)',
+              fontSize: '0.8rem',
               cursor: 'pointer',
             }}
           >
-            <option value="recent">Most recent</option>
-            <option value="featured">Live first</option>
+            <option value="recent">most recent</option>
+            <option value="featured">live first</option>
           </select>
         </label>
       </div>
 
       {visible.length === 0 ? (
-        <p style={{ color: 'var(--ink-muted)' }}>No projects in this category yet.</p>
+        <p className="mono" style={{ color: 'var(--ink-muted)', fontSize: '0.88rem' }}>{'// no projects in this category yet'}</p>
       ) : (
         <RevealGroup stagger={0.08} className="projects-grid">
           {visible.map((p) => (

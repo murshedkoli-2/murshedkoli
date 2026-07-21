@@ -31,16 +31,18 @@ interface ActionButtonProps extends CommonProps {
 type ButtonProps = LinkButtonProps | ActionButtonProps
 
 function styleFor(variant: Variant, size: Size): React.CSSProperties {
-  const pad = size === 'lg' ? '15px 28px' : '12px 22px'
+  const pad = size === 'lg' ? '14px 24px' : '11px 18px'
   const base: React.CSSProperties = {
     display: 'inline-flex',
     alignItems: 'center',
     justifyContent: 'center',
-    gap: 8,
+    gap: 9,
     padding: pad,
     borderRadius: 'var(--radius-sm)',
-    fontSize: size === 'lg' ? '1rem' : '0.95rem',
-    fontWeight: 600,
+    fontFamily: 'var(--font-mono)',
+    fontSize: size === 'lg' ? '0.9rem' : '0.82rem',
+    fontWeight: 500,
+    letterSpacing: '0.01em',
     lineHeight: 1,
     cursor: 'pointer',
     border: '1px solid transparent',
@@ -51,7 +53,7 @@ function styleFor(variant: Variant, size: Size): React.CSSProperties {
   if (variant === 'primary') {
     return { ...base, background: 'var(--accent)', color: 'var(--accent-ink)' }
   }
-  return { ...base, background: 'transparent', color: 'var(--ink)', borderColor: 'var(--line)' }
+  return { ...base, background: 'var(--surface)', color: 'var(--ink)', borderColor: 'var(--line-strong)' }
 }
 
 export function Button(props: ButtonProps) {

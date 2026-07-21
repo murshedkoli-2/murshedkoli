@@ -25,19 +25,19 @@ export function ContactSection({ profile }: ContactSectionProps) {
     : []
 
   return (
-    <Section id="contact" eyebrow="Contact" title="Let's work together">
+    <Section id="contact" eyebrow="contact" title="Let's build something.">
       <div className="contact-grid">
         <div>
-          <p style={{ color: 'var(--ink-muted)', fontSize: '1.075rem', maxWidth: '30rem', marginBottom: '1.75rem' }}>
+          <p style={{ color: 'var(--ink-muted)', fontSize: '1.075rem', maxWidth: '30rem', marginBottom: '1.75rem', lineHeight: 1.7 }}>
             Have a project in mind or just want to say hello? Send a message and I&rsquo;ll get back to you.
           </p>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 12, marginBottom: '1.75rem' }}>
+          <div className="mono" style={{ display: 'flex', flexDirection: 'column', gap: 12, marginBottom: '1.75rem', fontSize: '0.88rem' }}>
             <a href={`mailto:${profile.email}`} style={{ display: 'inline-flex', alignItems: 'center', gap: 10 }}>
-              <Mail size={18} style={{ color: 'var(--accent)' }} /> {profile.email}
+              <Mail size={17} style={{ color: 'var(--accent)' }} /> {profile.email}
             </a>
             {profile.location && (
               <span style={{ display: 'inline-flex', alignItems: 'center', gap: 10, color: 'var(--ink-muted)' }}>
-                <MapPin size={18} style={{ color: 'var(--accent)' }} /> {profile.location}
+                <MapPin size={17} style={{ color: 'var(--accent)' }} /> {profile.location}
               </span>
             )}
           </div>

@@ -1,6 +1,5 @@
 import type { ServiceView } from '@/lib/data/portfolio'
 import { Section } from '@/components/site/ui/Section'
-import { Card } from '@/components/site/ui/Card'
 import { RevealGroup, RevealItem } from '@/components/site/Reveal'
 import { resolveServiceIcon } from './serviceIcons'
 
@@ -12,32 +11,48 @@ export function ServicesSection({ services }: ServicesSectionProps) {
   if (services.length === 0) return null
 
   return (
-    <Section id="services" eyebrow="What I do" title="Services">
+    <Section id="services" eyebrow="what I do" title="Expertise">
       <RevealGroup stagger={0.08} className="services-grid">
-        {services.map((s) => {
+        {services.map((s, i) => {
           const Icon = resolveServiceIcon(s.icon)
           return (
             <RevealItem key={s.id}>
-              <Card style={{ padding: '1.75rem', height: '100%' }}>
-                <span
-                  aria-hidden
-                  style={{
-                    display: 'inline-flex',
-                    width: 48,
-                    height: 48,
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    borderRadius: 14,
-                    background: 'color-mix(in oklch, var(--accent) 14%, transparent)',
-                    color: 'var(--accent)',
-                    marginBottom: '1.1rem',
-                  }}
-                >
-                  <Icon size={24} />
-                </span>
+              <div
+                className="site-card site-card--interactive"
+                style={{
+                  height: '100%',
+                  padding: '1.75rem',
+                  background: 'var(--surface)',
+                  border: '1px solid var(--line)',
+                  borderRadius: 'var(--radius)',
+                  display: 'flex',
+                  flexDirection: 'column',
+                }}
+              >
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '1.25rem' }}>
+                  <span
+                    aria-hidden
+                    style={{
+                      display: 'inline-flex',
+                      width: 44,
+                      height: 44,
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      borderRadius: 10,
+                      border: '1px solid var(--line)',
+                      background: 'var(--accent-soft)',
+                      color: 'var(--accent)',
+                    }}
+                  >
+                    <Icon size={22} />
+                  </span>
+                  <span className="mono" style={{ fontSize: '0.85rem', color: 'var(--comment)' }}>
+                    {String(i + 1).padStart(2, '0')}
+                  </span>
+                </div>
                 <h3 style={{ fontSize: 'var(--text-h3)', marginBottom: '0.6rem' }}>{s.title}</h3>
-                <p style={{ color: 'var(--ink-muted)', fontSize: '0.95rem', lineHeight: 1.6 }}>{s.description}</p>
-              </Card>
+                <p style={{ color: 'var(--ink-muted)', fontSize: '0.95rem', lineHeight: 1.65 }}>{s.description}</p>
+              </div>
             </RevealItem>
           )
         })}

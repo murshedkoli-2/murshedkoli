@@ -10,7 +10,7 @@ interface AboutTeaserProps {
 
 export function AboutTeaser({ profile }: AboutTeaserProps) {
   return (
-    <Section id="about" surface eyebrow="About">
+    <Section id="about" surface eyebrow="about">
       <Reveal>
         <div style={{ maxWidth: '48rem' }}>
           <p
@@ -25,9 +25,13 @@ export function AboutTeaser({ profile }: AboutTeaserProps) {
             {profile.description}
           </p>
           <div style={{ display: 'flex', flexWrap: 'wrap', gap: 12, alignItems: 'center', color: 'var(--ink-muted)' }}>
-            {profile.location && <span>Based in {profile.location}</span>}
+            {profile.location && (
+              <span className="mono" style={{ fontSize: '0.82rem' }}>
+                <span style={{ color: 'var(--accent)' }}>◆</span> based in {profile.location}
+              </span>
+            )}
             <Button href="/about" variant="ghost">
-              More about me <ArrowRight size={17} />
+              more about me <ArrowRight size={16} />
             </Button>
           </div>
         </div>

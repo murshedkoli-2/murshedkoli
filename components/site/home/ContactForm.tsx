@@ -8,7 +8,7 @@ const inputStyle: React.CSSProperties = {
   width: '100%',
   padding: '12px 14px',
   borderRadius: 'var(--radius-sm)',
-  border: '1px solid var(--line)',
+  border: '1px solid var(--line-strong)',
   background: 'var(--canvas)',
   color: 'var(--ink)',
   fontSize: '0.95rem',
@@ -17,9 +17,11 @@ const inputStyle: React.CSSProperties = {
 
 const labelStyle: React.CSSProperties = {
   display: 'block',
-  fontSize: '0.82rem',
-  fontWeight: 600,
-  marginBottom: 6,
+  fontFamily: 'var(--font-mono)',
+  fontSize: '0.76rem',
+  fontWeight: 500,
+  letterSpacing: '0.02em',
+  marginBottom: 7,
   color: 'var(--ink-muted)',
 }
 
@@ -67,20 +69,20 @@ export function ContactForm() {
     <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }} className="contact-form-row">
         <div>
-          <label style={labelStyle} htmlFor="cf-name">Name</label>
+          <label style={labelStyle} htmlFor="cf-name">name *</label>
           <input id="cf-name" name="name" type="text" required style={inputStyle} autoComplete="name" />
         </div>
         <div>
-          <label style={labelStyle} htmlFor="cf-email">Email</label>
+          <label style={labelStyle} htmlFor="cf-email">email *</label>
           <input id="cf-email" name="email" type="email" required style={inputStyle} autoComplete="email" />
         </div>
       </div>
       <div>
-        <label style={labelStyle} htmlFor="cf-subject">Subject</label>
+        <label style={labelStyle} htmlFor="cf-subject">subject</label>
         <input id="cf-subject" name="subject" type="text" style={inputStyle} />
       </div>
       <div>
-        <label style={labelStyle} htmlFor="cf-message">Message</label>
+        <label style={labelStyle} htmlFor="cf-message">message *</label>
         <textarea id="cf-message" name="message" required rows={5} style={{ ...inputStyle, resize: 'vertical' }} />
       </div>
       <button
@@ -95,14 +97,16 @@ export function ContactForm() {
           borderRadius: 'var(--radius-sm)',
           background: 'var(--accent)',
           color: 'var(--accent-ink)',
-          fontWeight: 600,
+          fontFamily: 'var(--font-mono)',
+          fontSize: '0.85rem',
+          fontWeight: 500,
           border: 'none',
           cursor: sending ? 'default' : 'pointer',
           opacity: sending ? 0.7 : 1,
           alignSelf: 'flex-start',
         }}
       >
-        <Send size={16} /> {sending ? 'Sending…' : 'Send message'}
+        <Send size={16} /> {sending ? 'sending…' : 'send message'}
       </button>
     </form>
   )

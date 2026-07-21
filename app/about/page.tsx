@@ -49,21 +49,21 @@ export default async function AboutPage() {
           <Container>
             <div className="about-intro">
               <div>
-                <Eyebrow>About me</Eyebrow>
+                <Eyebrow>about me</Eyebrow>
                 <h1 style={{ fontSize: 'var(--text-h2)', marginTop: '0.75rem', marginBottom: '1.5rem' }}>
                   {profile.name}
                 </h1>
-                <p style={{ fontSize: '1.15rem', color: 'var(--ink-muted)', lineHeight: 1.7, marginBottom: '1.5rem' }}>
+                <p style={{ fontSize: '1.15rem', color: 'var(--ink-muted)', lineHeight: 1.75, marginBottom: '1.5rem' }}>
                   {profile.description}
                 </p>
                 <div style={{ display: 'flex', flexWrap: 'wrap', gap: 12, alignItems: 'center' }}>
                   {profile.resume && (
                     <Button href={profile.resume} external>
-                      <FileText size={17} /> Download résumé
+                      <FileText size={16} /> download résumé
                     </Button>
                   )}
                   <Button href="/#contact" variant="ghost">
-                    Get in touch
+                    get in touch
                   </Button>
                 </div>
               </div>
@@ -74,7 +74,7 @@ export default async function AboutPage() {
                   aspectRatio: '1 / 1',
                   borderRadius: 'var(--radius)',
                   overflow: 'hidden',
-                  border: '1px solid var(--line)',
+                  border: '1px solid var(--line-strong)',
                   boxShadow: 'var(--shadow-md)',
                   background: 'var(--surface-2)',
                 }}
@@ -82,7 +82,7 @@ export default async function AboutPage() {
                 {portrait ? (
                   <Image src={portrait} alt={profile.name} fill priority sizes="(max-width: 800px) 80vw, 380px" style={{ objectFit: 'cover' }} />
                 ) : (
-                  <div style={{ position: 'absolute', inset: 0, display: 'grid', placeItems: 'center', fontFamily: 'var(--font-display)', fontSize: '4rem', color: 'var(--accent)' }}>
+                  <div style={{ position: 'absolute', inset: 0, display: 'grid', placeItems: 'center', fontFamily: 'var(--font-mono)', fontSize: '4rem', color: 'var(--accent)' }}>
                     {initials(profile.name)}
                   </div>
                 )}

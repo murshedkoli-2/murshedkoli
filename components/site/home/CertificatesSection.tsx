@@ -29,7 +29,7 @@ export function CertificatesSection({ certificates }: CertificatesSectionProps) 
   }
 
   return (
-    <Section eyebrow="Credentials" title="Certificates">
+    <Section eyebrow="credentials" title="Certificates">
       <div className="certs-grid">
         {certificates.map((c) => {
           const isImage = Boolean(c.fileUrl && c.fileType === 'image')
@@ -37,8 +37,8 @@ export function CertificatesSection({ certificates }: CertificatesSectionProps) 
           return (
             <Card key={c.id} interactive style={{ padding: '1.4rem', display: 'flex', flexDirection: 'column', gap: 10 }}>
               <Award size={22} style={{ color: 'var(--accent)' }} />
-              <div style={{ fontFamily: 'var(--font-display)', fontSize: '1.05rem', lineHeight: 1.3 }}>{c.title}</div>
-              <div style={{ color: 'var(--ink-muted)', fontSize: '0.9rem' }}>
+              <div style={{ fontFamily: 'var(--font-display)', fontSize: '1.05rem', fontWeight: 600, lineHeight: 1.3 }}>{c.title}</div>
+              <div className="mono" style={{ color: 'var(--ink-muted)', fontSize: '0.78rem' }}>
                 {c.issuer}
                 {c.date ? ` · ${c.date}` : ''}
               </div>
@@ -80,8 +80,9 @@ const linkBtn: React.CSSProperties = {
   display: 'inline-flex',
   alignItems: 'center',
   gap: 6,
-  fontSize: '0.85rem',
-  fontWeight: 600,
+  fontFamily: 'var(--font-mono)',
+  fontSize: '0.78rem',
+  fontWeight: 500,
   color: 'var(--accent)',
   background: 'none',
   border: 'none',

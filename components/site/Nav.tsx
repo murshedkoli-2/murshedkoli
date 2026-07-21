@@ -73,22 +73,28 @@ export function Nav({ name, resumeUrl }: NavProps) {
         >
           <Link
             href="/"
-            style={{ fontFamily: 'var(--font-display)', fontSize: '1.35rem', fontWeight: 600, letterSpacing: '-0.02em' }}
+            style={{ fontFamily: 'var(--font-display)', fontSize: '1.3rem', fontWeight: 700, letterSpacing: '-0.03em' }}
           >
             {first}
-            {rest.length > 0 && <span style={{ color: 'var(--accent)' }}> {rest.join(' ')}</span>}
+            {rest.length > 0 && <span style={{ color: 'var(--accent)' }}>{rest.join('')}</span>}
+            <span style={{ color: 'var(--accent)' }}>.</span>
           </Link>
 
           {/* Desktop links */}
-          <div className="site-nav-desktop" style={{ alignItems: 'center', gap: 28 }}>
+          <div className="site-nav-desktop" style={{ alignItems: 'center', gap: 26 }}>
             {LINKS.map((l) => (
               <Link
                 key={l.href}
                 href={l.href}
-                style={{ fontSize: '0.95rem', color: 'var(--ink-muted)', fontWeight: 500 }}
+                style={{
+                  fontFamily: 'var(--font-mono)',
+                  fontSize: '0.82rem',
+                  color: 'var(--ink-muted)',
+                  fontWeight: 500,
+                }}
                 className="site-nav-link"
               >
-                {l.label}
+                <span style={{ color: 'var(--accent)' }}>{'//'}</span> {l.label.toLowerCase()}
               </Link>
             ))}
           </div>
@@ -105,15 +111,17 @@ export function Nav({ name, resumeUrl }: NavProps) {
                   display: 'none',
                   alignItems: 'center',
                   gap: 7,
-                  padding: '10px 18px',
+                  padding: '9px 16px',
                   borderRadius: 'var(--radius-sm)',
-                  background: 'var(--accent)',
-                  color: 'var(--accent-ink)',
-                  fontSize: '0.9rem',
-                  fontWeight: 600,
+                  background: 'var(--surface)',
+                  border: '1px solid var(--line-strong)',
+                  color: 'var(--ink)',
+                  fontFamily: 'var(--font-mono)',
+                  fontSize: '0.8rem',
+                  fontWeight: 500,
                 }}
               >
-                <FileText size={16} /> Resume
+                <FileText size={15} /> resume ↗
               </a>
             )}
             <button
@@ -200,9 +208,14 @@ export function Nav({ name, resumeUrl }: NavProps) {
                   key={l.href}
                   href={l.href}
                   onClick={() => setOpen(false)}
-                  style={{ padding: '12px 8px', fontSize: '1.1rem', fontFamily: 'var(--font-display)', borderBottom: '1px solid var(--line)' }}
+                  style={{
+                    padding: '13px 8px',
+                    fontSize: '1rem',
+                    fontFamily: 'var(--font-mono)',
+                    borderBottom: '1px solid var(--line)',
+                  }}
                 >
-                  {l.label}
+                  <span style={{ color: 'var(--accent)' }}>{'//'}</span> {l.label.toLowerCase()}
                 </Link>
               ))}
               {resumeUrl && (
@@ -221,10 +234,12 @@ export function Nav({ name, resumeUrl }: NavProps) {
                     borderRadius: 'var(--radius-sm)',
                     background: 'var(--accent)',
                     color: 'var(--accent-ink)',
-                    fontWeight: 600,
+                    fontFamily: 'var(--font-mono)',
+                    fontSize: '0.85rem',
+                    fontWeight: 500,
                   }}
                 >
-                  <FileText size={16} /> Resume
+                  <FileText size={16} /> resume ↗
                 </a>
               )}
             </motion.aside>

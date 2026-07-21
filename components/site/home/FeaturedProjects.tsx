@@ -13,7 +13,7 @@ export function FeaturedProjects({ projects }: FeaturedProjectsProps) {
   if (projects.length === 0) return null
 
   return (
-    <Section id="projects" eyebrow="Selected work" title="Featured projects">
+    <Section id="projects" eyebrow="selected work" title="Featured projects">
       <RevealGroup stagger={0.1} className="projects-grid">
         {projects.map((p) => (
           <RevealItem key={p.id}>
@@ -24,7 +24,7 @@ export function FeaturedProjects({ projects }: FeaturedProjectsProps) {
 
       <div style={{ marginTop: '2.5rem' }}>
         <Button href="/projects" variant="ghost">
-          View all work <ArrowRight size={17} />
+          view all work <ArrowRight size={16} />
         </Button>
       </div>
     </Section>

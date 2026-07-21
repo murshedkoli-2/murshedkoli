@@ -47,9 +47,10 @@ export function ProjectDetailView({ project }: { project: ProjectDetailData }) {
       <Container style={{ marginTop: '-4rem', position: 'relative', zIndex: 1 }}>
         <Link
           href="/projects"
-          style={{ display: 'inline-flex', alignItems: 'center', gap: 7, color: 'var(--ink-muted)', marginBottom: '1.5rem' }}
+          className="mono"
+          style={{ display: 'inline-flex', alignItems: 'center', gap: 7, color: 'var(--ink-muted)', marginBottom: '1.5rem', fontSize: '0.82rem' }}
         >
-          <ArrowLeft size={17} /> All projects
+          <ArrowLeft size={16} /> cd ../projects
         </Link>
 
         <div style={{ maxWidth: '52rem' }}>
@@ -75,16 +76,17 @@ export function ProjectDetailView({ project }: { project: ProjectDetailData }) {
                       display: 'inline-flex',
                       alignItems: 'center',
                       gap: 8,
-                      padding: '11px 20px',
+                      padding: '11px 18px',
                       borderRadius: 'var(--radius-sm)',
-                      background: primary ? 'var(--accent)' : 'transparent',
+                      background: primary ? 'var(--accent)' : 'var(--surface)',
                       color: primary ? 'var(--accent-ink)' : 'var(--ink)',
-                      border: `1px solid ${primary ? 'var(--accent)' : 'var(--line)'}`,
-                      fontWeight: 600,
-                      fontSize: '0.92rem',
+                      border: `1px solid ${primary ? 'var(--accent)' : 'var(--line-strong)'}`,
+                      fontFamily: 'var(--font-mono)',
+                      fontWeight: 500,
+                      fontSize: '0.82rem',
                     }}
                   >
-                    <Icon size={16} /> {l.label}
+                    <Icon size={15} /> {l.label.toLowerCase()} ↗
                   </a>
                 )
               })}
@@ -113,7 +115,7 @@ export function ProjectDetailView({ project }: { project: ProjectDetailData }) {
             {project.outcome && <MetaBlock label="Outcome" value={project.outcome} />}
             {project.stack.length > 0 && (
               <div>
-                <div style={metaLabel}>Tech stack</div>
+                <div style={metaLabel}># tech stack</div>
                 <div style={{ display: 'flex', flexWrap: 'wrap', gap: 7, marginTop: 10 }}>
                   {project.stack.map((t) => (
                     <TechTag key={t} label={t} />
@@ -129,17 +131,18 @@ export function ProjectDetailView({ project }: { project: ProjectDetailData }) {
 }
 
 const metaLabel: React.CSSProperties = {
-  fontSize: 'var(--text-eyebrow)',
-  fontWeight: 600,
-  letterSpacing: '0.12em',
-  textTransform: 'uppercase',
-  color: 'var(--accent)',
+  fontFamily: 'var(--font-mono)',
+  fontSize: '0.74rem',
+  fontWeight: 500,
+  letterSpacing: '0.02em',
+  textTransform: 'lowercase',
+  color: 'var(--comment)',
 }
 
 function MetaBlock({ label, value }: { label: string; value: string }) {
   return (
     <div>
-      <div style={metaLabel}>{label}</div>
+      <div style={metaLabel}># {label}</div>
       <p style={{ marginTop: 8, color: 'var(--ink-muted)', lineHeight: 1.6 }}>{value}</p>
     </div>
   )

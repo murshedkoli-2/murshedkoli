@@ -42,21 +42,30 @@ export function Footer({ name, email, socialLinks }: FooterProps) {
           }}
         >
           <div style={{ maxWidth: 320 }}>
-            <div style={{ fontFamily: 'var(--font-display)', fontSize: '1.4rem', fontWeight: 600 }}>{name}</div>
+            <div style={{ fontFamily: 'var(--font-display)', fontSize: '1.4rem', fontWeight: 700, letterSpacing: '-0.03em' }}>
+              {name}
+              <span style={{ color: 'var(--accent)' }}>.</span>
+            </div>
             {email && (
               <a
                 href={`mailto:${email}`}
-                style={{ display: 'inline-flex', alignItems: 'center', gap: 7, marginTop: 10, color: 'var(--ink-muted)' }}
+                className="mono"
+                style={{ display: 'inline-flex', alignItems: 'center', gap: 7, marginTop: 12, fontSize: '0.82rem', color: 'var(--ink-muted)' }}
               >
-                <Mail size={15} /> {email}
+                <Mail size={14} /> {email}
               </a>
             )}
           </div>
 
-          <nav aria-label="Footer" style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+          <nav aria-label="Footer" style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
             {QUICK_LINKS.map((l) => (
-              <Link key={l.href} href={l.href} style={{ color: 'var(--ink-muted)' }} className="site-nav-link">
-                {l.label}
+              <Link
+                key={l.href}
+                href={l.href}
+                className="site-nav-link mono"
+                style={{ color: 'var(--ink-muted)', fontSize: '0.82rem' }}
+              >
+                <span style={{ color: 'var(--accent)' }}>{'//'}</span> {l.label.toLowerCase()}
               </Link>
             ))}
           </nav>
@@ -93,15 +102,21 @@ export function Footer({ name, email, socialLinks }: FooterProps) {
         </div>
 
         <div
+          className="mono"
           style={{
             marginTop: 40,
             paddingTop: 20,
             borderTop: '1px solid var(--line)',
-            fontSize: '0.85rem',
+            fontSize: '0.76rem',
             color: 'var(--ink-muted)',
+            display: 'flex',
+            flexWrap: 'wrap',
+            gap: '8px 16px',
+            justifyContent: 'space-between',
           }}
         >
-          © {new Date().getFullYear()} {name}. All rights reserved.
+          <span>© {new Date().getFullYear()} {name}. all rights reserved.</span>
+          <span>built with <span style={{ color: 'var(--accent)' }}>Next.js</span> + TypeScript</span>
         </div>
       </Container>
     </footer>

@@ -13,7 +13,7 @@ export function ProjectCard({ project }: ProjectCardProps) {
   return (
     <Link href={project.links.caseStudy} aria-label={project.title} style={{ display: 'block', height: '100%' }}>
       <Card interactive style={{ overflow: 'hidden', height: '100%', display: 'flex', flexDirection: 'column' }}>
-        <div style={{ position: 'relative', aspectRatio: '16 / 10', background: 'var(--surface-2)', overflow: 'hidden' }}>
+        <div style={{ position: 'relative', aspectRatio: '16 / 10', background: 'var(--surface-2)', overflow: 'hidden', borderBottom: '1px solid var(--line)' }}>
           {project.coverImage ? (
             <Image
               src={project.coverImage}
@@ -29,7 +29,7 @@ export function ProjectCard({ project }: ProjectCardProps) {
                 inset: 0,
                 display: 'grid',
                 placeItems: 'center',
-                fontFamily: 'var(--font-display)',
+                fontFamily: 'var(--font-mono)',
                 fontSize: '2.5rem',
                 color: 'var(--ink-muted)',
               }}
@@ -37,25 +37,43 @@ export function ProjectCard({ project }: ProjectCardProps) {
               {project.number}
             </div>
           )}
+          <span
+            className="mono"
+            style={{
+              position: 'absolute',
+              top: 12,
+              left: 12,
+              padding: '3px 9px',
+              borderRadius: 5,
+              background: 'color-mix(in oklch, var(--canvas) 82%, transparent)',
+              backdropFilter: 'blur(6px)',
+              fontSize: '0.72rem',
+              fontWeight: 600,
+              color: 'var(--ink)',
+            }}
+          >
+            {project.number}
+          </span>
           {project.isLive && (
             <span
+              className="mono"
               style={{
                 position: 'absolute',
                 top: 12,
-                left: 12,
+                right: 12,
                 display: 'inline-flex',
                 alignItems: 'center',
                 gap: 6,
-                padding: '4px 10px',
-                borderRadius: 999,
-                background: 'color-mix(in oklch, var(--canvas) 80%, transparent)',
+                padding: '3px 9px',
+                borderRadius: 5,
+                background: 'color-mix(in oklch, var(--canvas) 82%, transparent)',
                 backdropFilter: 'blur(6px)',
-                fontSize: '0.72rem',
+                fontSize: '0.68rem',
                 fontWeight: 600,
                 color: 'var(--ink)',
               }}
             >
-              <span style={{ width: 7, height: 7, borderRadius: 999, background: 'var(--accent)' }} /> Live
+              <span style={{ width: 6, height: 6, borderRadius: 999, background: 'var(--accent)' }} /> live
             </span>
           )}
         </div>
@@ -65,7 +83,7 @@ export function ProjectCard({ project }: ProjectCardProps) {
             <h3 style={{ fontSize: 'var(--text-h3)' }}>{project.title}</h3>
             <ArrowUpRight size={20} style={{ color: 'var(--ink-muted)', flexShrink: 0, marginTop: 4 }} />
           </div>
-          <p style={{ color: 'var(--ink-muted)', fontSize: '0.95rem', flex: 1 }}>{project.summary}</p>
+          <p style={{ color: 'var(--ink-muted)', fontSize: '0.95rem', flex: 1, lineHeight: 1.6 }}>{project.summary}</p>
           {project.stack.length > 0 && (
             <div style={{ display: 'flex', flexWrap: 'wrap', gap: 7 }}>
               {project.stack.slice(0, 4).map((t) => (

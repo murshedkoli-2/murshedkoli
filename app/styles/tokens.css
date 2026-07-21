@@ -1,46 +1,54 @@
-/* Design tokens — soft luxury. Light is default; dark overrides under [data-theme="dark"]. */
+/* Design tokens — dev-minimalist. Light is default; dark overrides under [data-theme="dark"]. */
 :root,
 :root[data-theme="light"] {
-  --canvas: oklch(97% 0.012 85);
-  --surface: oklch(99% 0.008 85);
-  --surface-2: oklch(95% 0.014 85);
-  --ink: oklch(26% 0.02 60);
-  --ink-muted: oklch(50% 0.02 60);
-  --line: oklch(89% 0.012 85);
-  --accent: oklch(64% 0.07 155);
-  --accent-ink: oklch(99% 0.01 155);   /* text on accent */
-  --accent-2: oklch(70% 0.09 45);
-  --accent-3: oklch(72% 0.06 290);
-  --shadow-sm: 0 1px 2px oklch(26% 0.02 60 / 0.06), 0 2px 8px oklch(26% 0.02 60 / 0.05);
-  --shadow-md: 0 4px 12px oklch(26% 0.02 60 / 0.08), 0 12px 32px oklch(26% 0.02 60 / 0.07);
+  --canvas: oklch(97.6% 0.003 255);
+  --surface: oklch(99.4% 0.002 255);
+  --surface-2: oklch(95.2% 0.004 255);
+  --ink: oklch(22% 0.012 260);
+  --ink-muted: oklch(51% 0.014 260);
+  --line: oklch(90% 0.006 260);
+  --line-strong: oklch(84% 0.008 260);
+  --accent: oklch(57% 0.2 256);          /* electric blue */
+  --accent-ink: oklch(99% 0.01 256);     /* text on accent */
+  --accent-soft: oklch(57% 0.2 256 / 0.1);
+  --accent-2: oklch(62% 0.17 210);       /* legacy alias (admin surfaces) */
+  --accent-3: oklch(60% 0.19 290);       /* legacy alias (admin surfaces) */
+  --comment: oklch(62% 0.03 256);        /* muted // prefix */
+  --shadow-sm: 0 1px 2px oklch(22% 0.03 260 / 0.05), 0 1px 3px oklch(22% 0.03 260 / 0.06);
+  --shadow-md: 0 6px 20px oklch(22% 0.03 260 / 0.09), 0 2px 6px oklch(22% 0.03 260 / 0.06);
 
-  --font-display: var(--font-fraunces), Georgia, serif;
+  --font-display: var(--font-space-grotesk), "SF Pro Display", system-ui, sans-serif;
   --font-body: var(--font-inter), system-ui, sans-serif;
+  --font-mono: var(--font-jetbrains-mono), ui-monospace, "SF Mono", Menlo, monospace;
 
-  --text-hero: clamp(2.75rem, 1.2rem + 6vw, 6rem);
-  --text-h2: clamp(2rem, 1.2rem + 2.6vw, 3.25rem);
-  --text-h3: clamp(1.25rem, 1rem + 1vw, 1.6rem);
-  --text-body: clamp(1rem, 0.96rem + 0.2vw, 1.125rem);
-  --text-eyebrow: 0.78rem;
+  --text-hero: clamp(2.75rem, 1rem + 7vw, 6.5rem);
+  --text-h2: clamp(1.9rem, 1.15rem + 2.6vw, 3.1rem);
+  --text-h3: clamp(1.2rem, 1rem + 0.9vw, 1.5rem);
+  --text-body: clamp(1rem, 0.96rem + 0.2vw, 1.0625rem);
+  --text-eyebrow: 0.8rem;
+  --text-mono: 0.82rem;
 
-  --space-section: clamp(4.5rem, 3rem + 6vw, 9rem);
-  --radius: 18px;
-  --radius-sm: 10px;
-  --container: 1200px;
+  --space-section: clamp(4.5rem, 3rem + 6vw, 8.5rem);
+  --radius: 12px;
+  --radius-sm: 8px;
+  --container: 1180px;
   --ease: cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 :root[data-theme="dark"] {
-  --canvas: oklch(22% 0.012 60);
-  --surface: oklch(26% 0.014 60);
-  --surface-2: oklch(30% 0.016 60);
-  --ink: oklch(92% 0.01 85);
-  --ink-muted: oklch(70% 0.015 85);
-  --line: oklch(34% 0.014 60);
-  --accent: oklch(72% 0.08 155);
-  --accent-ink: oklch(20% 0.02 155);
-  --accent-2: oklch(76% 0.10 45);
-  --accent-3: oklch(78% 0.07 290);
-  --shadow-sm: 0 1px 2px oklch(0% 0 0 / 0.3), 0 2px 8px oklch(0% 0 0 / 0.25);
-  --shadow-md: 0 4px 14px oklch(0% 0 0 / 0.35), 0 14px 40px oklch(0% 0 0 / 0.3);
+  --canvas: oklch(17% 0.01 260);
+  --surface: oklch(20.5% 0.012 260);
+  --surface-2: oklch(24.5% 0.014 260);
+  --ink: oklch(95% 0.006 260);
+  --ink-muted: oklch(66% 0.016 260);
+  --line: oklch(30% 0.013 260);
+  --line-strong: oklch(38% 0.016 260);
+  --accent: oklch(70% 0.16 256);
+  --accent-ink: oklch(16% 0.02 256);
+  --accent-soft: oklch(70% 0.16 256 / 0.14);
+  --accent-2: oklch(72% 0.15 210);
+  --accent-3: oklch(70% 0.16 290);
+  --comment: oklch(56% 0.035 256);
+  --shadow-sm: 0 1px 2px oklch(0% 0 0 / 0.35), 0 1px 3px oklch(0% 0 0 / 0.3);
+  --shadow-md: 0 8px 26px oklch(0% 0 0 / 0.45), 0 2px 8px oklch(0% 0 0 / 0.35);
 }
