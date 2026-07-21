@@ -5,27 +5,28 @@
    Fonts come from the root layout's next/font CSS variables.
    ============================================================ */
 .adm-app {
-  /* Content colors flow from the global soft-luxury tokens, so the admin
-     adapts to the light/dark theme toggle. --ink is intentionally NOT
-     redefined here — it inherits the global token. The sidebar rail keeps a
-     fixed warm-espresso ground (--rail) in both themes for a premium look. */
+  /* Every admin color derives from the global theme tokens, so the whole
+     panel — sidebar rail included — flips with the light/dark toggle. Nothing
+     here is a fixed hex that ignores the theme. */
   --bg: var(--canvas);
   --panel: var(--surface);
   --border: var(--line);
   --muted: var(--ink-muted);
-  --rail: #241f1b;
-  --rail-ink: #d9cfc4;
-  --blue: var(--rail);
+  --rail: var(--surface-2);            /* sidebar ground — follows the theme */
+  --rail-ink: var(--ink-muted);        /* sidebar text — follows the theme */
+  --rail-hover: color-mix(in oklch, var(--ink) 7%, transparent);
+  --rail-active: color-mix(in oklch, var(--ink) 4%, transparent);
+  --on-accent: var(--accent-ink);      /* text/ink on an accent background */
   --amber: var(--accent);
   --amber-bg: color-mix(in oklch, var(--accent) 14%, transparent);
-  --green: #2c9e73;
-  --green-bg: color-mix(in oklch, #2c9e73 14%, transparent);
-  --red: #d16a5a;
-  --red-bg: color-mix(in oklch, #d16a5a 14%, transparent);
+  --green: oklch(64% 0.13 158);
+  --green-bg: color-mix(in oklch, var(--green) 16%, transparent);
+  --red: oklch(60% 0.17 22);
+  --red-bg: color-mix(in oklch, var(--red) 16%, transparent);
 
   --adm-sans: var(--font-inter), 'Inter', system-ui, sans-serif;
-  --adm-display: var(--font-fraunces), Georgia, serif;
-  --adm-mono: var(--font-inter), system-ui, sans-serif;
+  --adm-display: var(--font-space-grotesk), system-ui, sans-serif;
+  --adm-mono: var(--font-jetbrains-mono), ui-monospace, monospace;
 
   font-family: var(--adm-sans);
   background: var(--bg);
@@ -44,8 +45,9 @@
 
 /* ── Sidebar ─────────────────────────────────────────────── */
 .adm-aside {
-  background: var(--blue);
+  background: var(--rail);
   color: var(--rail-ink);
+  border-right: 1px solid var(--line);
   padding: 20px 14px;
   display: flex;
   flex-direction: column;
@@ -60,7 +62,7 @@
 .adm-brand {
   font-family: var(--adm-display);
   font-weight: 800;
-  color: #fff;
+  color: var(--ink);
   font-size: 15px;
   padding: 6px 10px;
   margin-bottom: 24px;
@@ -74,7 +76,7 @@
   font-size: 10.5px;
   letter-spacing: 0.14em;
   text-transform: uppercase;
-  color: #9c8f82;
+  color: var(--muted);
   padding: 14px 10px 6px;
 }
 .adm-link {
@@ -95,10 +97,10 @@
   transition: background 150ms ease, color 150ms ease;
 }
 .adm-link:hover {
-  background: rgba(255, 255, 255, 0.06);
+  background: var(--rail-hover);
 }
 .adm-link:active {
-  background: rgba(255, 255, 255, 0.04);
+  background: var(--rail-active);
 }
 .adm-link:focus-visible {
   outline: 2px solid var(--amber);
@@ -106,7 +108,7 @@
 }
 .adm-link.active {
   background: var(--amber);
-  color: var(--blue);
+  color: var(--on-accent);
   font-weight: 600;
 }
 .adm-link.active:hover {
@@ -119,18 +121,18 @@
 }
 .adm-badge {
   margin-left: auto;
-  background: rgba(255, 255, 255, 0.12);
+  background: color-mix(in oklch, var(--ink) 10%, transparent);
   border-radius: 10px;
   font-size: 11px;
   padding: 1px 8px;
 }
 .adm-link.active .adm-badge {
-  background: rgba(11, 28, 48, 0.15);
+  background: color-mix(in oklch, var(--accent-ink) 22%, transparent);
 }
 .adm-side-foot {
   margin-top: auto;
   padding: 12px 10px;
-  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  border-top: 1px solid var(--line);
   font-size: 12px;
   display: flex;
   align-items: center;
@@ -141,7 +143,7 @@
   height: 30px;
   border-radius: 50%;
   background: var(--amber);
-  color: var(--blue);
+  color: var(--on-accent);
   display: grid;
   place-items: center;
   font-weight: 700;
@@ -206,7 +208,7 @@
 .adm-btn.amber {
   background: var(--amber);
   border-color: var(--amber);
-  color: var(--blue);
+  color: var(--on-accent);
   font-weight: 600;
 }
 .adm-btn.amber:hover {
@@ -416,7 +418,7 @@
 }
 .adm-icon-btn.danger:hover {
   background: var(--red-bg);
-  border-color: #f0c2c2;
+  border-color: color-mix(in oklch, var(--red) 45%, var(--line));
   color: var(--red);
 }
 .adm-empty {
@@ -445,7 +447,7 @@
   .adm-scrim {
     position: fixed;
     inset: 0;
-    background: rgba(11, 28, 48, 0.45);
+    background: color-mix(in oklch, var(--ink) 45%, transparent);
     z-index: 55;
   }
   .adm-menu-btn {
@@ -596,7 +598,7 @@
   line-height: 1;
 }
 .cert-file-remove:hover {
-  color: #e55;
+  color: var(--red);
 }
 .cert-img-preview-wrap {
   position: relative;

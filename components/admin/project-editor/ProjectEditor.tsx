@@ -151,7 +151,7 @@ export function ProjectEditor({ project }: ProjectEditorProps) {
         </span>
       )}
       {isSaving && (
-        <span style={{ fontSize: 12, color: '#66788f' }}>Saving…</span>
+        <span style={{ fontSize: 12, color: 'var(--ink-muted)' }}>Saving…</span>
       )}
       <button
         className="adm-btn"

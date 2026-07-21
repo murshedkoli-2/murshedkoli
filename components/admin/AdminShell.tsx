@@ -105,7 +105,7 @@ export function AdminShell({ active, title, subtitle, actions, badges = {}, chil
           <div style={{ flex: 1 }}>
             Murshed Al Main
             <br />
-            <span style={{ color: '#9c8f82', fontSize: 11 }}>Admin</span>
+            <span style={{ color: 'var(--ink-muted)', fontSize: 11 }}>Admin</span>
           </div>
           <button
             className="adm-link"
