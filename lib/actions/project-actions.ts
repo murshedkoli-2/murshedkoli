@@ -137,7 +137,7 @@ export async function createProject(input: CreateProjectInput): Promise<ActionRe
       }
     })
 
-    revalidatePath('/admin/dashboard')
+    revalidatePath('/admin/projects')
     revalidatePath('/projects')
     
     return { success: true, data: project }
@@ -157,7 +157,17 @@ export async function updateProject(input: UpdateProjectInput): Promise<ActionRe
   if (!(await isAdmin())) return { success: false, error: 'Unauthorized' }
   try {
     const validated = UpdateProjectSchema.parse(input)
-    const { id, ...updateData } = validated
+    const { id } = validated
+
+    // `.partial()` makes keys optional but does NOT disable `.default()`, so an
+    // absent key still parses into its default. Writing the whole parsed object
+    // would therefore reset every field the caller did not send — unpublishing
+    // the project and emptying techStack/features/gallery on a title-only save.
+    // Persist only the keys actually supplied.
+    const supplied = new Set(Object.keys(input as Record<string, unknown>))
+    const updateData = Object.fromEntries(
+      Object.entries(validated).filter(([key]) => key !== 'id' && supplied.has(key))
+    ) as Omit<typeof validated, 'id'>
 
     // If slug is being updated, check for duplicates
     if (updateData.slug) {
@@ -186,17 +196,23 @@ export async function updateProject(input: UpdateProjectInput): Promise<ActionRe
       }
     }
 
+    // These two were previously written unconditionally, so any partial update
+    // that did not include them (saving just the title, say) silently cleared
+    // both links. Only normalise them when the caller actually sent them.
+    const linkFields: Record<string, string | null> = {}
+    if ('githubUrl' in updateData) linkFields.githubUrl = updateData.githubUrl || null
+    if ('demoUrl' in updateData) linkFields.demoUrl = updateData.demoUrl || null
+
     const project = await prisma.project.update({
       where: { id },
       data: {
         ...(updateData as any),
         ...(overallProgress !== undefined && { overallProgress }),
-        githubUrl: updateData.githubUrl || null,
-        demoUrl: updateData.demoUrl || null
+        ...linkFields,
       }
     })
 
-    revalidatePath('/admin/dashboard')
+    revalidatePath('/admin/projects')
     revalidatePath('/projects')
     revalidatePath(`/projects/${project.slug}`)
     
@@ -220,7 +236,7 @@ export async function deleteProject(id: string): Promise<ActionResponse> {
       where: { id }
     })
 
-    revalidatePath('/admin/dashboard')
+    revalidatePath('/admin/projects')
     revalidatePath('/projects')
     
     return { success: true }
@@ -263,7 +279,7 @@ export async function updateProjectFeatures(input: {
       }
     })
 
-    revalidatePath('/admin/dashboard')
+    revalidatePath('/admin/projects')
     revalidatePath(`/projects/${project.slug}`)
     
     return { success: true, data: project }
@@ -306,7 +322,7 @@ export async function updateProjectModules(input: {
       }
     })
 
-    revalidatePath('/admin/dashboard')
+    revalidatePath('/admin/projects')
     revalidatePath(`/projects/${project.slug}`)
     
     return { success: true, data: project }
@@ -334,7 +350,7 @@ export async function updateProjectFlow(input: {
       }
     })
 
-    revalidatePath('/admin/dashboard')
+    revalidatePath('/admin/projects')
     revalidatePath(`/projects/${project.slug}`)
     
     return { success: true, data: project }
@@ -364,7 +380,7 @@ export async function updateProjectTechStack(input: {
       }
     })
 
-    revalidatePath('/admin/dashboard')
+    revalidatePath('/admin/projects')
     revalidatePath(`/projects/${project.slug}`)
     
     return { success: true, data: project }
@@ -392,7 +408,7 @@ export async function updateProjectApiStructure(input: {
       }
     })
 
-    revalidatePath('/admin/dashboard')
+    revalidatePath('/admin/projects')
     revalidatePath(`/projects/${project.slug}`)
     
     return { success: true, data: project }
@@ -420,7 +436,7 @@ export async function updateProjectDatabaseDesign(input: {
       }
     })
 
-    revalidatePath('/admin/dashboard')
+    revalidatePath('/admin/projects')
     revalidatePath(`/projects/${project.slug}`)
     
     return { success: true, data: project }
@@ -448,7 +464,7 @@ export async function updateProjectDeployment(input: {
       }
     })
 
-    revalidatePath('/admin/dashboard')
+    revalidatePath('/admin/projects')
     revalidatePath(`/projects/${project.slug}`)
     
     return { success: true, data: project }
@@ -472,7 +488,7 @@ export async function updateProjectLifecycleStatus(
       data: { lifecycleStatus: lifecycleStatus as any }
     })
 
-    revalidatePath('/admin/dashboard')
+    revalidatePath('/admin/projects')
     revalidatePath(`/projects/${project.slug}`)
     
     return { success: true, data: project }

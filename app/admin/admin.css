@@ -258,6 +258,518 @@
   color: var(--red);
 }
 
+/* ── Project cards ───────────────────────────────────────── */
+.pcard-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-bottom: 18px;
+}
+.pcard-filters {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.pcard-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 16px;
+}
+.pcard {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  overflow: hidden;
+  transition: border-color 200ms ease, transform 200ms ease;
+}
+.pcard:hover {
+  border-color: var(--accent);
+  transform: translateY(-2px);
+}
+/* Keyboard focus must show on the card, not just the invisible link. */
+.pcard:focus-within {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px var(--amber-bg);
+}
+
+.pcard-media {
+  position: relative;
+  aspect-ratio: 16 / 9;
+  background: var(--surface-2);
+  overflow: hidden;
+}
+.pcard-media img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  transition: transform 500ms ease;
+}
+.pcard:hover .pcard-media img {
+  transform: scale(1.03);
+}
+/* Keeps the pills legible over bright screenshots. */
+.pcard-media.has-cover::before {
+  content: '';
+  position: absolute;
+  inset: 0 0 auto 0;
+  height: 72px;
+  background: linear-gradient(to bottom, rgba(0, 0, 0, 0.5), transparent);
+  z-index: 1;
+  pointer-events: none;
+}
+.pcard-media.has-cover .adm-pill.live,
+.pcard-media.has-cover .adm-pill.draft,
+.pcard-media.has-cover .adm-pill.feat {
+  color: #fff;
+  background: rgba(0, 0, 0, 0.45);
+  backdrop-filter: blur(3px);
+}
+.pcard-media-empty {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  font-family: var(--adm-display);
+  font-size: 40px;
+  font-weight: 700;
+  color: var(--muted);
+  opacity: 0.35;
+}
+.pcard-pills {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+  z-index: 2;
+}
+
+.pcard-body {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+  padding: 16px 18px 18px;
+  flex: 1;
+}
+.pcard-title {
+  font-family: var(--adm-display);
+  font-size: 15px;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  line-height: 1.3;
+}
+.pcard-link {
+  color: var(--ink);
+  text-decoration: none;
+}
+/* Stretched link: the whole card becomes the hit area. */
+.pcard-link::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+}
+.pcard-link:focus-visible {
+  outline: none;
+}
+.pcard-desc {
+  font-size: 12.5px;
+  line-height: 1.5;
+  color: var(--muted);
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+.pcard-stack {
+  font-size: 11.5px;
+  color: var(--muted);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.pcard-foot {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-top: auto;
+  padding-top: 10px;
+  border-top: 1px solid var(--border);
+  font-size: 11.5px;
+}
+.pcard-ok { color: var(--green); }
+.pcard-warn { color: var(--red); }
+.pcard-time {
+  color: var(--muted);
+  white-space: nowrap;
+}
+
+.pcard-actions {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  display: flex;
+  gap: 6px;
+  z-index: 2;
+  opacity: 0;
+  transition: opacity 180ms ease;
+}
+.pcard:hover .pcard-actions,
+.pcard:focus-within .pcard-actions {
+  opacity: 1;
+}
+/* Touch devices get no hover — keep the actions permanently visible there. */
+@media (hover: none) {
+  .pcard-actions { opacity: 1; }
+}
+.pcard-actions .adm-icon-btn {
+  background: var(--panel);
+  backdrop-filter: blur(4px);
+}
+
+@media (min-width: 640px) {
+  .pcard-grid { grid-template-columns: repeat(2, 1fr); }
+}
+@media (min-width: 1180px) {
+  .pcard-grid { grid-template-columns: repeat(3, 1fr); }
+}
+
+/* Certificates are documents, not screenshots — show the whole scan rather
+   than cropping it, and give PDFs a readable plate instead of a blank box. */
+.pcard-media--contain {
+  aspect-ratio: 4 / 3;
+  background: var(--surface-2);
+}
+.pcard-media--contain img {
+  object-fit: contain;
+  padding: 10px;
+}
+.pcard:hover .pcard-media--contain img {
+  transform: none;
+}
+/* Inline PDF preview. pointer-events must stay off or the embedded viewer
+   swallows clicks meant for the card's stretched link. */
+.pcard-pdf {
+  width: 100%;
+  height: 100%;
+  border: 0;
+  display: block;
+  pointer-events: none;
+  background: #fff;
+}
+.pcard-doc {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  color: var(--muted);
+}
+.pcard-doc-icon { font-size: 30px; }
+.pcard-doc-label {
+  font-family: var(--adm-mono);
+  font-size: 10px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+.pcard-meta {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 10px;
+  font-size: 12.5px;
+  color: var(--muted);
+}
+.pcard-issuer {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.pcard-date {
+  font-family: var(--adm-mono);
+  font-size: 11px;
+  white-space: nowrap;
+}
+
+/* ── Editable field rows (.ef-*) ─────────────────────────────
+   The About page is a read view; each row opens on its own. */
+.ef-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  padding: 14px 18px;
+  border-bottom: 1px solid var(--border);
+  transition: background 150ms ease;
+}
+.ef-row:last-child { border-bottom: none; }
+.ef-row:hover { background: var(--surface-2); }
+.ef-row.editing {
+  background: var(--surface-2);
+  box-shadow: inset 2px 0 0 var(--accent);
+}
+.ef-main {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.ef-label {
+  font-family: var(--adm-mono);
+  font-size: 10.5px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.ef-value {
+  font-size: 13.5px;
+  color: var(--ink);
+  line-height: 1.55;
+  overflow-wrap: anywhere;
+  white-space: pre-wrap;
+}
+.ef-value.empty {
+  color: var(--muted);
+  font-style: italic;
+}
+.ef-edit {
+  flex: none;
+  /* Visible without hover — this is the only way to edit the row. */
+  opacity: 0.55;
+  transition: opacity 150ms ease;
+}
+.ef-row:hover .ef-edit,
+.ef-row:focus-within .ef-edit { opacity: 1; }
+.ef-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-top: 4px;
+}
+.ef-hint {
+  font-size: 11px;
+  color: var(--muted);
+}
+.ef-thumb {
+  max-width: 160px;
+  max-height: 90px;
+  object-fit: contain;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  margin-top: 4px;
+}
+.ef-extra {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  flex-wrap: wrap;
+  margin-top: 6px;
+}
+
+/* ── Timeline cards (.tl-*) — shared by Experience and Education ──
+   No media: a role or a degree has no image, so these lead with the
+   period and lean on type instead of a picture. */
+.tl-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 16px;
+}
+.tl-card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+  padding: 20px 22px;
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  transition: border-color 200ms ease, transform 200ms ease;
+}
+.tl-card:hover {
+  border-color: var(--accent);
+  transform: translateY(-2px);
+}
+.tl-card:focus-within {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px var(--amber-bg);
+}
+/* A current role gets an amber spine so it reads first in the grid. */
+.tl-card.current::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 16px;
+  bottom: 16px;
+  width: 2px;
+  border-radius: 2px;
+  background: var(--accent);
+}
+
+.tl-top {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.tl-period {
+  font-family: var(--adm-mono);
+  font-size: 10.5px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+/* Education only — a grade is a fact, so it sits in the meta row. */
+.tl-gpa {
+  font-family: var(--adm-mono);
+  font-size: 10.5px;
+  letter-spacing: 0.06em;
+  padding: 2px 8px;
+  border-radius: 20px;
+  border: 1px solid var(--border);
+  color: var(--muted);
+}
+.tl-title {
+  font-family: var(--adm-display);
+  font-size: 16px;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  line-height: 1.25;
+}
+/* Stretched trigger: the whole card opens the editor. It is a button, not a
+   link, because editing happens in place rather than at its own URL. */
+.tl-open {
+  background: none;
+  border: 0;
+  padding: 0;
+  font: inherit;
+  color: var(--ink);
+  text-align: left;
+  cursor: pointer;
+}
+.tl-open::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  border-radius: 12px;
+}
+.tl-open:focus-visible { outline: none; }
+.tl-where {
+  font-size: 13px;
+  color: var(--ink);
+}
+.tl-where .at {
+  color: var(--muted);
+}
+.tl-desc {
+  font-size: 12.5px;
+  line-height: 1.6;
+  color: var(--muted);
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+.tl-actions {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  display: flex;
+  gap: 6px;
+  z-index: 2;
+  opacity: 0;
+  transition: opacity 180ms ease;
+}
+.tl-card:hover .tl-actions,
+.tl-card:focus-within .tl-actions {
+  opacity: 1;
+}
+@media (hover: none) {
+  .tl-actions { opacity: 1; }
+}
+
+/* ── Overview inventory + activity columns ───────────────── */
+.ovw-grid {
+  display: grid;
+  /* auto-fill rather than a fixed count, so adding a content type doesn't
+     leave an orphan tile on the next row. */
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  gap: 12px;
+  margin-bottom: 24px;
+}
+.ovw-tile {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 16px 18px;
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  text-decoration: none;
+  color: inherit;
+  transition: border-color 160ms ease, background 160ms ease;
+}
+.ovw-tile:hover {
+  border-color: var(--accent);
+  background: var(--surface-2);
+}
+.ovw-tile-label {
+  font-size: 11px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.ovw-tile-value {
+  font-family: var(--adm-display);
+  font-weight: 700;
+  font-size: 24px;
+  line-height: 1.1;
+}
+.ovw-tile-detail {
+  font-size: 12px;
+  color: var(--muted);
+}
+.ovw-tile-detail.warn {
+  color: var(--amber);
+}
+
+.ovw-columns {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 16px;
+  align-items: start;
+}
+.ovw-row {
+  text-decoration: none;
+  color: inherit;
+  transition: background 150ms ease;
+}
+.ovw-row:hover {
+  background: var(--surface-2);
+}
+.ovw-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--amber);
+  flex: none;
+}
+
+@media (min-width: 1100px) {
+  .ovw-columns { grid-template-columns: 1.25fr 1fr; }
+}
+
 /* ── Completeness banner ─────────────────────────────────── */
 .adm-banner {
   background: var(--amber-bg);
@@ -420,6 +932,17 @@
   background: var(--red-bg);
   border-color: color-mix(in oklch, var(--red) 45%, var(--line));
   color: var(--red);
+}
+.adm-icon-btn:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+}
+/* Hover must not imply the button still works. */
+.adm-icon-btn:disabled:hover,
+.adm-icon-btn.danger:disabled:hover {
+  background: var(--panel);
+  border-color: var(--border);
+  color: var(--ink);
 }
 .adm-empty {
   padding: 40px 18px;
@@ -843,4 +1366,569 @@
 }
 .adm-note.warn {
   color: var(--accent);
+}
+
+/* ============================================================
+   Project editor primitives (.pe-*)
+   Editorial translation of the homepage's dark-gallery system:
+   hairline borders, flat surfaces, mono uppercase micro-labels,
+   one amber accent. Every color resolves from the global theme
+   tokens, so these follow the light/dark toggle.
+   ============================================================ */
+
+/* Mono uppercase micro-label — the admin echo of the site's .hp-meta */
+.pe-label {
+  display: block;
+  font-family: var(--adm-mono);
+  font-size: 10.5px;
+  font-weight: 500;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-bottom: 8px;
+}
+.pe-label .req {
+  color: var(--accent);
+  margin-left: 3px;
+}
+
+/* Field controls */
+.pe-input,
+.pe-textarea,
+.pe-select {
+  width: 100%;
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 10px 13px;
+  font-family: var(--adm-sans);
+  font-size: 13.5px;
+  color: var(--ink);
+  transition: border-color 160ms ease, background 160ms ease;
+}
+.pe-input::placeholder,
+.pe-textarea::placeholder {
+  color: var(--muted);
+  opacity: 0.65;
+}
+.pe-input:hover,
+.pe-textarea:hover,
+.pe-select:hover {
+  border-color: var(--line-strong);
+}
+.pe-input:focus,
+.pe-textarea:focus,
+.pe-select:focus {
+  outline: none;
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px var(--accent-soft);
+}
+.pe-input:disabled,
+.pe-textarea:disabled {
+  color: var(--muted);
+  background: var(--surface-2);
+  cursor: not-allowed;
+}
+.pe-input.err,
+.pe-textarea.err,
+.pe-select.err {
+  border-color: var(--red);
+}
+.pe-textarea {
+  resize: vertical;
+  line-height: 1.6;
+}
+.pe-select {
+  appearance: none;
+  cursor: pointer;
+  padding-right: 34px;
+}
+.pe-help {
+  margin-top: 7px;
+  font-size: 11.5px;
+  color: var(--muted);
+}
+.pe-help.err {
+  color: var(--red);
+}
+
+/* Buttons */
+.pe-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  border: 1px solid transparent;
+  border-radius: 6px;
+  font-family: var(--adm-sans);
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background 160ms ease, border-color 160ms ease, color 160ms ease;
+}
+.pe-btn:disabled {
+  opacity: 0.45;
+  pointer-events: none;
+}
+.pe-btn-sm { padding: 7px 13px; font-size: 12.5px; }
+.pe-btn-md { padding: 9px 18px; }
+.pe-btn-lg { padding: 12px 24px; font-size: 14px; }
+
+.pe-btn-primary {
+  background: var(--accent);
+  color: var(--accent-ink);
+  border-color: var(--accent);
+}
+.pe-btn-primary:hover {
+  background: color-mix(in oklch, var(--accent) 84%, black);
+}
+.pe-btn-secondary {
+  background: var(--panel);
+  color: var(--ink);
+  border-color: var(--border);
+}
+.pe-btn-secondary:hover {
+  background: var(--surface-2);
+  border-color: var(--line-strong);
+}
+.pe-btn-ghost {
+  background: transparent;
+  color: var(--muted);
+}
+.pe-btn-ghost:hover {
+  background: var(--surface-2);
+  color: var(--ink);
+}
+.pe-btn-danger {
+  background: var(--red);
+  color: var(--accent-ink);
+  border-color: var(--red);
+}
+.pe-btn-danger:hover {
+  background: color-mix(in oklch, var(--red) 84%, black);
+}
+
+/* Flat panels — no glass, no glow */
+.pe-card {
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 20px;
+}
+.pe-card-hover {
+  transition: border-color 200ms ease;
+}
+.pe-card-hover:hover {
+  border-color: var(--accent);
+}
+.pe-section {
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  overflow: hidden;
+}
+.pe-section-head {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 14px 20px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  text-align: left;
+  font-family: var(--adm-display);
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  color: var(--ink);
+  transition: background 150ms ease;
+}
+.pe-section-head:hover {
+  background: var(--surface-2);
+}
+.pe-section-body {
+  padding: 4px 20px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+/* Empty state */
+.pe-empty {
+  border: 1px dashed var(--border);
+  border-radius: 10px;
+  padding: 48px 24px;
+  text-align: center;
+  color: var(--muted);
+  background: var(--surface-2);
+}
+
+/* Chip — neutral at rest, amber when selected */
+.pe-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 6px 12px;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  background: var(--panel);
+  color: var(--muted);
+  font-size: 12.5px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: border-color 150ms ease, color 150ms ease, background 150ms ease;
+}
+.pe-chip:hover {
+  border-color: var(--line-strong);
+  color: var(--ink);
+}
+.pe-chip.on {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: var(--accent-ink);
+}
+
+/* ============================================================
+   Create wizard (.wiz-*)
+   Linear and guided, deliberately unlike the edit map.
+   ============================================================ */
+.wiz-app {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+.wiz-topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 14px 24px;
+  border-bottom: 1px solid var(--line);
+  background: var(--surface);
+}
+.wiz-counter {
+  font-size: 10.5px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.wiz-progress {
+  height: 2px;
+  background: var(--line);
+}
+.wiz-progress > div {
+  height: 100%;
+  background: var(--accent);
+  transition: width 400ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+.wiz-body {
+  flex: 1;
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 0;
+  max-width: 1080px;
+  width: 100%;
+  margin: 0 auto;
+  padding: 0 24px;
+}
+.wiz-main {
+  padding: 40px 0 80px;
+  min-width: 0;
+}
+
+/* Rail */
+.wiz-rail {
+  display: none;
+  flex-direction: column;
+  gap: 2px;
+  padding: 44px 32px 0 0;
+  border-right: 1px solid var(--line);
+  margin-right: 40px;
+}
+.wiz-step {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 9px 10px;
+  border: none;
+  background: none;
+  border-radius: 6px;
+  cursor: pointer;
+  text-align: left;
+  color: var(--muted);
+  transition: color 150ms ease, background 150ms ease;
+}
+.wiz-step:disabled {
+  cursor: default;
+  opacity: 0.45;
+}
+.wiz-step:not(:disabled):hover {
+  background: var(--surface-2);
+  color: var(--ink);
+}
+.wiz-step-mark {
+  width: 20px;
+  height: 20px;
+  flex: none;
+  border-radius: 999px;
+  border: 1px solid var(--line-strong);
+  display: grid;
+  place-items: center;
+  font-family: var(--adm-mono);
+  font-size: 10px;
+  font-weight: 600;
+  margin-top: 1px;
+  transition: background 150ms ease, border-color 150ms ease, color 150ms ease;
+}
+.wiz-step.done .wiz-step-mark {
+  background: var(--accent-soft);
+  border-color: var(--accent);
+  color: var(--accent);
+}
+.wiz-step.current .wiz-step-mark {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: var(--accent-ink);
+}
+.wiz-step.current {
+  color: var(--ink);
+}
+.wiz-step-text {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  min-width: 0;
+}
+.wiz-step-label {
+  font-size: 13px;
+  font-weight: 500;
+}
+.wiz-step.current .wiz-step-label {
+  font-weight: 600;
+}
+.wiz-step-hint {
+  font-size: 11.5px;
+  color: var(--muted);
+  line-height: 1.35;
+  max-width: 15ch;
+}
+
+/* GitHub import — sits above the Identity fields, visibly a shortcut */
+.gh-import {
+  padding: 18px;
+  margin-bottom: 28px;
+  background: var(--surface-2);
+  border: 1px solid var(--line);
+  border-radius: 10px;
+}
+.gh-import-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+.gh-import-hint {
+  font-size: 12.5px;
+  line-height: 1.55;
+  color: var(--muted);
+  margin-bottom: 14px;
+  max-width: 60ch;
+}
+.gh-import-row {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.gh-import-row .pe-input {
+  flex: 1;
+  min-width: 220px;
+  font-family: var(--adm-mono);
+  font-size: 12.5px;
+}
+.gh-import-result {
+  overflow: hidden;
+  font-size: 12.5px;
+  color: var(--muted);
+}
+.gh-import-result p {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  margin-top: 14px;
+}
+.gh-import-result strong {
+  color: var(--ink);
+  font-weight: 500;
+}
+.gh-import-skipped {
+  padding-left: 20px;
+  opacity: 0.8;
+}
+
+/* Step header */
+.wiz-head {
+  margin-bottom: 32px;
+}
+.wiz-eyebrow {
+  font-size: 10.5px;
+  font-weight: 500;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--accent);
+}
+.wiz-title {
+  font-family: var(--adm-display);
+  font-size: clamp(1.6rem, 1.3rem + 1.4vw, 2.2rem);
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  line-height: 1.1;
+  margin-top: 12px;
+}
+.wiz-optional {
+  margin-top: 10px;
+  font-size: 13px;
+  color: var(--muted);
+}
+
+.wiz-restored {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-bottom: 28px;
+  padding: 10px 14px;
+  font-size: 13px;
+  background: var(--accent-soft);
+  border-left: 2px solid var(--accent);
+  border-radius: 0 6px 6px 0;
+}
+
+/* Footer nav */
+.wiz-foot {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-top: 44px;
+  padding-top: 24px;
+  border-top: 1px solid var(--line);
+}
+
+@media (min-width: 900px) {
+  .wiz-body {
+    grid-template-columns: 232px minmax(0, 1fr);
+  }
+  .wiz-rail {
+    display: flex;
+  }
+  .wiz-progress {
+    display: none;
+  }
+}
+
+/* ============================================================
+   Edit section map (.map-*)
+   Random access: pick the one thing you came to change.
+   ============================================================ */
+.map-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 12px;
+}
+@media (min-width: 640px) {
+  .map-grid { grid-template-columns: repeat(2, 1fr); }
+}
+@media (min-width: 1100px) {
+  .map-grid { grid-template-columns: repeat(3, 1fr); }
+}
+.map-card {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 18px 20px;
+  text-align: left;
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  cursor: pointer;
+  transition: border-color 180ms ease, background 180ms ease;
+}
+.map-card:hover {
+  border-color: var(--accent);
+  background: var(--surface-2);
+}
+.map-card-top {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.map-card-title {
+  font-family: var(--adm-display);
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--ink);
+}
+.map-card-arrow {
+  margin-left: auto;
+  color: var(--muted);
+  transition: transform 180ms ease, color 180ms ease;
+}
+.map-card:hover .map-card-arrow {
+  transform: translateX(3px);
+  color: var(--accent);
+}
+.map-card-meta {
+  font-family: var(--adm-mono);
+  font-size: 10.5px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.map-card-meta.filled {
+  color: var(--accent);
+}
+.map-card-preview {
+  font-size: 12.5px;
+  color: var(--muted);
+  line-height: 1.5;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+/* Amber-on-hairline toggle */
+.pe-switch {
+  position: relative;
+  width: 34px;
+  height: 18px;
+  border-radius: 999px;
+  border: 1px solid var(--border);
+  background: var(--surface-2);
+  cursor: pointer;
+  flex: none;
+  transition: background 160ms ease, border-color 160ms ease;
+}
+.pe-switch.on {
+  background: var(--accent);
+  border-color: var(--accent);
+}
+.pe-switch::after {
+  content: '';
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: var(--panel);
+  transition: transform 160ms ease;
+}
+.pe-switch.on::after {
+  transform: translateX(16px);
+  background: var(--accent-ink);
 }

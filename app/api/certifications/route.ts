@@ -32,6 +32,7 @@ export async function POST(request: NextRequest) {
         url: data.url,
         fileUrl: data.fileUrl,
         fileType: data.fileType,
+        thumbnailUrl: data.thumbnailUrl,
         description: data.description,
         order: data.order || 0
       }

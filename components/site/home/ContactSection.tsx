@@ -1,18 +1,18 @@
-import { Mail, MapPin } from 'lucide-react'
-import { Github, Linkedin, Twitter, Facebook, Youtube, Globe } from 'lucide-react'
+'use client'
+
+import { motion, useReducedMotion } from 'framer-motion'
 import type { ProfileView } from '@/lib/data/portfolio'
 import type { SocialLinks } from '@/lib/site-data'
-import { Section } from '@/components/site/ui/Section'
-import { Card } from '@/components/site/ui/Card'
+import { Container } from '@/components/site/ui/Container'
 import { ContactForm } from './ContactForm'
 
-const SOCIAL_ICONS: Record<keyof SocialLinks, typeof Github> = {
-  github: Github,
-  linkedin: Linkedin,
-  twitter: Twitter,
-  facebook: Facebook,
-  youtube: Youtube,
-  website: Globe,
+const SOCIAL_LABELS: Record<keyof SocialLinks, string> = {
+  github: 'GitHub',
+  linkedin: 'LinkedIn',
+  twitter: 'Twitter',
+  facebook: 'Facebook',
+  youtube: 'YouTube',
+  website: 'Website',
 }
 
 interface ContactSectionProps {
@@ -20,62 +20,111 @@ interface ContactSectionProps {
 }
 
 export function ContactSection({ profile }: ContactSectionProps) {
+  const reduce = useReducedMotion()
   const socials = profile.socialLinks
     ? (Object.entries(profile.socialLinks).filter(([, url]) => Boolean(url)) as [keyof SocialLinks, string][])
     : []
 
   return (
-    <Section id="contact" eyebrow="contact" title="Let's build something.">
-      <div className="contact-grid">
-        <div>
-          <p style={{ color: 'var(--ink-muted)', fontSize: '1.075rem', maxWidth: '30rem', marginBottom: '1.75rem', lineHeight: 1.7 }}>
-            Have a project in mind or just want to say hello? Send a message and I&rsquo;ll get back to you.
-          </p>
-          <div className="mono" style={{ display: 'flex', flexDirection: 'column', gap: 12, marginBottom: '1.75rem', fontSize: '0.88rem' }}>
-            <a href={`mailto:${profile.email}`} style={{ display: 'inline-flex', alignItems: 'center', gap: 10 }}>
-              <Mail size={17} style={{ color: 'var(--accent)' }} /> {profile.email}
-            </a>
-            {profile.location && (
-              <span style={{ display: 'inline-flex', alignItems: 'center', gap: 10, color: 'var(--ink-muted)' }}>
-                <MapPin size={17} style={{ color: 'var(--accent)' }} /> {profile.location}
+    <section
+      id="contact"
+      style={{
+        background: '#0b0b0c',
+        color: '#ececea',
+        paddingBlock: 'var(--space-section)',
+        scrollMarginTop: '5rem',
+        borderTop: '1px solid rgba(255, 255, 255, 0.09)',
+      }}
+    >
+      <Container>
+        <div className="contact-grid">
+          <motion.div
+            initial={reduce ? {} : { opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
+          >
+            <span className="hp-meta" style={{ display: 'block', marginBottom: '1.5rem' }}>
+              get in touch
+            </span>
+            <h2
+              style={{
+                fontSize: 'clamp(2.2rem, 1.4rem + 3.6vw, 4.2rem)',
+                fontWeight: 600,
+                letterSpacing: '-0.03em',
+                lineHeight: 1.05,
+                marginBottom: '1.5rem',
+              }}
+            >
+              Let&apos;s build something{' '}
+              <span className="serif-accent" style={{ color: '#f5b04c' }}>
+                exceptional
               </span>
-            )}
-          </div>
-          {socials.length > 0 && (
-            <div style={{ display: 'flex', gap: 12 }}>
-              {socials.map(([key, url]) => {
-                const Icon = SOCIAL_ICONS[key] ?? Globe
-                return (
+            </h2>
+            <p
+              style={{
+                color: 'rgba(255, 255, 255, 0.6)',
+                fontSize: '1.05rem',
+                maxWidth: '28rem',
+                marginBottom: '2.5rem',
+                lineHeight: 1.7,
+              }}
+            >
+              Have a project in mind, or looking for a lead developer? Send a message — I reply within a day.
+            </p>
+
+            <a
+              href={`mailto:${profile.email}`}
+              className="mono contact-email"
+              style={{
+                display: 'inline-block',
+                fontSize: 'clamp(1rem, 0.9rem + 1vw, 1.4rem)',
+                color: '#ececea',
+                borderBottom: '1px solid rgba(255, 255, 255, 0.3)',
+                paddingBottom: 6,
+                marginBottom: '2.5rem',
+                transition: 'color 250ms var(--ease), border-color 250ms var(--ease)',
+              }}
+            >
+              {profile.email}
+            </a>
+
+            {socials.length > 0 && (
+              <div className="hp-meta" style={{ display: 'flex', gap: 22, flexWrap: 'wrap' }}>
+                {socials.map(([key, url]) => (
                   <a
                     key={key}
                     href={url}
                     target="_blank"
                     rel="noopener noreferrer"
-                    aria-label={key}
-                    className="site-card--interactive"
-                    style={{
-                      display: 'inline-flex',
-                      width: 42,
-                      height: 42,
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      borderRadius: 999,
-                      border: '1px solid var(--line)',
-                      color: 'var(--ink-muted)',
-                    }}
+                    style={{ color: 'rgba(255, 255, 255, 0.55)', transition: 'color 200ms var(--ease)' }}
+                    className="contact-social"
                   >
-                    <Icon size={18} />
+                    {SOCIAL_LABELS[key] ?? key} ↗
                   </a>
-                )
-              })}
-            </div>
-          )}
-        </div>
+                ))}
+              </div>
+            )}
+          </motion.div>
 
-        <Card style={{ padding: 'clamp(1.4rem, 1rem + 2vw, 2.25rem)' }}>
-          <ContactForm />
-        </Card>
-      </div>
-    </Section>
+          <motion.div
+            initial={reduce ? {} : { opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6, delay: 0.12, ease: [0.16, 1, 0.3, 1] }}
+          >
+            <div
+              style={{
+                padding: 'clamp(1.75rem, 1rem + 2vw, 2.5rem)',
+                border: '1px solid rgba(255, 255, 255, 0.1)',
+                background: 'rgba(255, 255, 255, 0.02)',
+              }}
+            >
+              <ContactForm />
+            </div>
+          </motion.div>
+        </div>
+      </Container>
+    </section>
   )
 }

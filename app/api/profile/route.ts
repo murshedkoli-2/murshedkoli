@@ -55,6 +55,8 @@ export async function PUT(request: NextRequest) {
           location: data.location,
           avatar: data.avatar,
           heroImage: data.heroImage,
+          heroPortrait: data.heroPortrait,
+          storyImage: data.storyImage,
           resume: data.resume,
           socialLinks: data.socialLinks,
         }
@@ -71,6 +73,8 @@ export async function PUT(request: NextRequest) {
           location: data.location,
           avatar: data.avatar,
           heroImage: data.heroImage,
+          heroPortrait: data.heroPortrait,
+          storyImage: data.storyImage,
           resume: data.resume,
           socialLinks: data.socialLinks,
         }

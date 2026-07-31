@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { toast } from 'sonner'
 import { AdminShell } from '@/components/admin/AdminShell'
+import { confirmDialog } from '@/components/ui/ConfirmDialog'
 import { useAdminGuard } from '@/lib/admin/useAdminGuard'
 
 interface Skill {
@@ -98,7 +99,13 @@ export default function SkillsManager() {
   }
 
   const remove = async (s: Skill) => {
-    if (!window.confirm(`Delete skill "${s.name}"?`)) return
+    const ok = await confirmDialog({
+      title: 'Delete this skill?',
+      description: <><strong>{s.name}</strong> will be removed from your skills list.</>,
+      confirmLabel: 'Delete skill',
+      tone: 'danger',
+    })
+    if (!ok) return
     try {
       const res = await fetch(`/api/skills/${s.id}`, { method: 'DELETE' })
       if (res.ok) {

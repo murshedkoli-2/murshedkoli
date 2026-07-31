@@ -1,91 +1,129 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
-import { motion } from 'framer-motion'
-import { Input, Textarea, Button } from '@/components/ui/FormElements'
-import { AIGenerateButton } from '@/components/AIGenerateButton'
+import { motion, AnimatePresence } from 'framer-motion'
+import { toast } from 'sonner'
+import { ArrowLeft, ArrowRight, Check } from 'lucide-react'
+import { Button } from '@/components/ui/FormElements'
 import { createProject } from '@/lib/actions/project-actions'
 import type { CreateProjectInput } from '@/lib/validations/project'
-import { toast } from 'sonner'
-import {
-  ArrowLeft, ArrowRight, Sparkles,
-  Globe, Smartphone, Laptop, Server, Check
-} from 'lucide-react'
 
-const PROJECT_TYPES = [
-  { value: 'webapp', label: 'Web App', icon: Globe, desc: 'Browser-based application' },
-  { value: 'android', label: 'Android', icon: Smartphone, desc: 'Mobile application' },
-  { value: 'desktop', label: 'Desktop', icon: Laptop, desc: 'Native desktop app' },
-  { value: 'api', label: 'API / Backend', icon: Server, desc: 'Backend service or API' },
-]
+import { WizardRail } from './wizard/WizardRail'
+import { GithubImport } from './wizard/GithubImport'
+import { TypeStep } from './wizard/TypeStep'
+import { ReviewStep } from './wizard/ReviewStep'
+import { STEPS, INITIAL_DATA, DRAFT_KEY, stepError, type StepId, type WizardData } from './wizard/steps'
 
+import { IdentityFields } from './fields/IdentityFields'
+import { StoryFields } from './fields/StoryFields'
+import { MediaFields } from './fields/MediaFields'
+import { LinksFields } from './fields/LinksFields'
+import { FeaturesTab } from './tabs/FeaturesTab'
+import { TechStackTab } from './tabs/TechStackTab'
+
+const EASE = [0.16, 1, 0.3, 1] as const
+
+/** Text fields the GitHub import may fill — but only while they are still empty. */
+const OPTIONAL_IMPORT_FIELDS = [
+  'title', 'slug', 'description', 'longDescription', 'coverImage',
+] as const satisfies readonly (keyof WizardData)[]
+
+/**
+ * Guided project creation.
+ *
+ * Eight steps, one createProject() call at the end. Nothing hits the database
+ * until Review, so the draft is mirrored to localStorage on every change and
+ * restored on return — closing the tab mid-way costs nothing.
+ */
 export function ProjectWizard() {
   const router = useRouter()
-  const [isLoading, setIsLoading] = useState(false)
-  const [formData, setFormData] = useState({
-    title: '',
-    slug: '',
-    description: '',
-    projectType: 'webapp',
-  })
+  const [index, setIndex] = useState(0)
+  const [furthest, setFurthest] = useState(0)
+  const [data, setData] = useState<WizardData>(INITIAL_DATA)
+  const [isCreating, setIsCreating] = useState(false)
+  const [restored, setRestored] = useState(false)
+  const [showError, setShowError] = useState(false)
 
-  const handleChange = (field: string, value: string) => {
-    setFormData(prev => {
-      const updated = { ...prev, [field]: value }
-      if (field === 'title' && !prev.slug) {
-        updated.slug = value
-          .toLowerCase()
-          .replace(/[^a-z0-9]+/g, '-')
-          .replace(/^-+|-+$/g, '')
+  const step = STEPS[index]
+  const error = stepError(step.id, data)
+  const isLast = index === STEPS.length - 1
+
+  // Restore after mount so server and client render the same initial markup.
+  useEffect(() => {
+    try {
+      const raw = localStorage.getItem(DRAFT_KEY)
+      if (!raw) return
+      const saved = JSON.parse(raw) as WizardData
+      if (saved && typeof saved === 'object') {
+        setData({ ...INITIAL_DATA, ...saved })
+        setRestored(true)
       }
-      return updated
-    })
+    } catch {
+      // A corrupt draft is not worth surfacing; start clean.
+      localStorage.removeItem(DRAFT_KEY)
+    }
+  }, [])
+
+  useEffect(() => {
+    if (data === INITIAL_DATA) return
+    try {
+      localStorage.setItem(DRAFT_KEY, JSON.stringify(data))
+    } catch {
+      // Storage full or blocked — the wizard still works, just without recovery.
+    }
+  }, [data])
+
+  const patch = useCallback((p: Partial<WizardData>) => {
+    setData(prev => ({ ...prev, ...p }))
+  }, [])
+
+  const goTo = useCallback((next: number) => {
+    setIndex(next)
+    setFurthest(f => Math.max(f, next))
+    setShowError(false)
+    window.scrollTo({ top: 0, behavior: 'smooth' })
+  }, [])
+
+  const handleNext = () => {
+    if (error) { setShowError(true); return }
+    if (!isLast) goTo(index + 1)
   }
 
-  const handleSlugChange = (value: string) => {
-    setFormData(prev => ({
-      ...prev,
-      slug: value.toLowerCase().replace(/[^a-z0-9-]/g, '-').replace(/-+/g, '-'),
-    }))
+  const discardDraft = () => {
+    localStorage.removeItem(DRAFT_KEY)
+    setData(INITIAL_DATA)
+    setRestored(false)
+    setIndex(0)
+    setFurthest(0)
   }
 
   const handleCreate = async () => {
-    if (!formData.title.trim()) { toast.error('Project title is required'); return }
-    if (!formData.slug.trim()) { toast.error('URL slug is required'); return }
-    if (!formData.description.trim()) { toast.error('Short description is required'); return }
+    const identityError = stepError('identity', data)
+    if (identityError) {
+      toast.error(identityError)
+      goTo(STEPS.findIndex(s => s.id === 'identity'))
+      return
+    }
 
-    setIsLoading(true)
+    setIsCreating(true)
     try {
       const result = await createProject({
-        title: formData.title.trim(),
-        slug: formData.slug.trim(),
-        description: formData.description.trim(),
-        projectType: formData.projectType,
-        lifecycleStatus: 'idea',
-        publishStatus: 'draft',
-        featured: false,
-        order: 0,
-        gallery: [],
+        ...data,
+        title: data.title.trim(),
+        slug: data.slug.trim(),
+        description: data.description.trim(),
         technologies: [],
-        techStack: [],
-        features: [],
         modules: [],
         roadmap: [],
         apiStructure: [],
         databaseDesign: [],
-        githubUrlEnabled: true,
-        demoUrlEnabled: true,
-        clientProjectUrlEnabled: false,
-        adminProjectUrlEnabled: false,
-        clientLiveUrlEnabled: false,
-        adminLiveUrlEnabled: false,
-        androidDownloadUrlEnabled: false,
       } as CreateProjectInput)
 
       if (result.success && result.data) {
-        toast.success('Project created! Now fill in the details.')
-        const project = result.data as any
+        localStorage.removeItem(DRAFT_KEY)
+        toast.success('Project created')
+        const project = result.data as { id: string }
         router.push(`/admin/projects/${project.id}?created=1`)
       } else {
         toast.error(result.error || 'Failed to create project')
@@ -93,165 +131,165 @@ export function ProjectWizard() {
     } catch {
       toast.error('An unexpected error occurred')
     } finally {
-      setIsLoading(false)
+      setIsCreating(false)
     }
   }
 
-  const isValid =
-    formData.title.trim().length > 0 &&
-    formData.slug.trim().length > 0 &&
-    formData.description.trim().length > 0
+  const jumpToStep = (id: StepId) => goTo(STEPS.findIndex(s => s.id === id))
 
   return (
-    <div className="min-h-screen bg-zinc-950 flex flex-col">
-      {/* Minimal Header */}
-      <div className="border-b border-zinc-900 px-6 py-3.5 flex items-center gap-3">
-        <button
-          onClick={() => router.push('/admin/dashboard')}
-          className="flex items-center gap-1.5 text-sm text-zinc-500 hover:text-zinc-200 transition-colors group"
-        >
-          <ArrowLeft size={15} className="group-hover:-translate-x-0.5 transition-transform" />
-          Dashboard
+    <div className="adm-app wiz-app">
+      <header className="wiz-topbar">
+        <button onClick={() => router.push('/admin/projects')} className="pe-btn pe-btn-ghost pe-btn-sm">
+          <ArrowLeft size={15} />
+          Projects
         </button>
-        <div className="w-px h-4 bg-zinc-800" />
-        <span className="text-sm text-zinc-400">New Project</span>
+        <span className="adm-mono wiz-counter">
+          Step {index + 1} of {STEPS.length}
+        </span>
+      </header>
+
+      {/* Mobile progress line — the rail is hidden at this width. */}
+      <div className="wiz-progress" aria-hidden>
+        <div style={{ width: `${((index + 1) / STEPS.length) * 100}%` }} />
       </div>
 
-      {/* Centered Wizard Content */}
-      <div className="flex-1 flex items-start justify-center pt-16 px-4 pb-24">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
-          className="w-full max-w-[520px]"
-        >
-          {/* Hero Section */}
-          <div className="text-center mb-10">
-            <div className="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-gradient-to-br from-blue-600/20 to-purple-600/20 border border-blue-500/20 mb-4">
-              <Sparkles className="text-blue-400" size={24} />
+      <div className="wiz-body">
+        <WizardRail current={index} data={data} furthest={furthest} onJump={goTo} />
+
+        <main className="wiz-main">
+          {restored && index === 0 && (
+            <div className="wiz-restored">
+              <span>Picked up an unfinished draft.</span>
+              <button type="button" onClick={discardDraft} className="pe-btn pe-btn-ghost pe-btn-sm">
+                Start over
+              </button>
             </div>
-            <h1 className="text-2xl font-bold text-white mb-2">New project</h1>
-            <p className="text-zinc-500 text-sm">
-              Start with the essentials — you can fill everything else after.
-            </p>
+          )}
+
+          <div className="wiz-head">
+            <span className="adm-mono wiz-eyebrow">{step.label}</span>
+            <h1 className="wiz-title">{step.hint}</h1>
+            {step.optional && <p className="wiz-optional">Optional — you can fill this in later.</p>}
           </div>
 
-          <div className="space-y-6">
-            {/* Project Type Grid */}
-            <div>
-              <label className="block text-xs font-semibold uppercase tracking-wider text-zinc-500 mb-3">
-                Project type
-              </label>
-              <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
-                {PROJECT_TYPES.map((type) => {
-                  const Icon = type.icon
-                  const isSelected = formData.projectType === type.value
-                  return (
-                    <button
-                      key={type.value}
-                      type="button"
-                      onClick={() => handleChange('projectType', type.value)}
-                      className={`
-                        relative flex flex-col items-center gap-2 p-3 rounded-xl border text-center transition-all
-                        ${isSelected
-                          ? 'border-blue-500/50 bg-blue-600/10 text-blue-300'
-                          : 'border-zinc-800 bg-zinc-900/40 text-zinc-500 hover:border-zinc-700 hover:text-zinc-300 hover:bg-zinc-800/40'
-                        }
-                      `}
-                    >
-                      {isSelected && (
-                        <span className="absolute top-1.5 right-1.5 w-3.5 h-3.5 rounded-full bg-blue-500 flex items-center justify-center">
-                          <Check size={8} strokeWidth={3} className="text-white" />
-                        </span>
-                      )}
-                      <Icon
-                        size={20}
-                        className={isSelected ? 'text-blue-400' : 'text-zinc-600'}
-                      />
-                      <span className="text-xs font-medium leading-tight">{type.label}</span>
-                    </button>
-                  )
-                })}
-              </div>
-            </div>
-
-            {/* Title */}
-            <Input
-              label={
-                <div className="flex items-center justify-between w-full">
-                  <span>
-                    Project title{' '}
-                    <span className="text-red-500">*</span>
-                  </span>
-                  <AIGenerateButton
-                    onGenerate={(text) => handleChange('title', text)}
-                    promptContext={{
-                      field: 'Project Title',
-                      contextData: { description: formData.description },
-                    }}
-                    className="!p-1 scale-75 origin-right"
-                  />
-                </div>
-              }
-              value={formData.title}
-              onChange={(e) => handleChange('title', e.target.value)}
-              placeholder="My Awesome Project"
-              autoFocus
-            />
-
-            {/* Slug */}
-            <Input
-              label={
-                <span>
-                  URL slug <span className="text-red-500">*</span>
-                </span>
-              }
-              value={formData.slug}
-              onChange={(e) => handleSlugChange(e.target.value)}
-              placeholder="my-awesome-project"
-              helperText={
-                formData.slug
-                  ? `morshed.dev/projects/${formData.slug}`
-                  : undefined
-              }
-            />
-
-            {/* Description */}
-            <Textarea
-              label={
-                <div className="flex items-center justify-between w-full">
-                  <span>
-                    Short description{' '}
-                    <span className="text-red-500">*</span>
-                  </span>
-                  <AIGenerateButton
-                    onGenerate={(text) => handleChange('description', text)}
-                    promptContext={{
-                      field: 'Short Description',
-                      contextData: { title: formData.title },
-                    }}
-                    className="!p-1 scale-75 origin-right"
-                  />
-                </div>
-              }
-              value={formData.description}
-              onChange={(e) => handleChange('description', e.target.value)}
-              placeholder="A brief description of what this project does…"
-              rows={3}
-            />
-
-            {/* Create Button */}
-            <Button
-              onClick={handleCreate}
-              isLoading={isLoading}
-              disabled={!isValid || isLoading}
-              className="w-full !py-3 text-base"
-              rightIcon={isLoading ? undefined : <ArrowRight size={16} />}
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={step.id}
+              initial={{ opacity: 0, y: 8 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -8 }}
+              transition={{ duration: 0.25, ease: EASE }}
             >
-              {isLoading ? 'Creating…' : 'Create project & continue'}
-            </Button>
-          </div>
-        </motion.div>
+              {step.id === 'type' && (
+                <TypeStep value={data.projectType ?? 'webapp'} onChange={(v) => patch({ projectType: v })} />
+              )}
+
+              {step.id === 'identity' && (
+                <>
+                  <GithubImport
+                    onImport={patch}
+                    occupiedFields={OPTIONAL_IMPORT_FIELDS.filter(
+                      (k) => String(data[k] ?? '').trim().length > 0
+                    )}
+                  />
+                  <IdentityFields
+                    value={{ title: data.title, slug: data.slug, description: data.description }}
+                    onChange={patch}
+                  />
+                </>
+              )}
+
+              {step.id === 'story' && (
+                <StoryFields
+                  value={{
+                    longDescription: data.longDescription ?? '',
+                    outcome: data.outcome ?? '',
+                    role: data.role ?? '',
+                  }}
+                  onChange={patch}
+                />
+              )}
+
+              {step.id === 'media' && (
+                <MediaFields
+                  value={{
+                    coverImage: data.coverImage ?? '',
+                    logoUrl: data.logoUrl ?? '',
+                    gallery: data.gallery ?? [],
+                  }}
+                  onChange={patch}
+                />
+              )}
+
+              {step.id === 'links' && (
+                <LinksFields
+                  value={{
+                    githubUrl: data.githubUrl ?? '',
+                    demoUrl: data.demoUrl ?? '',
+                    clientProjectUrl: data.clientProjectUrl ?? '',
+                    adminProjectUrl: data.adminProjectUrl ?? '',
+                    clientLiveUrl: data.clientLiveUrl ?? '',
+                    adminLiveUrl: data.adminLiveUrl ?? '',
+                    androidDownloadUrl: data.androidDownloadUrl ?? '',
+                    githubUrlEnabled: data.githubUrlEnabled ?? true,
+                    demoUrlEnabled: data.demoUrlEnabled ?? true,
+                    clientProjectUrlEnabled: data.clientProjectUrlEnabled ?? false,
+                    adminProjectUrlEnabled: data.adminProjectUrlEnabled ?? false,
+                    clientLiveUrlEnabled: data.clientLiveUrlEnabled ?? false,
+                    adminLiveUrlEnabled: data.adminLiveUrlEnabled ?? false,
+                    androidDownloadUrlEnabled: data.androidDownloadUrlEnabled ?? false,
+                  }}
+                  onChange={patch}
+                />
+              )}
+
+              {step.id === 'features' && (
+                <FeaturesTab
+                  features={data.features ?? []}
+                  onChange={(features) => patch({ features })}
+                />
+              )}
+
+              {step.id === 'techstack' && (
+                <TechStackTab
+                  techStack={data.techStack ?? []}
+                  onChange={(techStack) => patch({ techStack })}
+                />
+              )}
+
+              {step.id === 'review' && (
+                <ReviewStep data={data} onChange={patch} onJump={jumpToStep} />
+              )}
+            </motion.div>
+          </AnimatePresence>
+
+          {showError && error && (
+            <p className="pe-help err" style={{ marginTop: 18 }}>{error}</p>
+          )}
+
+          <footer className="wiz-foot">
+            <button
+              type="button"
+              onClick={() => goTo(index - 1)}
+              disabled={index === 0}
+              className="pe-btn pe-btn-secondary pe-btn-md"
+            >
+              <ArrowLeft size={15} />
+              Back
+            </button>
+
+            {isLast ? (
+              <Button onClick={handleCreate} isLoading={isCreating} size="lg" leftIcon={<Check size={16} />}>
+                {isCreating ? 'Creating…' : 'Create Project'}
+              </Button>
+            ) : (
+              <Button onClick={handleNext} size="lg" rightIcon={<ArrowRight size={16} />}>
+                Continue
+              </Button>
+            )}
+          </footer>
+        </main>
       </div>
     </div>
   )

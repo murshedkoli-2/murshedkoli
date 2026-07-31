@@ -6,13 +6,17 @@ import { useRouter } from 'next/navigation'
 import { ThemeToggle } from '@/components/site/ThemeToggle'
 
 export type AdminNavKey =
+  | 'overview'
   | 'projects'
   | 'services'
   | 'skills'
   | 'certificates'
   | 'experience'
+  | 'education'
   | 'about'
   | 'messages'
+  | 'tour'
+  | 'savings'
   | 'settings'
 
 interface NavItem {
@@ -23,17 +27,27 @@ interface NavItem {
   badgeKey?: 'projects' | 'skills' | 'certificates' | 'messages'
 }
 
+const HOME: NavItem[] = [
+  { key: 'overview', label: 'Overview', icon: '◎', href: '/admin/dashboard' },
+]
+
 const CONTENT: NavItem[] = [
-  { key: 'projects',      label: 'Projects',      icon: '▤', href: '/admin/dashboard',    badgeKey: 'projects' },
+  { key: 'projects',      label: 'Projects',      icon: '▤', href: '/admin/projects',     badgeKey: 'projects' },
   { key: 'services',      label: 'Services',       icon: '◈', href: '/admin/services' },
   { key: 'skills',        label: 'Skills',         icon: '⬡', href: '/admin/skills',       badgeKey: 'skills' },
   { key: 'certificates',  label: 'Certificates',   icon: '✦', href: '/admin/certificates', badgeKey: 'certificates' },
   { key: 'experience',    label: 'Experience',     icon: '≡', href: '/admin/experience' },
+  { key: 'education',     label: 'Education',      icon: '⚑', href: '/admin/education' },
   { key: 'about',         label: 'About & Hero',   icon: '✎', href: '/admin/about' },
 ]
 
 const INBOX: NavItem[] = [
   { key: 'messages', label: 'Messages', icon: '✉', href: '/admin/messages', badgeKey: 'messages' },
+]
+
+const PERSONAL: NavItem[] = [
+  { key: 'tour',    label: 'Tour',    icon: '✈', href: '/admin/tour' },
+  { key: 'savings', label: 'Savings', icon: '৳', href: '/admin/savings' },
 ]
 
 const SYSTEM: NavItem[] = [
@@ -91,11 +105,16 @@ export function AdminShell({ active, title, subtitle, actions, badges = {}, chil
           MURSHED<span>.</span>ADMIN
         </Link>
 
+        {HOME.map(renderItem)}
+
         <div className="adm-nav-group">Content</div>
         {CONTENT.map(renderItem)}
 
         <div className="adm-nav-group">Inbox</div>
         {INBOX.map(renderItem)}
+
+        <div className="adm-nav-group">Personal</div>
+        {PERSONAL.map(renderItem)}
 
         <div className="adm-nav-group">System</div>
         {SYSTEM.map(renderItem)}

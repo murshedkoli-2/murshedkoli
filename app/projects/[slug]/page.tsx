@@ -1,6 +1,7 @@
 import { notFound } from 'next/navigation'
 import { Nav } from '@/components/site/Nav'
 import { Footer } from '@/components/site/Footer'
+import { DARK_THEME_SCOPE } from '@/lib/dark-theme'
 import { getAllPublishedSlugs, getProjectBySlug, getProfile } from '@/lib/data/portfolio'
 import { ProjectDetailView, type ProjectDetailData, type ProjectDetailLink } from './ProjectDetailView'
 
@@ -68,11 +69,11 @@ export default async function ProjectDetailPage({ params }: { params: Promise<{ 
 
   return (
     <>
-      <Nav name={profile.name} resumeUrl={profile.resume} />
-      <main>
+      <Nav name={profile.name} resumeUrl={profile.resume} dark />
+      <main style={{ ...DARK_THEME_SCOPE, background: 'var(--canvas)', color: 'var(--ink)' }}>
         <ProjectDetailView project={data} />
       </main>
-      <Footer name={profile.name} email={profile.email} socialLinks={profile.socialLinks} />
+      <Footer name={profile.name} email={profile.email} socialLinks={profile.socialLinks} dark />
     </>
   )
 }

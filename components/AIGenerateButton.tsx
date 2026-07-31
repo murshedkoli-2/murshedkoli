@@ -2,6 +2,7 @@
 
 import React, { useState } from 'react'
 import { Sparkles, Loader2 } from 'lucide-react'
+import { toast } from 'sonner'
 
 interface AIGenerateButtonProps {
   onGenerate: (generatedText: string) => void
@@ -32,7 +33,8 @@ export function AIGenerateButton({ onGenerate, promptContext, className = '' }: 
       }
     } catch (error) {
       console.error('AI Generation error:', error)
-      alert("Failed to generate content. Ensure your API keys are configured.")
+      // Transient failure, not a decision — a toast is the right primitive here.
+      toast.error('Could not generate content. Check that your API keys are configured.')
     } finally {
       setLoading(false)
     }
@@ -43,13 +45,13 @@ export function AIGenerateButton({ onGenerate, promptContext, className = '' }: 
       type="button"
       onClick={handleGenerate}
       disabled={loading}
-      className={`inline-flex items-center gap-1.5 text-xs font-medium px-2.5 py-1.5 rounded-lg border border-purple-500/30 bg-purple-500/10 text-purple-400 hover:bg-purple-500/20 hover:text-purple-300 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed ${className}`}
+      className={`pe-btn pe-btn-ghost pe-btn-sm ${className}`}
       title="Auto-generate via AI"
     >
       {loading ? (
-        <Loader2 size={14} className="animate-spin" />
+        <Loader2 size={13} className="animate-spin" />
       ) : (
-        <Sparkles size={14} />
+        <Sparkles size={13} />
       )}
       <span>Generate AI</span>
     </button>

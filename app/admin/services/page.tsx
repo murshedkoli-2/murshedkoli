@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { toast } from 'sonner'
 import { AdminShell } from '@/components/admin/AdminShell'
+import { confirmDialog } from '@/components/ui/ConfirmDialog'
 import { useAdminGuard } from '@/lib/admin/useAdminGuard'
 
 interface Service {
@@ -88,7 +89,13 @@ export default function ServicesManager() {
   }
 
   const remove = async (s: Service) => {
-    if (!window.confirm(`Delete service "${s.title}"?`)) return
+    const ok = await confirmDialog({
+      title: 'Delete this service?',
+      description: <><strong>{s.title}</strong> will no longer appear on your site.</>,
+      confirmLabel: 'Delete service',
+      tone: 'danger',
+    })
+    if (!ok) return
     try {
       const res = await fetch(`/api/services/${s.id}`, { method: 'DELETE' })
       if (res.ok) {

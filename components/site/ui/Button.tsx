@@ -12,6 +12,7 @@ interface CommonProps {
   variant?: Variant
   size?: Size
   className?: string
+  style?: React.CSSProperties
 }
 
 interface LinkButtonProps extends CommonProps {
@@ -59,7 +60,7 @@ function styleFor(variant: Variant, size: Size): React.CSSProperties {
 export function Button(props: ButtonProps) {
   const { children, variant = 'primary', size = 'md', className } = props
   const reduce = useReducedMotion()
-  const style = styleFor(variant, size)
+  const style = { ...styleFor(variant, size), ...props.style }
   const hover = reduce ? undefined : { y: -2, boxShadow: 'var(--shadow-md)' }
   const tap = reduce ? undefined : { y: 0, scale: 0.98 }
 

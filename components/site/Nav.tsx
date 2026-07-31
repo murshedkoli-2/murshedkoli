@@ -6,6 +6,7 @@ import { AnimatePresence, motion, useReducedMotion } from 'framer-motion'
 import { Menu, X, FileText } from 'lucide-react'
 import { ThemeToggle } from '@/components/site/ThemeToggle'
 import { Container } from '@/components/site/ui/Container'
+import { DARK_THEME_SCOPE } from '@/lib/dark-theme'
 
 interface NavLink {
   label: string
@@ -23,9 +24,11 @@ const LINKS: NavLink[] = [
 interface NavProps {
   name: string
   resumeUrl?: string | null
+  /** Force the dark palette regardless of theme (used on the dark homepage). */
+  dark?: boolean
 }
 
-export function Nav({ name, resumeUrl }: NavProps) {
+export function Nav({ name, resumeUrl, dark }: NavProps) {
   const [scrolled, setScrolled] = useState(false)
   const [open, setOpen] = useState(false)
   const reduce = useReducedMotion()
@@ -50,10 +53,16 @@ export function Nav({ name, resumeUrl }: NavProps) {
   return (
     <header
       style={{
+        ...(dark ? DARK_THEME_SCOPE : undefined),
+        color: 'var(--ink)',
         position: 'sticky',
         top: 0,
         zIndex: 50,
-        background: scrolled ? 'color-mix(in oklch, var(--canvas) 82%, transparent)' : 'transparent',
+        background: scrolled
+          ? 'color-mix(in oklch, var(--canvas) 82%, transparent)'
+          : dark
+            ? 'var(--canvas)'
+            : 'transparent',
         backdropFilter: scrolled ? 'saturate(180%) blur(12px)' : 'none',
         WebkitBackdropFilter: scrolled ? 'saturate(180%) blur(12px)' : 'none',
         borderBottom: `1px solid ${scrolled ? 'var(--line)' : 'transparent'}`,

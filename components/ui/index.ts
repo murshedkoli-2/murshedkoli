@@ -1,6 +1,0 @@
-export * from './Tabs'
-export * from './Progress'
-export * from './Badge'
-export * from './Modal'
-export * from './FormElements'
-export * from './ImageUpload'

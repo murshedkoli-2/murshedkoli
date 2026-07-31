@@ -8,18 +8,23 @@
   --ink-muted: oklch(51% 0.014 260);
   --line: oklch(90% 0.006 260);
   --line-strong: oklch(84% 0.008 260);
-  --accent: oklch(57% 0.2 256);          /* electric blue */
-  --accent-ink: oklch(99% 0.01 256);     /* text on accent */
-  --accent-soft: oklch(57% 0.2 256 / 0.1);
-  --accent-2: oklch(62% 0.17 210);       /* legacy alias (admin surfaces) */
-  --accent-3: oklch(60% 0.19 290);       /* legacy alias (admin surfaces) */
-  --comment: oklch(62% 0.03 256);        /* muted // prefix */
+  /* Amber — the homepage's single accent, darkened for contrast on light canvas. */
+  --accent: oklch(58% 0.12 68);
+  --accent-ink: oklch(99% 0.01 68);      /* text on accent */
+  --accent-soft: oklch(58% 0.12 68 / 0.1);
+  --accent-2: oklch(64% 0.11 52);        /* amber-adjacent, warmer */
+  --accent-3: oklch(52% 0.09 82);        /* amber-adjacent, deeper */
+  --comment: oklch(62% 0.02 68);         /* muted // prefix */
+  --danger: oklch(55% 0.19 25);          /* destructive actions */
+  --danger-ink: oklch(99% 0.01 25);
+  --danger-soft: oklch(55% 0.19 25 / 0.1);
   --shadow-sm: 0 1px 2px oklch(22% 0.03 260 / 0.05), 0 1px 3px oklch(22% 0.03 260 / 0.06);
   --shadow-md: 0 6px 20px oklch(22% 0.03 260 / 0.09), 0 2px 6px oklch(22% 0.03 260 / 0.06);
 
   --font-display: var(--font-space-grotesk), "SF Pro Display", system-ui, sans-serif;
   --font-body: var(--font-inter), system-ui, sans-serif;
   --font-mono: var(--font-jetbrains-mono), ui-monospace, "SF Mono", Menlo, monospace;
+  --font-serif: var(--font-instrument-serif), Georgia, "Times New Roman", serif;
 
   --text-hero: clamp(2.75rem, 1rem + 7vw, 6.5rem);
   --text-h2: clamp(1.9rem, 1.15rem + 2.6vw, 3.1rem);
@@ -43,12 +48,16 @@
   --ink-muted: oklch(66% 0.016 260);
   --line: oklch(30% 0.013 260);
   --line-strong: oklch(38% 0.016 260);
-  --accent: oklch(70% 0.16 256);
-  --accent-ink: oklch(16% 0.02 256);
-  --accent-soft: oklch(70% 0.16 256 / 0.14);
-  --accent-2: oklch(72% 0.15 210);
-  --accent-3: oklch(70% 0.16 290);
-  --comment: oklch(56% 0.035 256);
+  /* Matches the homepage's #f5b04c exactly. */
+  --accent: oklch(79.5% 0.128 73);
+  --accent-ink: oklch(16% 0.005 260);
+  --accent-soft: oklch(79.5% 0.128 73 / 0.14);
+  --accent-2: oklch(82% 0.11 58);
+  --accent-3: oklch(74% 0.12 88);
+  --comment: oklch(56% 0.02 73);
+  --danger: oklch(66% 0.17 25);
+  --danger-ink: oklch(16% 0.02 25);
+  --danger-soft: oklch(66% 0.17 25 / 0.14);
   --shadow-sm: 0 1px 2px oklch(0% 0 0 / 0.35), 0 1px 3px oklch(0% 0 0 / 0.3);
   --shadow-md: 0 8px 26px oklch(0% 0 0 / 0.45), 0 2px 8px oklch(0% 0 0 / 0.35);
 }

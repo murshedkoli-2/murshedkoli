@@ -1,5 +1,22 @@
 import { z } from 'zod'
 
+/**
+ * Prisma returns `null` for an unset optional field (`String?`), but Zod's
+ * `.optional()` only accepts `undefined`. Reading a document and saving it back
+ * unchanged therefore failed validation — see TechStackItem.icon.
+ *
+ * These helpers accept what the database actually returns and normalise it, so
+ * a round-trip is always valid.
+ */
+// The trailing `.optional()` keeps the key optional in the inferred type; a bare
+// transform would make callers pass `icon: undefined` explicitly.
+const optionalString = z.string().nullish().transform((v) => v ?? undefined).optional()
+const optionalBool = z.boolean().nullish().transform((v) => v ?? undefined).optional()
+const boolWithDefault = (fallback: boolean) =>
+  z.boolean().nullish().transform((v) => v ?? fallback)
+const intWithDefault = (fallback: number) =>
+  z.number().int().nullish().transform((v) => v ?? fallback)
+
 // Enums
 export const ProjectLifecycleStatus = z.enum([
   'idea',
@@ -25,46 +42,46 @@ export const FlowNodeType = z.enum(['api', 'ui', 'database', 'logic', 'service',
 export const TechStackItemSchema = z.object({
   name: z.string().min(1, 'Tech name is required'),
   category: TechCategory,
-  icon: z.string().optional()
+  icon: optionalString
 })
 
 // Feature Item
 export const FeatureItemSchema = z.object({
   id: z.string(),
   title: z.string().min(1, 'Feature title is required'),
-  done: z.boolean().default(false),
-  order: z.number().int().default(0)
+  done: boolWithDefault(false),
+  order: intWithDefault(0)
 })
 
 // Task Item
 export const TaskItemSchema = z.object({
   id: z.string(),
   title: z.string().min(1, 'Task title is required'),
-  description: z.string().optional(),
-  assignedTo: z.string().optional(),
+  description: optionalString,
+  assignedTo: optionalString,
   status: TaskStatus,
   priority: TaskPriority,
-  startDate: z.string().optional(),
-  endDate: z.string().optional(),
-  order: z.number().int().default(0)
+  startDate: optionalString,
+  endDate: optionalString,
+  order: intWithDefault(0)
 })
 
 // Module Item
 export const ModuleItemSchema = z.object({
   id: z.string(),
   name: z.string().min(1, 'Module name is required'),
-  description: z.string().optional(),
+  description: optionalString,
   status: FeatureStatus,
   tasks: z.array(TaskItemSchema).default([]),
-  order: z.number().int().default(0)
+  order: intWithDefault(0)
 })
 
 // Roadmap Phase
 export const RoadmapPhaseSchema = z.object({
   id: z.string(),
   phaseName: z.string().min(1, 'Phase name is required'),
-  description: z.string().optional(),
-  order: z.number().int().default(0),
+  description: optionalString,
+  order: intWithDefault(0),
   progress: z.number().int().min(0).max(100).default(0)
 })
 
@@ -75,7 +92,7 @@ export const FlowNodeSchema = z.object({
   type: FlowNodeType,
   positionX: z.number(),
   positionY: z.number(),
-  data: z.string().optional()
+  data: optionalString
 })
 
 // Flow Edge
@@ -83,8 +100,8 @@ export const FlowEdgeSchema = z.object({
   id: z.string(),
   source: z.string(),
   target: z.string(),
-  label: z.string().optional(),
-  animated: z.boolean().optional()
+  label: optionalString,
+  animated: optionalBool
 })
 
 // Flow Diagram
@@ -98,9 +115,9 @@ export const ApiEndpointSchema = z.object({
   id: z.string(),
   endpoint: z.string().min(1, 'Endpoint is required'),
   method: z.enum(['GET', 'POST', 'PUT', 'DELETE', 'PATCH']),
-  description: z.string().optional(),
-  requestBody: z.string().optional(),
-  responseBody: z.string().optional()
+  description: optionalString,
+  requestBody: optionalString,
+  responseBody: optionalString
 })
 
 // Database Collection
@@ -108,17 +125,17 @@ export const DatabaseCollectionSchema = z.object({
   id: z.string(),
   collection: z.string().min(1, 'Collection name is required'),
   fields: z.string(),
-  description: z.string().optional()
+  description: optionalString
 })
 
 // Deployment Info
 export const DeploymentInfoSchema = z.object({
-  platform: z.string().optional(),
-  domain: z.string().optional(),
-  environment: z.string().optional(),
-  ciCd: z.string().optional(),
-  repository: z.string().optional(),
-  branch: z.string().optional()
+  platform: optionalString,
+  domain: optionalString,
+  environment: optionalString,
+  ciCd: optionalString,
+  repository: optionalString,
+  branch: optionalString
 })
 
 // Create Project Schema
@@ -126,14 +143,14 @@ export const CreateProjectSchema = z.object({
   title: z.string().min(1, 'Title is required').max(200),
   slug: z.string().min(1, 'Slug is required').max(200).regex(/^[a-z0-9-]+$/, 'Slug must be lowercase with hyphens only'),
   description: z.string().min(1, 'Description is required'),
-  longDescription: z.string().optional(),
-  outcome: z.string().optional(),
-  role: z.string().optional(),
+  longDescription: optionalString,
+  outcome: optionalString,
+  role: optionalString,
   projectType: z.string().default('webapp'),
   lifecycleStatus: ProjectLifecycleStatus.default('idea'),
   publishStatus: z.enum(['draft', 'published', 'archived']).default('draft'),
-  coverImage: z.string().optional(),
-  logoUrl: z.string().optional(),
+  coverImage: optionalString,
+  logoUrl: optionalString,
   gallery: z.array(z.string()).default([]),
   technologies: z.array(z.string()).default([]),
   techStack: z.array(TechStackItemSchema).default([]),

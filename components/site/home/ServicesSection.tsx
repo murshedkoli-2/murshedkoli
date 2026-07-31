@@ -1,62 +1,59 @@
+'use client'
+
+import { motion, useReducedMotion } from 'framer-motion'
 import type { ServiceView } from '@/lib/data/portfolio'
-import { Section } from '@/components/site/ui/Section'
-import { RevealGroup, RevealItem } from '@/components/site/Reveal'
-import { resolveServiceIcon } from './serviceIcons'
+import { Container } from '@/components/site/ui/Container'
+import { HomeSectionHeader } from './HomeSectionHeader'
 
 interface ServicesSectionProps {
   services: ServiceView[]
 }
 
 export function ServicesSection({ services }: ServicesSectionProps) {
+  const reduce = useReducedMotion()
   if (services.length === 0) return null
 
   return (
-    <Section id="services" eyebrow="what I do" title="Expertise">
-      <RevealGroup stagger={0.08} className="services-grid">
-        {services.map((s, i) => {
-          const Icon = resolveServiceIcon(s.icon)
-          return (
-            <RevealItem key={s.id}>
-              <div
-                className="site-card site-card--interactive"
+    <section
+      id="services"
+      style={{
+        background: '#0b0b0c',
+        color: '#ececea',
+        paddingBlock: 'var(--space-section)',
+        scrollMarginTop: '5rem',
+        borderTop: '1px solid rgba(255, 255, 255, 0.09)',
+      }}
+    >
+      <Container>
+        <HomeSectionHeader title="What I" accent="do" meta="capabilities" />
+
+        <div>
+          {services.map((s, i) => (
+            <motion.div
+              key={s.id}
+              className="svc-row"
+              initial={reduce ? {} : { opacity: 0, y: 18 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, margin: '-10%' }}
+              transition={{ duration: 0.55, delay: Math.min(i * 0.05, 0.25), ease: [0.16, 1, 0.3, 1] }}
+            >
+              <h3
                 style={{
-                  height: '100%',
-                  padding: '1.75rem',
-                  background: 'var(--surface)',
-                  border: '1px solid var(--line)',
-                  borderRadius: 'var(--radius)',
-                  display: 'flex',
-                  flexDirection: 'column',
+                  fontSize: 'clamp(1.3rem, 1.1rem + 1vw, 1.8rem)',
+                  fontWeight: 600,
+                  letterSpacing: '-0.015em',
+                  color: '#ececea',
                 }}
               >
-                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '1.25rem' }}>
-                  <span
-                    aria-hidden
-                    style={{
-                      display: 'inline-flex',
-                      width: 44,
-                      height: 44,
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      borderRadius: 10,
-                      border: '1px solid var(--line)',
-                      background: 'var(--accent-soft)',
-                      color: 'var(--accent)',
-                    }}
-                  >
-                    <Icon size={22} />
-                  </span>
-                  <span className="mono" style={{ fontSize: '0.85rem', color: 'var(--comment)' }}>
-                    {String(i + 1).padStart(2, '0')}
-                  </span>
-                </div>
-                <h3 style={{ fontSize: 'var(--text-h3)', marginBottom: '0.6rem' }}>{s.title}</h3>
-                <p style={{ color: 'var(--ink-muted)', fontSize: '0.95rem', lineHeight: 1.65 }}>{s.description}</p>
-              </div>
-            </RevealItem>
-          )
-        })}
-      </RevealGroup>
-    </Section>
+                {s.title}
+              </h3>
+              <p style={{ color: 'rgba(255, 255, 255, 0.55)', lineHeight: 1.7, fontSize: '0.98rem' }}>
+                {s.description}
+              </p>
+            </motion.div>
+          ))}
+        </div>
+      </Container>
+    </section>
   )
 }

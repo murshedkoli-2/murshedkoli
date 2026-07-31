@@ -20,6 +20,8 @@ export type PublicProfile = {
   location?: string | null
   avatar?: string | null
   heroImage?: string | null
+  heroPortrait?: string | null
+  storyImage?: string | null
   resume?: string | null
   socialLinks?: SocialLinks
 }
@@ -73,6 +75,8 @@ export const getPublicProfile = cached('public-profile', async (): Promise<Publi
       location: profile.location,
       avatar: profile.avatar,
       heroImage: profile.heroImage,
+      heroPortrait: profile.heroPortrait,
+      storyImage: profile.storyImage,
       resume: profile.resume,
       socialLinks: (profile.socialLinks as SocialLinks | null) || undefined,
     }

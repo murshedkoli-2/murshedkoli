@@ -29,7 +29,10 @@ model Profile {
   phone       String?
   location    String?
   avatar      String?
-  heroImage   String?
+  heroImage   String?   // OG/social card and the /about portrait
+  // Home page art. Null falls back to the bundled files in /public/images.
+  heroPortrait String?  // portrait plate in the hero
+  storyImage   String?  // plate beside the craft principles
   resume      String?
   socialLinks Json?    // {github, linkedin, twitter, etc.}
   createdAt   DateTime @default(now())
@@ -344,6 +347,10 @@ model Certification {
   url         String?
   fileUrl     String?
   fileType    String?  // "image" | "pdf"
+  // Page-1 raster of a PDF, generated once at upload so cards can show a real
+  // preview without embedding a PDF viewer. Null for image uploads (fileUrl is
+  // already an image) and for PDFs uploaded before this existed.
+  thumbnailUrl String?
   description String?
   order       Int      @default(0)
   createdAt   DateTime @default(now())
@@ -359,4 +366,30 @@ model Service {
   isEnabled   Boolean  @default(true)
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
+}
+
+model TourLocation {
+  id        String    @id @default(auto()) @map("_id") @db.ObjectId
+  name      String
+  region    String    @default("bangladesh") // "bangladesh" | "international"
+  country   String?
+  notes     String?
+  visited   Boolean   @default(false)
+  visitedAt DateTime?
+  order     Int       @default(0)
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+}
+
+model SavingsAccount {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  name      String
+  bank      String?
+  accountNo String?
+  type      String?
+  currency  String   @default("BDT")
+  amount    Float    @default(0)
+  notes     String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }

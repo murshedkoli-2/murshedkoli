@@ -2,12 +2,16 @@ import Link from 'next/link'
 import { Github, Linkedin, Twitter, Facebook, Youtube, Globe, Mail } from 'lucide-react'
 import type { SocialLinks } from '@/lib/site-data'
 import { Container } from '@/components/site/ui/Container'
+import { DARK_THEME_SCOPE } from '@/lib/dark-theme'
 
 interface FooterProps {
   name: string
   email?: string
   socialLinks?: SocialLinks
+  /** Force the dark palette regardless of theme (used on the dark homepage). */
+  dark?: boolean
 }
+
 
 const SOCIAL_ICONS: Record<keyof SocialLinks, typeof Github> = {
   github: Github,
@@ -24,13 +28,21 @@ const QUICK_LINKS = [
   { label: 'Contact', href: '/#contact' },
 ]
 
-export function Footer({ name, email, socialLinks }: FooterProps) {
+export function Footer({ name, email, socialLinks, dark }: FooterProps) {
   const socials = socialLinks
     ? (Object.entries(socialLinks).filter(([, url]) => Boolean(url)) as [keyof SocialLinks, string][])
     : []
 
   return (
-    <footer style={{ borderTop: '1px solid var(--line)', background: 'var(--surface)', paddingBlock: '3.5rem' }}>
+    <footer
+      style={{
+        ...(dark ? DARK_THEME_SCOPE : undefined),
+        borderTop: '1px solid var(--line)',
+        background: dark ? 'var(--canvas)' : 'var(--surface)',
+        paddingBlock: '3.5rem',
+        color: dark ? 'var(--ink)' : undefined,
+      }}
+    >
       <Container>
         <div
           style={{

@@ -1,7 +1,7 @@
 import { Nav } from '@/components/site/Nav'
 import { Footer } from '@/components/site/Footer'
 import { Hero } from '@/components/site/home/Hero'
-import { AboutTeaser } from '@/components/site/home/AboutTeaser'
+import { ScrollStorySection } from '@/components/site/home/ScrollStorySection'
 import { ServicesSection } from '@/components/site/home/ServicesSection'
 import { FeaturedProjects } from '@/components/site/home/FeaturedProjects'
 import { SkillsSection } from '@/components/site/home/SkillsSection'
@@ -24,7 +24,7 @@ const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://murshedkoli.com'
 /** ISR: served static (instant navigation), regenerated in the background every 10 min. */
 export const revalidate = 600
 
-/** Dev-minimalist homepage — fully server-rendered; sections receive data as props. */
+/** High-aesthetic animated homepage with scroll-driven image narrative. */
 export default async function Home() {
   const [profile, stats, featured, skills, experience, education, certificates, services] = await Promise.all([
     getProfile(),
@@ -53,10 +53,10 @@ export default async function Home() {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(personJsonLd) }}
       />
-      <Nav name={profile.name} resumeUrl={profile.resume} />
-      <main>
+      <Nav name={profile.name} resumeUrl={profile.resume} dark />
+      <main style={{ background: '#0b0b0c' }}>
         <Hero profile={profile} stats={stats} />
-        <AboutTeaser profile={profile} />
+        <ScrollStorySection profile={profile} />
         <ServicesSection services={services} />
         <FeaturedProjects projects={featured} />
         <SkillsSection columns={skills} />
@@ -64,7 +64,7 @@ export default async function Home() {
         <CertificatesSection certificates={certificates} />
         <ContactSection profile={profile} />
       </main>
-      <Footer name={profile.name} email={profile.email} socialLinks={profile.socialLinks} />
+      <Footer name={profile.name} email={profile.email} socialLinks={profile.socialLinks} dark />
     </>
   )
 }

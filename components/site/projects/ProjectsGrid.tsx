@@ -3,8 +3,7 @@
 import { useMemo } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import type { FeaturedProject } from '@/lib/data/portfolio'
-import { ProjectCard } from './ProjectCard'
-import { RevealGroup, RevealItem } from '@/components/site/Reveal'
+import { ProjectRow } from '@/components/site/home/ProjectRow'
 
 interface ProjectsGridProps {
   projects: FeaturedProject[]
@@ -52,10 +51,10 @@ export function ProjectsGrid({ projects }: ProjectsGridProps) {
         style={{
           display: 'flex',
           flexWrap: 'wrap',
-          gap: 10,
+          gap: 12,
           justifyContent: 'space-between',
           alignItems: 'center',
-          marginBottom: '2rem',
+          marginBottom: '2.5rem',
         }}
       >
         <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
@@ -67,39 +66,42 @@ export function ProjectsGrid({ projects }: ProjectsGridProps) {
                 type="button"
                 onClick={() => setParam('type', f.key)}
                 aria-pressed={active}
+                className="mono"
                 style={{
-                  padding: '7px 14px',
-                  borderRadius: 'var(--radius-sm)',
+                  padding: '7px 16px',
+                  borderRadius: 999,
                   border: `1px solid ${active ? 'var(--accent)' : 'var(--line-strong)'}`,
-                  background: active ? 'var(--accent)' : 'var(--surface)',
-                  color: active ? 'var(--accent-ink)' : 'var(--ink-muted)',
-                  fontFamily: 'var(--font-mono)',
-                  fontSize: '0.8rem',
+                  background: 'transparent',
+                  color: active ? 'var(--accent)' : 'var(--ink-muted)',
+                  fontSize: '0.78rem',
                   fontWeight: 500,
+                  letterSpacing: '0.06em',
+                  textTransform: 'uppercase',
                   cursor: 'pointer',
-                  transition: 'background 180ms var(--ease), color 180ms var(--ease), border-color 180ms var(--ease)',
+                  transition: 'color 180ms var(--ease), border-color 180ms var(--ease)',
                 }}
               >
-                {f.label.toLowerCase()}
+                {f.label}
               </button>
             )
           })}
         </div>
 
-        <label className="mono" style={{ display: 'inline-flex', alignItems: 'center', gap: 8, color: 'var(--ink-muted)', fontSize: '0.8rem' }}>
-          sort:
+        <label className="hp-meta" style={{ display: 'inline-flex', alignItems: 'center', gap: 10 }}>
+          sort
           <select
             value={sort}
             onChange={(e) => setParam('sort', e.target.value)}
+            className="mono"
             style={{
               padding: '7px 12px',
-              borderRadius: 'var(--radius-sm)',
+              borderRadius: 999,
               border: '1px solid var(--line-strong)',
-              background: 'var(--surface)',
+              background: 'transparent',
               color: 'var(--ink)',
-              fontFamily: 'var(--font-mono)',
-              fontSize: '0.8rem',
+              fontSize: '0.78rem',
               cursor: 'pointer',
+              colorScheme: 'dark',
             }}
           >
             <option value="recent">most recent</option>
@@ -109,15 +111,13 @@ export function ProjectsGrid({ projects }: ProjectsGridProps) {
       </div>
 
       {visible.length === 0 ? (
-        <p className="mono" style={{ color: 'var(--ink-muted)', fontSize: '0.88rem' }}>{'// no projects in this category yet'}</p>
+        <p className="hp-meta">no projects in this category yet</p>
       ) : (
-        <RevealGroup stagger={0.08} className="projects-grid">
-          {visible.map((p) => (
-            <RevealItem key={p.id}>
-              <ProjectCard project={p} />
-            </RevealItem>
+        <div>
+          {visible.map((p, i) => (
+            <ProjectRow key={p.id} project={p} index={i} thumbFirst />
           ))}
-        </RevealGroup>
+        </div>
       )}
     </div>
   )

@@ -1,10 +1,11 @@
 'use client'
 
 import { useMemo, useState } from 'react'
-import { ExternalLink, FileText, Award } from 'lucide-react'
+import { motion, useReducedMotion } from 'framer-motion'
+import { ExternalLink, FileText } from 'lucide-react'
 import type { CertificateView } from '@/lib/data/portfolio'
-import { Section } from '@/components/site/ui/Section'
-import { Card } from '@/components/site/ui/Card'
+import { Container } from '@/components/site/ui/Container'
+import { HomeSectionHeader } from './HomeSectionHeader'
 import { Lightbox, type LightboxImage } from '@/components/site/ui/Lightbox'
 
 interface CertificatesSectionProps {
@@ -12,9 +13,9 @@ interface CertificatesSectionProps {
 }
 
 export function CertificatesSection({ certificates }: CertificatesSectionProps) {
+  const reduce = useReducedMotion()
   const [index, setIndex] = useState<number | null>(null)
 
-  // Only image certs participate in the lightbox; map cert id -> lightbox index.
   const imageCerts = useMemo(
     () => certificates.filter((c) => c.fileUrl && c.fileType === 'image'),
     [certificates],
@@ -29,50 +30,75 @@ export function CertificatesSection({ certificates }: CertificatesSectionProps) 
   }
 
   return (
-    <Section eyebrow="credentials" title="Certificates">
-      <div className="certs-grid">
-        {certificates.map((c) => {
-          const isImage = Boolean(c.fileUrl && c.fileType === 'image')
-          const isPdf = Boolean(c.fileUrl && c.fileType === 'pdf')
-          return (
-            <Card key={c.id} interactive style={{ padding: '1.4rem', display: 'flex', flexDirection: 'column', gap: 10 }}>
-              <Award size={22} style={{ color: 'var(--accent)' }} />
-              <div style={{ fontFamily: 'var(--font-display)', fontSize: '1.05rem', fontWeight: 600, lineHeight: 1.3 }}>{c.title}</div>
-              <div className="mono" style={{ color: 'var(--ink-muted)', fontSize: '0.78rem' }}>
-                {c.issuer}
-                {c.date ? ` · ${c.date}` : ''}
-              </div>
-              {c.description && (
-                <p style={{ color: 'var(--ink-muted)', fontSize: '0.88rem', lineHeight: 1.55 }}>{c.description}</p>
-              )}
-              <div style={{ display: 'flex', gap: 14, marginTop: 'auto', paddingTop: 6, flexWrap: 'wrap' }}>
-                {isImage && (
-                  <button
-                    type="button"
-                    onClick={() => openCert(c)}
-                    style={linkBtn}
-                  >
-                    <FileText size={15} /> View
-                  </button>
-                )}
-                {isPdf && (
-                  <a href={c.fileUrl as string} target="_blank" rel="noopener noreferrer" style={linkBtn}>
-                    <FileText size={15} /> View PDF
-                  </a>
-                )}
-                {c.verifyUrl && (
-                  <a href={c.verifyUrl} target="_blank" rel="noopener noreferrer" style={linkBtn}>
-                    <ExternalLink size={15} /> Verify
-                  </a>
-                )}
-              </div>
-            </Card>
-          )
-        })}
-      </div>
+    <section
+      style={{
+        background: '#0b0b0c',
+        color: '#ececea',
+        paddingBlock: 'var(--space-section)',
+        borderTop: '1px solid rgba(255, 255, 255, 0.09)',
+      }}
+    >
+      <Container>
+        <HomeSectionHeader
+          title="Certificates &"
+          accent="credentials"
+          meta={`${String(certificates.length).padStart(2, '0')} verified`}
+        />
+
+        <div>
+          {certificates.map((c, idx) => {
+            const isImage = Boolean(c.fileUrl && c.fileType === 'image')
+            const isPdf = Boolean(c.fileUrl && c.fileType === 'pdf')
+            return (
+              <motion.div
+                key={c.id}
+                className="svc-row"
+                initial={reduce ? {} : { opacity: 0, y: 16 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, margin: '-10%' }}
+                transition={{ duration: 0.5, delay: Math.min(idx * 0.05, 0.25), ease: [0.16, 1, 0.3, 1] }}
+              >
+                <div>
+                  <div style={{ fontFamily: 'var(--font-display)', fontSize: '1.15rem', fontWeight: 600, color: '#ececea', lineHeight: 1.35 }}>
+                    {c.title}
+                  </div>
+                  <div className="hp-meta" style={{ marginTop: 8 }}>
+                    {c.issuer}
+                    {c.date ? ` · ${c.date}` : ''}
+                  </div>
+                </div>
+                <div style={{ display: 'flex', gap: 20, flexWrap: 'wrap', alignItems: 'center' }}>
+                  {c.description && (
+                    <p style={{ color: 'rgba(255, 255, 255, 0.55)', fontSize: '0.92rem', lineHeight: 1.6, flex: '1 1 16rem', minWidth: '12rem' }}>
+                      {c.description}
+                    </p>
+                  )}
+                  <div style={{ display: 'flex', gap: 18, flexShrink: 0 }}>
+                    {isImage && (
+                      <button type="button" onClick={() => openCert(c)} style={linkBtn}>
+                        <FileText size={14} /> view
+                      </button>
+                    )}
+                    {isPdf && (
+                      <a href={c.fileUrl as string} target="_blank" rel="noopener noreferrer" style={linkBtn}>
+                        <FileText size={14} /> pdf
+                      </a>
+                    )}
+                    {c.verifyUrl && (
+                      <a href={c.verifyUrl} target="_blank" rel="noopener noreferrer" style={linkBtn}>
+                        <ExternalLink size={14} /> verify
+                      </a>
+                    )}
+                  </div>
+                </div>
+              </motion.div>
+            )
+          })}
+        </div>
+      </Container>
 
       <Lightbox images={lightboxImages} index={index} onClose={() => setIndex(null)} onNavigate={setIndex} />
-    </Section>
+    </section>
   )
 }
 
@@ -83,7 +109,9 @@ const linkBtn: React.CSSProperties = {
   fontFamily: 'var(--font-mono)',
   fontSize: '0.78rem',
   fontWeight: 500,
-  color: 'var(--accent)',
+  letterSpacing: '0.06em',
+  textTransform: 'uppercase',
+  color: '#f5b04c',
   background: 'none',
   border: 'none',
   padding: 0,

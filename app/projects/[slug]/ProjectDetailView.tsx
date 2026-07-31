@@ -2,7 +2,6 @@ import Image from 'next/image'
 import Link from 'next/link'
 import { ArrowLeft, Github, ExternalLink, Globe, Smartphone } from 'lucide-react'
 import { Container } from '@/components/site/ui/Container'
-import { Eyebrow } from '@/components/site/ui/Eyebrow'
 import { TechTag } from '@/components/site/ui/TechTag'
 import { ProjectGallery } from '@/components/site/projects/ProjectGallery'
 
@@ -36,28 +35,34 @@ const ICONS = {
 export function ProjectDetailView({ project }: { project: ProjectDetailData }) {
   return (
     <article>
-      {/* Cover */}
-      <div style={{ position: 'relative', width: '100%', aspectRatio: '21 / 9', maxHeight: '60vh', background: 'var(--surface-2)', overflow: 'hidden' }}>
-        {project.coverImage ? (
+      {/* Cover (only when the project has one) */}
+      {project.coverImage && (
+        <div style={{ position: 'relative', width: '100%', aspectRatio: '21 / 9', maxHeight: '60vh', background: 'var(--surface-2)', overflow: 'hidden' }}>
           <Image src={project.coverImage} alt={project.title} fill priority sizes="100vw" style={{ objectFit: 'cover' }} />
-        ) : null}
-        <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(180deg, transparent 40%, color-mix(in oklch, var(--canvas) 92%, transparent))' }} />
-      </div>
+          <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(180deg, transparent 40%, color-mix(in oklch, var(--canvas) 92%, transparent))' }} />
+        </div>
+      )}
 
-      <Container style={{ marginTop: '-4rem', position: 'relative', zIndex: 1 }}>
+      <Container
+        style={
+          project.coverImage
+            ? { marginTop: '-4rem', position: 'relative', zIndex: 1 }
+            : { paddingTop: 'clamp(3.5rem, 2.5rem + 4vw, 6rem)' }
+        }
+      >
         <Link
           href="/projects"
-          className="mono"
-          style={{ display: 'inline-flex', alignItems: 'center', gap: 7, color: 'var(--ink-muted)', marginBottom: '1.5rem', fontSize: '0.82rem' }}
+          className="hp-meta"
+          style={{ display: 'inline-flex', alignItems: 'center', gap: 8, marginBottom: '1.75rem' }}
         >
-          <ArrowLeft size={16} /> cd ../projects
+          <ArrowLeft size={14} /> all work
         </Link>
 
         <div style={{ maxWidth: '52rem' }}>
-          <Eyebrow>
-            {project.projectType}
-            {project.isLive ? ' · Live' : ''}
-          </Eyebrow>
+          <div className="hp-meta" style={{ display: 'flex', gap: 16 }}>
+            <span>{project.projectType}</span>
+            {project.isLive && <span style={{ color: '#34d399' }}>live</span>}
+          </div>
           <h1 style={{ fontSize: 'var(--text-h2)', marginTop: '0.75rem', marginBottom: '1.25rem' }}>{project.title}</h1>
           <p style={{ fontSize: '1.2rem', color: 'var(--ink-muted)', lineHeight: 1.6 }}>{project.description}</p>
 
@@ -95,7 +100,10 @@ export function ProjectDetailView({ project }: { project: ProjectDetailData }) {
         </div>
 
         {/* Body: narrative + meta */}
-        <div className="detail-body" style={{ marginTop: 'clamp(2.5rem, 2rem + 3vw, 4rem)' }}>
+        <div
+          className="detail-body"
+          style={{ marginTop: 'clamp(2.5rem, 2rem + 3vw, 4rem)', paddingBottom: 'var(--space-section)' }}
+        >
           <div>
             {project.longDescription && (
               <div style={{ fontSize: '1.075rem', lineHeight: 1.75, color: 'var(--ink)', whiteSpace: 'pre-wrap' }}>
@@ -115,7 +123,7 @@ export function ProjectDetailView({ project }: { project: ProjectDetailData }) {
             {project.outcome && <MetaBlock label="Outcome" value={project.outcome} />}
             {project.stack.length > 0 && (
               <div>
-                <div style={metaLabel}># tech stack</div>
+                <div className="hp-meta">tech stack</div>
                 <div style={{ display: 'flex', flexWrap: 'wrap', gap: 7, marginTop: 10 }}>
                   {project.stack.map((t) => (
                     <TechTag key={t} label={t} />
@@ -130,19 +138,10 @@ export function ProjectDetailView({ project }: { project: ProjectDetailData }) {
   )
 }
 
-const metaLabel: React.CSSProperties = {
-  fontFamily: 'var(--font-mono)',
-  fontSize: '0.74rem',
-  fontWeight: 500,
-  letterSpacing: '0.02em',
-  textTransform: 'lowercase',
-  color: 'var(--comment)',
-}
-
 function MetaBlock({ label, value }: { label: string; value: string }) {
   return (
     <div>
-      <div style={metaLabel}># {label}</div>
+      <div className="hp-meta">{label}</div>
       <p style={{ marginTop: 8, color: 'var(--ink-muted)', lineHeight: 1.6 }}>{value}</p>
     </div>
   )

@@ -2,188 +2,150 @@
 
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import Link from 'next/link'
-import { useRouter } from 'next/navigation'
 import { toast } from 'sonner'
 import { AdminShell } from '@/components/admin/AdminShell'
+import { useAdminGuard } from '@/lib/admin/useAdminGuard'
+import {
+  relativeTime,
+  isLive,
+  buildCompleteness,
+  MAX_VISIBLE_SKILLS,
+  type AdminProject,
+  type AdminMessage,
+  type AdminProfile,
+  type AdminSkill,
+  type AdminCert,
+  type AdminService,
+  type AdminExperience,
+} from '@/lib/admin/portfolio-summary'
 
-// ── Types (aligned with the /api/* raw project docs) ────────────────
-interface AdminProject {
-  id: string
-  title: string
-  slug: string
-  description?: string
-  coverImage?: string | null
-  logoUrl?: string | null
-  technologies?: string[]
-  techStack?: { name: string }[]
-  publishStatus?: string
-  lifecycleStatus?: string
-  demoUrl?: string | null
-  clientLiveUrl?: string | null
-  featured?: boolean
-  order?: number
-  updatedAt?: string
-}
-
-interface AdminMessage {
-  id: string
-  status: 'unread' | 'read' | 'replied'
-  subject?: string
-  flaggedAsJob?: boolean
-}
-
-interface AdminProfile {
-  name?: string
-  resume?: string | null
-}
-
-interface AdminSkill { id?: string; isEnabled?: boolean }
-interface AdminCert { id?: string; url?: string | null }
-
-const MAX_VISIBLE_SKILLS = 16
-
-// ── Helpers ─────────────────────────────────────────────────────────
-function relativeTime(iso?: string): string {
-  if (!iso) return ''
-  const then = new Date(iso).getTime()
-  const diff = Date.now() - then
-  const mins = Math.floor(diff / 60000)
-  if (mins < 60) return `${Math.max(1, mins)}m ago`
-  const hrs = Math.floor(mins / 60)
-  if (hrs < 24) return `${hrs}h ago`
-  const days = Math.floor(hrs / 24)
-  if (days < 30) return `${days}d ago`
-  return `${Math.floor(days / 30)}mo ago`
-}
-
-function stackLabel(p: AdminProject): string {
-  const fromTech = p.techStack?.map((t) => t.name).filter(Boolean) ?? []
-  const stack = fromTech.length ? fromTech : p.technologies ?? []
-  if (!stack.length) return '—'
-  return stack.slice(0, 3).join(' · ')
-}
-
-function isLive(p: AdminProject): boolean {
-  return p.publishStatus === 'published'
-}
-
-/** Per-project completeness for the table cell. */
-function projectCompleteness(p: AdminProject): { ok: boolean; label: string } {
-  const missing: string[] = []
-  if (!p.coverImage) missing.push('cover')
-  const hasStack = (p.techStack?.length ?? 0) > 0 || (p.technologies?.length ?? 0) > 0
-  if (!hasStack) missing.push('stack')
-  if (missing.length === 0) return { ok: true, label: '✓ Complete' }
-  return { ok: false, label: `✗ Missing ${missing.join(' + ')}` }
-}
-
-export default function AdminDashboard() {
-  const router = useRouter()
-  const [ready, setReady] = useState(false)
+/** Landing screen for the admin panel: the state of the whole site at a glance. */
+export default function AdminOverview() {
+  const ready = useAdminGuard()
   const [projects, setProjects] = useState<AdminProject[]>([])
   const [messages, setMessages] = useState<AdminMessage[]>([])
   const [profile, setProfile] = useState<AdminProfile | null>(null)
   const [skills, setSkills] = useState<AdminSkill[]>([])
   const [certs, setCerts] = useState<AdminCert[]>([])
-  const [search, setSearch] = useState('')
+  const [services, setServices] = useState<AdminService[]>([])
+  const [experience, setExperience] = useState<AdminExperience[]>([])
+  const [education, setEducation] = useState<AdminExperience[]>([])
 
   const fetchAll = useCallback(async () => {
     try {
-      const [projRes, msgRes, profRes, skillRes, certRes] = await Promise.all([
+      const responses = await Promise.all([
         fetch('/api/projects?all=true'),
         fetch('/api/contact'),
         fetch('/api/profile'),
         fetch('/api/skills'),
         fetch('/api/certifications'),
+        fetch('/api/services'),
+        fetch('/api/experience'),
+        fetch('/api/education'),
       ])
+      const [projRes, msgRes, profRes, skillRes, certRes, svcRes, expRes, eduRes] = responses
       if (projRes.ok) setProjects(await projRes.json())
       if (msgRes.ok) setMessages(await msgRes.json())
       if (profRes.ok) setProfile(await profRes.json())
       if (skillRes.ok) setSkills(await skillRes.json())
       if (certRes.ok) setCerts(await certRes.json())
+      if (svcRes.ok) setServices(await svcRes.json())
+      if (expRes.ok) setExperience(await expRes.json())
+      if (eduRes.ok) setEducation(await eduRes.json())
     } catch (error) {
-      console.error('Dashboard fetch failed:', error)
-      toast.error('Could not load dashboard data.')
+      console.error('Overview fetch failed:', error)
+      toast.error('Could not load overview data.')
     }
   }, [])
 
   useEffect(() => {
-    if (typeof window === 'undefined') return
-    if (localStorage.getItem('adminLoggedIn') !== 'true') {
-      router.push('/admin/login')
-      return
-    }
-    setReady(true)
-    fetchAll()
-  }, [router, fetchAll])
+    if (ready) fetchAll()
+  }, [ready, fetchAll])
 
   const unread = useMemo(() => messages.filter((m) => m.status === 'unread').length, [messages])
   const visibleSkills = useMemo(() => skills.filter((s) => s.isEnabled !== false).length, [skills])
-
-  // ── Profile completeness (PRD §7 checker) ─────────────────────────
-  const completeness = useMemo(() => {
-    const published = projects.filter(isLive)
-    const checks: { ok: boolean; label: string; href: string }[] = [
-      {
-        ok: published.every((p) => Boolean(p.coverImage)),
-        label: `${published.filter((p) => !p.coverImage).length} published project(s) missing a cover image`,
-        href: '#projects',
-      },
-      {
-        ok: visibleSkills <= MAX_VISIBLE_SKILLS,
-        label: `${visibleSkills} skills visible — trim to ${MAX_VISIBLE_SKILLS} or fewer`,
-        href: '/admin/manage?tab=skills',
-      },
-      {
-        ok: certs.length === 0 || certs.every((c) => Boolean(c.url)),
-        label: `${certs.filter((c) => !c.url).length} certificate(s) missing a verify link`,
-        href: '/admin/manage?tab=certifications',
-      },
-      {
-        ok: Boolean(profile?.resume),
-        label: 'No résumé file uploaded',
-        href: '/admin/manage?tab=profile',
-      },
-    ]
-    const passed = checks.filter((c) => c.ok).length
-    const percent = checks.length ? Math.round((passed / checks.length) * 100) : 100
-    const issues = checks.filter((c) => !c.ok)
-    return { percent, issues }
-  }, [projects, visibleSkills, certs, profile])
-
-  const filtered = useMemo(() => {
-    const q = search.trim().toLowerCase()
-    if (!q) return projects
-    return projects.filter(
-      (p) => p.title.toLowerCase().includes(q) || stackLabel(p).toLowerCase().includes(q)
-    )
-  }, [projects, search])
+  const liveProjects = useMemo(() => projects.filter(isLive).length, [projects])
+  const completeness = useMemo(
+    () => buildCompleteness({ projects, skills, certs, profile }),
+    [projects, skills, certs, profile]
+  )
 
   const resumeName = profile?.resume ? profile.resume.split('/').pop() || 'resume.pdf' : null
 
-  const handleDelete = async (p: AdminProject) => {
-    if (!window.confirm(`Delete "${p.title}"? This cannot be undone.`)) return
-    try {
-      const res = await fetch(`/api/projects/${p.id}`, { method: 'DELETE' })
-      if (res.ok) {
-        setProjects((prev) => prev.filter((x) => x.id !== p.id))
-        toast.success('Project deleted.')
-      } else {
-        toast.error('Could not delete project.')
-      }
-    } catch (error) {
-      console.error('Delete failed:', error)
-      toast.error('Could not delete project.')
-    }
-  }
+  const recentProjects = useMemo(
+    () =>
+      [...projects]
+        .sort((a, b) => new Date(b.updatedAt ?? 0).getTime() - new Date(a.updatedAt ?? 0).getTime())
+        .slice(0, 5),
+    [projects]
+  )
+
+  const recentMessages = useMemo(
+    () =>
+      [...messages]
+        .sort((a, b) => new Date(b.createdAt ?? 0).getTime() - new Date(a.createdAt ?? 0).getTime())
+        .slice(0, 4),
+    [messages]
+  )
+
+  /** One card per content type — count, a qualifying stat, and a way in. */
+  const inventory = [
+    {
+      label: 'Projects',
+      value: projects.length,
+      detail: `${liveProjects} live · ${projects.length - liveProjects} draft`,
+      href: '/admin/projects',
+    },
+    {
+      label: 'Skills',
+      value: skills.length,
+      detail: `${visibleSkills} visible`,
+      href: '/admin/skills',
+      warn: visibleSkills > MAX_VISIBLE_SKILLS,
+    },
+    {
+      label: 'Services',
+      value: services.length,
+      detail: services.length ? 'offered' : 'none yet',
+      href: '/admin/services',
+    },
+    {
+      label: 'Certificates',
+      value: certs.length,
+      detail: certs.some((c) => !c.url)
+        ? `${certs.filter((c) => !c.url).length} missing a link`
+        : certs.length ? 'all verifiable' : 'none yet',
+      href: '/admin/certificates',
+      warn: certs.some((c) => !c.url),
+    },
+    {
+      label: 'Experience',
+      value: experience.length,
+      detail: experience.length === 1 ? 'role' : 'roles',
+      href: '/admin/experience',
+    },
+    {
+      label: 'Education',
+      value: education.length,
+      detail: education.length === 1 ? 'qualification' : 'qualifications',
+      href: '/admin/education',
+    },
+    {
+      label: 'Messages',
+      value: messages.length,
+      detail: unread ? `${unread} unread` : 'inbox clear',
+      href: '/admin/messages',
+      warn: unread > 0,
+    },
+  ]
 
   if (!ready) return null
 
   return (
     <AdminShell
-      active="projects"
-      title="Projects"
-      subtitle="Drag to reorder · changes publish instantly via revalidation"
+      active="overview"
+      title="Overview"
+      subtitle={profile?.name ? `Signed in as ${profile.name}` : 'Portfolio at a glance'}
       badges={{ projects: projects.length, skills: skills.length, certificates: certs.length, messages: unread }}
       actions={
         <>
@@ -225,14 +187,14 @@ export default function AdminDashboard() {
             {resumeName || '—'}
           </div>
           <div className="d">
-            <Link href="/admin/manage?tab=profile" style={{ color: 'inherit', textDecoration: 'underline' }}>
+            <Link href="/admin/about" style={{ color: 'inherit', textDecoration: 'underline' }}>
               {resumeName ? 'replace' : 'upload'}
             </Link>
           </div>
         </div>
       </div>
 
-      {/* Completeness banner */}
+      {/* Attention banner */}
       {completeness.issues.length > 0 && (
         <div className="adm-banner">
           <span aria-hidden>⚠</span>
@@ -247,103 +209,67 @@ export default function AdminDashboard() {
         </div>
       )}
 
-      {/* Projects table */}
-      <div className="adm-panel" id="projects">
-        <div className="adm-panel-head">
-          <h2>All projects ({projects.length})</h2>
-          <input
-            className="adm-search"
-            placeholder="Search projects…"
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-          />
+      {/* Content inventory */}
+      <div className="ovw-grid">
+        {inventory.map((item) => (
+          <Link key={item.label} href={item.href} className="ovw-tile">
+            <span className="ovw-tile-label">{item.label}</span>
+            <span className="ovw-tile-value">{item.value}</span>
+            <span className={`ovw-tile-detail ${item.warn ? 'warn' : ''}`}>{item.detail}</span>
+          </Link>
+        ))}
+      </div>
+
+      {/* Recent activity */}
+      <div className="ovw-columns">
+        <div className="adm-panel">
+          <div className="adm-panel-head">
+            <h2>Recently updated</h2>
+            <Link href="/admin/projects" className="adm-linkbtn">All projects →</Link>
+          </div>
+          <div className="adm-rows">
+            {recentProjects.length === 0 ? (
+              <div className="adm-empty">No projects yet. Create your first one.</div>
+            ) : (
+              recentProjects.map((p) => (
+                <Link key={p.id} href={`/admin/projects/${p.id}`} className="adm-list-row ovw-row">
+                  <div className="grow">
+                    <b>{p.title}</b>
+                    <div className="sub">
+                      {p.lifecycleStatus || 'project'}
+                      {p.updatedAt ? ` · updated ${relativeTime(p.updatedAt)}` : ''}
+                    </div>
+                  </div>
+                  <span className={`adm-pill ${isLive(p) ? 'live' : 'draft'}`}>
+                    {isLive(p) ? 'Live' : 'Draft'}
+                  </span>
+                </Link>
+              ))
+            )}
+          </div>
         </div>
 
-        <div className="adm-table-wrap">
-          <table className="adm-table">
-            <thead>
-              <tr>
-                <th style={{ width: 36 }} />
-                <th>Project</th>
-                <th>Stack</th>
-                <th>Status</th>
-                <th>Completeness</th>
-                <th style={{ textAlign: 'right' }}>Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              {filtered.length === 0 ? (
-                <tr>
-                  <td colSpan={6} className="adm-empty">
-                    {projects.length === 0 ? 'No projects yet. Create your first one.' : 'No projects match your search.'}
-                  </td>
-                </tr>
-              ) : (
-                filtered.map((p) => {
-                  const done = projectCompleteness(p)
-                  const thumb = p.coverImage || p.logoUrl
-                  return (
-                    <tr key={p.id}>
-                      <td>
-                        <span className="adm-drag" title="Drag to reorder">⠿</span>
-                      </td>
-                      <td>
-                        <div className="adm-proj">
-                          {thumb ? (
-                            // eslint-disable-next-line @next/next/no-img-element
-                            <img className="adm-thumb" src={thumb} alt="" />
-                          ) : (
-                            <div className="adm-thumb" />
-                          )}
-                          <div style={{ minWidth: 0 }}>
-                            <b>{p.title}</b>
-                            <span>
-                              {(p.lifecycleStatus || 'project')}
-                              {p.updatedAt ? ` · updated ${relativeTime(p.updatedAt)}` : ''}
-                            </span>
-                          </div>
-                        </div>
-                      </td>
-                      <td className="adm-mono" style={{ fontSize: 12 }}>
-                        {stackLabel(p)}
-                      </td>
-                      <td>
-                        <span className={`adm-pill ${isLive(p) ? 'live' : 'draft'}`}>
-                          {isLive(p) ? 'Live' : 'Draft'}
-                        </span>{' '}
-                        {p.featured ? <span className="adm-pill feat">Featured</span> : null}
-                      </td>
-                      <td style={{ color: done.ok ? 'var(--green)' : 'var(--red)', fontSize: 13 }}>
-                        {done.label}
-                      </td>
-                      <td>
-                        <div className="adm-row-actions">
-                          <Link className="adm-icon-btn" href={`/admin/projects/${p.id}`} title="Edit">
-                            ✎
-                          </Link>
-                          <Link
-                            className="adm-icon-btn"
-                            href={`/projects/${p.slug}`}
-                            target="_blank"
-                            title="View live"
-                          >
-                            ↗
-                          </Link>
-                          <button
-                            className="adm-icon-btn danger"
-                            onClick={() => handleDelete(p)}
-                            title="Delete"
-                          >
-                            🗑
-                          </button>
-                        </div>
-                      </td>
-                    </tr>
-                  )
-                })
-              )}
-            </tbody>
-          </table>
+        <div className="adm-panel">
+          <div className="adm-panel-head">
+            <h2>Latest messages</h2>
+            <Link href="/admin/messages" className="adm-linkbtn">Inbox →</Link>
+          </div>
+          <div className="adm-rows">
+            {recentMessages.length === 0 ? (
+              <div className="adm-empty">No messages yet.</div>
+            ) : (
+              recentMessages.map((m) => (
+                <Link key={m.id} href="/admin/messages" className="adm-list-row ovw-row">
+                  {m.status === 'unread' && <span className="ovw-dot" aria-label="Unread" />}
+                  <div className="grow">
+                    <b>{m.name || 'Anonymous'}</b>
+                    <div className="sub">{m.subject || 'No subject'}</div>
+                  </div>
+                  <span className="adm-cat">{relativeTime(m.createdAt) || 'just now'}</span>
+                </Link>
+              ))
+            )}
+          </div>
         </div>
       </div>
     </AdminShell>

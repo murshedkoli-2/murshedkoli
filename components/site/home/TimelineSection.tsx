@@ -1,59 +1,60 @@
+'use client'
+
+import { motion, useReducedMotion } from 'framer-motion'
 import type { TimelineEntry } from '@/lib/data/portfolio'
-import { Section } from '@/components/site/ui/Section'
-import { Reveal } from '@/components/site/Reveal'
+import { Container } from '@/components/site/ui/Container'
+import { HomeSectionHeader } from './HomeSectionHeader'
 
 interface TimelineSectionProps {
   experience: TimelineEntry[]
   education: TimelineEntry[]
 }
 
-function TimelineColumn({ label, heading, entries }: { label: string; heading: string; entries: TimelineEntry[] }) {
+function TimelineColumn({ label, entries, reduce }: { label: string; entries: TimelineEntry[]; reduce: boolean | null }) {
   if (entries.length === 0) return null
   return (
     <div>
-      <div className="mono" style={{ fontSize: '0.78rem', color: 'var(--comment)', marginBottom: '0.6rem' }}>
-        <span style={{ color: 'var(--accent)' }}>#</span> {label}
+      <div className="hp-meta" style={{ marginBottom: '1.75rem' }}>
+        {label}
       </div>
-      <h3 style={{ fontSize: 'var(--text-h3)', marginBottom: '1.75rem' }}>{heading}</h3>
-      <div
-        style={{
-          position: 'relative',
-          display: 'flex',
-          flexDirection: 'column',
-          gap: '1.75rem',
-          paddingLeft: '1.5rem',
-          borderLeft: '1px solid var(--line)',
-        }}
-      >
-        {entries.map((e) => (
-          <Reveal key={e.id}>
-            <div style={{ position: 'relative' }}>
-              <span
-                aria-hidden
-                style={{
-                  position: 'absolute',
-                  left: 'calc(-1.5rem - 5px)',
-                  top: 6,
-                  width: 9,
-                  height: 9,
-                  borderRadius: 2,
-                  background: e.current ? 'var(--accent)' : 'var(--canvas)',
-                  border: '2px solid var(--accent)',
-                  boxShadow: e.current ? '0 0 0 4px var(--accent-soft)' : 'none',
-                }}
-              />
-              <div className="mono" style={{ fontSize: '0.76rem', color: 'var(--accent)', letterSpacing: '0.02em' }}>
-                {e.period}
-              </div>
-              <div style={{ fontFamily: 'var(--font-display)', fontSize: '1.1rem', fontWeight: 600, marginTop: 5 }}>
-                {e.title}
-              </div>
-              <div style={{ color: 'var(--ink-muted)', fontSize: '0.92rem', marginTop: 2 }}>{e.subtitle}</div>
-              {e.detail && (
-                <p style={{ color: 'var(--ink-muted)', fontSize: '0.9rem', marginTop: 8, lineHeight: 1.6 }}>{e.detail}</p>
+      <div style={{ display: 'flex', flexDirection: 'column' }}>
+        {entries.map((e, idx) => (
+          <motion.div
+            key={e.id}
+            initial={reduce ? {} : { opacity: 0, y: 16 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: '-10%' }}
+            transition={{ duration: 0.5, delay: Math.min(idx * 0.06, 0.25), ease: [0.16, 1, 0.3, 1] }}
+            style={{
+              paddingBlock: '1.5rem',
+              borderTop: '1px solid rgba(255, 255, 255, 0.09)',
+            }}
+          >
+            <div
+              className="hp-meta"
+              style={{
+                marginBottom: '0.6rem',
+                display: 'flex',
+                alignItems: 'center',
+                gap: 10,
+                color: e.current ? '#f5b04c' : undefined,
+              }}
+            >
+              {e.period}
+              {e.current && (
+                <span style={{ width: 6, height: 6, borderRadius: 999, background: '#34d399' }} aria-hidden />
               )}
             </div>
-          </Reveal>
+            <div style={{ fontFamily: 'var(--font-display)', fontSize: '1.2rem', fontWeight: 600, color: '#ececea' }}>
+              {e.title}
+            </div>
+            <div style={{ color: 'rgba(255, 255, 255, 0.5)', fontSize: '0.95rem', marginTop: 4 }}>{e.subtitle}</div>
+            {e.detail && (
+              <p style={{ color: 'rgba(255, 255, 255, 0.55)', fontSize: '0.92rem', marginTop: 10, lineHeight: 1.65, maxWidth: '30rem' }}>
+                {e.detail}
+              </p>
+            )}
+          </motion.div>
         ))}
       </div>
     </div>
@@ -61,14 +62,27 @@ function TimelineColumn({ label, heading, entries }: { label: string; heading: s
 }
 
 export function TimelineSection({ experience, education }: TimelineSectionProps) {
+  const reduce = useReducedMotion()
   if (experience.length === 0 && education.length === 0) return null
 
   return (
-    <Section id="experience" surface eyebrow="journey" title="Experience & education">
-      <div className="timeline-grid">
-        <TimelineColumn label="work" heading="Experience" entries={experience} />
-        <TimelineColumn label="study" heading="Education" entries={education} />
-      </div>
-    </Section>
+    <section
+      id="experience"
+      style={{
+        background: '#0b0b0c',
+        color: '#ececea',
+        paddingBlock: 'var(--space-section)',
+        scrollMarginTop: '5rem',
+        borderTop: '1px solid rgba(255, 255, 255, 0.09)',
+      }}
+    >
+      <Container>
+        <HomeSectionHeader title="Experience &" accent="education" meta="journey" />
+        <div className="timeline-grid">
+          <TimelineColumn label="work" entries={experience} reduce={reduce} />
+          <TimelineColumn label="academic" entries={education} reduce={reduce} />
+        </div>
+      </Container>
+    </section>
   )
 }

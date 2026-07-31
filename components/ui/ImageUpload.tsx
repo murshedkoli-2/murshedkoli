@@ -100,14 +100,15 @@ export function ImageUpload({ value, onChange, label, previewSize = 'medium', fo
     }
 
     return (
-        <div className="space-y-2">
-            <label className="block text-sm font-medium text-gray-300">
-                {label}
-            </label>
+        <div>
+            <span className="pe-label">{label}</span>
 
             {value ? (
-                <div className="relative group">
-                    <div className={`relative ${previewSizes[previewSize]} rounded-lg overflow-hidden bg-white/10`}>
+                <div className={`relative group ${previewSizes[previewSize]}`}>
+                    <div
+                        className="relative w-full h-full overflow-hidden"
+                        style={{ borderRadius: 6, border: '1px solid var(--line)', background: 'var(--surface-2)' }}
+                    >
                         <Image
                             src={value}
                             alt={label}
@@ -119,9 +120,11 @@ export function ImageUpload({ value, onChange, label, previewSize = 'medium', fo
                     <button
                         type="button"
                         onClick={handleRemove}
-                        className="absolute -top-2 -right-2 w-6 h-6 bg-red-500 text-white rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity hover:bg-red-600"
+                        aria-label={`Remove ${label}`}
+                        className="absolute -top-2 -right-2 w-6 h-6 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
+                        style={{ background: 'var(--ink)', color: 'var(--canvas)' }}
                     >
-                        <X size={14} />
+                        <X size={13} />
                     </button>
                 </div>
             ) : (
@@ -130,22 +133,15 @@ export function ImageUpload({ value, onChange, label, previewSize = 'medium', fo
                     onDragLeave={handleDragLeave}
                     onDrop={handleDrop}
                     onClick={() => fileInputRef.current?.click()}
-                    className={`
-                        relative border-2 border-dashed rounded-lg cursor-pointer
-                        transition-all duration-200 flex flex-col items-center justify-center
-                        ${previewSizes[previewSize]}
-                        ${isDragging 
-                            ? 'border-blue-500 bg-blue-500/10' 
-                            : 'border-white/20 hover:border-white/40 hover:bg-white/5'
-                        }
-                    `}
+                    className={`cert-drop-zone ${isDragging ? 'drag-over' : ''} ${isUploading ? 'uploading' : ''} ${previewSizes[previewSize]}`}
+                    style={{ justifyContent: 'center' }}
                 >
                     {isUploading ? (
-                        <Loader2 className="w-8 h-8 text-blue-400 animate-spin" />
+                        <Loader2 className="w-7 h-7 animate-spin" style={{ color: 'var(--accent)' }} />
                     ) : (
                         <>
-                            <Upload className={`w-8 h-8 text-gray-400 ${isDragging ? 'text-blue-400' : ''}`} />
-                            <span className={`mt-2 text-xs text-gray-400 ${isDragging ? 'text-blue-400' : ''}`}>
+                            <Upload className="w-6 h-6" style={{ color: 'var(--ink-muted)' }} />
+                            <span className="cert-drop-sub" style={{ marginTop: 6 }}>
                                 Click or drag image
                             </span>
                         </>

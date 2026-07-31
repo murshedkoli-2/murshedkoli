@@ -1,7 +1,8 @@
-import { Space_Grotesk, Inter, JetBrains_Mono } from 'next/font/google'
+import { Space_Grotesk, Inter, JetBrains_Mono, Instrument_Serif } from 'next/font/google'
 import './globals.css'
 import { Metadata, Viewport } from 'next'
 import ToasterProvider from '@/components/ToasterProvider'
+import { ConfirmDialogHost } from '@/components/ui/ConfirmDialog'
 import { ThemeProvider } from '@/components/site/ThemeProvider'
 import { themeInitScript } from '@/lib/theme'
 import { getPublicProfile, getSettingsMap } from '@/lib/site-data'
@@ -24,6 +25,14 @@ const jetbrainsMono = JetBrains_Mono({
   subsets: ['latin'],
   weight: ['400', '500', '600'],
   variable: '--font-jetbrains-mono',
+  display: 'swap',
+})
+
+const instrumentSerif = Instrument_Serif({
+  subsets: ['latin'],
+  weight: '400',
+  style: ['normal', 'italic'],
+  variable: '--font-instrument-serif',
   display: 'swap',
 })
 
@@ -185,7 +194,7 @@ export default async function RootLayout({
   return (
     <html
       lang="en"
-      className={`${spaceGrotesk.variable} ${inter.variable} ${jetbrainsMono.variable}`}
+      className={`${spaceGrotesk.variable} ${inter.variable} ${jetbrainsMono.variable} ${instrumentSerif.variable}`}
       suppressHydrationWarning
     >
       <head>
@@ -201,6 +210,7 @@ export default async function RootLayout({
         <ThemeProvider>
           {children}
           <ToasterProvider />
+          <ConfirmDialogHost />
         </ThemeProvider>
       </body>
     </html>

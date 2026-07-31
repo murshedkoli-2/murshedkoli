@@ -10,7 +10,8 @@ import { Button } from '@/components/ui/FormElements'
 interface FeaturesTabProps {
   features: FeatureItemType[]
   onChange: (features: FeatureItemType[]) => void
-  onSave: () => void
+  /** Omitted by the create wizard, which defers all saving to the final step. */
+  onSave?: () => void
   isLoading?: boolean
 }
 
@@ -44,39 +45,48 @@ export function FeaturesTab({ features, onChange, onSave, isLoading }: FeaturesT
   return (
     <div className="space-y-6">
 
-      {/* Stats */}
+      {/* Stats — a single hairline meter, amber fill */}
       {total > 0 && (
         <div className="flex items-center gap-4 px-1">
-          <span className="text-sm text-zinc-400">
-            <span className="text-white font-semibold">{done}</span>/{total} done
+          <span className="adm-mono" style={{ fontSize: 11.5, color: 'var(--ink-muted)', whiteSpace: 'nowrap' }}>
+            <span style={{ color: 'var(--ink)', fontWeight: 600 }}>{done}</span>/{total} done
           </span>
-          <div className="flex-1 h-1 bg-zinc-800">
+          <div
+            className="flex-1 overflow-hidden"
+            style={{ height: 3, background: 'var(--line)', borderRadius: 999 }}
+          >
             <div
-              className="h-full bg-emerald-500 transition-all"
-              style={{ width: `${total ? (done / total) * 100 : 0}%` }}
+              style={{
+                height: '100%',
+                width: `${total ? (done / total) * 100 : 0}%`,
+                background: 'var(--accent)',
+                transition: 'width 600ms cubic-bezier(0.16, 1, 0.3, 1)',
+              }}
             />
           </div>
-          <span className="text-xs text-zinc-600 font-mono">
+          <span className="adm-mono" style={{ fontSize: 11.5, color: 'var(--accent)' }}>
             {total ? Math.round((done / total) * 100) : 0}%
           </span>
         </div>
       )}
 
       {/* Add input */}
-      <div className="flex gap-2">
+      <div className="flex gap-2.5">
         <input
           ref={inputRef}
           value={draft}
           onChange={e => setDraft(e.target.value)}
           onKeyDown={e => e.key === 'Enter' && add()}
-          placeholder="Add a feature…"
-          className="flex-1 bg-zinc-900 border border-zinc-800 text-sm text-white placeholder-zinc-600 px-3 py-2 outline-none focus:border-zinc-600 transition-colors"
+          placeholder="Add a new feature…"
+          aria-label="New feature"
+          className="pe-input flex-1"
         />
         <button
           type="button"
           onClick={add}
           disabled={!draft.trim()}
-          className="px-3 py-2 bg-zinc-800 hover:bg-zinc-700 text-white disabled:opacity-40 transition-colors"
+          aria-label="Add feature"
+          className="pe-btn pe-btn-primary pe-btn-md"
         >
           <Plus size={16} />
         </button>
@@ -84,45 +94,66 @@ export function FeaturesTab({ features, onChange, onSave, isLoading }: FeaturesT
 
       {/* Checklist */}
       {features.length === 0 ? (
-        <p className="text-sm text-zinc-600 text-center py-8">
+        <p className="text-center py-10" style={{ fontSize: 13, color: 'var(--ink-muted)' }}>
           No features yet — type above and press Enter.
         </p>
       ) : (
-        <Reorder.Group axis="y" values={features} onReorder={reorder} className="space-y-[2px]">
-          {features.map(f => (
-            <Reorder.Item key={f.id} value={f} className="group">
-              <div className={`flex items-center gap-3 px-3 py-2.5 border transition-colors ${
-                f.done
-                  ? 'bg-emerald-500/5 border-emerald-500/20'
-                  : 'bg-zinc-900/40 border-zinc-800/60'
-              }`}>
+        <Reorder.Group
+          axis="y"
+          values={features}
+          onReorder={reorder}
+          style={{ border: '1px solid var(--line)', borderRadius: 8, overflow: 'hidden' }}
+        >
+          {features.map((f, i) => (
+            <Reorder.Item key={f.id} value={f} className="group outline-none">
+              <div
+                className="flex items-center gap-3 px-4 py-3"
+                style={{
+                  borderTop: i === 0 ? 'none' : '1px solid var(--line)',
+                  background: f.done ? 'var(--accent-soft)' : 'var(--surface)',
+                  transition: 'background 200ms ease',
+                }}
+              >
                 {/* Drag */}
-                <span className="text-zinc-700 opacity-0 group-hover:opacity-100 transition-opacity cursor-grab active:cursor-grabbing shrink-0">
-                  <GripVertical size={14} />
+                <span
+                  className="opacity-0 group-hover:opacity-100 transition-opacity cursor-grab active:cursor-grabbing shrink-0"
+                  style={{ color: 'var(--ink-muted)' }}
+                >
+                  <GripVertical size={15} />
                 </span>
 
                 {/* Checkbox */}
                 <button
                   type="button"
                   onClick={() => toggle(f.id)}
-                  className={`w-4 h-4 border shrink-0 flex items-center justify-center transition-colors ${
-                    f.done
-                      ? 'bg-emerald-500 border-emerald-500 text-zinc-900'
-                      : 'border-zinc-600 hover:border-zinc-400'
-                  }`}
+                  className="shrink-0 flex items-center justify-center"
+                  style={{
+                    width: 17,
+                    height: 17,
+                    borderRadius: 4,
+                    border: `1px solid ${f.done ? 'var(--accent)' : 'var(--line-strong)'}`,
+                    background: f.done ? 'var(--accent)' : 'transparent',
+                    color: 'var(--accent-ink)',
+                    transition: 'background 200ms ease, border-color 200ms ease',
+                  }}
                   aria-label={f.done ? 'Mark incomplete' : 'Mark complete'}
                 >
                   {f.done && (
-                    <svg width="10" height="8" viewBox="0 0 10 8" fill="none">
-                      <path d="M1 4l3 3 5-6" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                    <svg width="11" height="9" viewBox="0 0 10 8" fill="none">
+                      <path d="M1 4l3 3 5-6" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
                     </svg>
                   )}
                 </button>
 
                 {/* Title */}
-                <span className={`flex-1 text-sm transition-colors ${
-                  f.done ? 'text-zinc-500 line-through' : 'text-zinc-200'
-                }`}>
+                <span
+                  className="flex-1"
+                  style={{
+                    fontSize: 13.5,
+                    color: f.done ? 'var(--ink-muted)' : 'var(--ink)',
+                    textDecoration: f.done ? 'line-through' : 'none',
+                  }}
+                >
                   {f.title}
                 </span>
 
@@ -130,9 +161,11 @@ export function FeaturesTab({ features, onChange, onSave, isLoading }: FeaturesT
                 <button
                   type="button"
                   onClick={() => remove(f.id)}
-                  className="opacity-0 group-hover:opacity-100 text-zinc-600 hover:text-red-400 transition-all shrink-0"
+                  aria-label={`Delete ${f.title}`}
+                  className="opacity-0 group-hover:opacity-100 transition-opacity shrink-0 p-1"
+                  style={{ color: 'var(--ink-muted)' }}
                 >
-                  <Trash2 size={14} />
+                  <Trash2 size={15} />
                 </button>
               </div>
             </Reorder.Item>
@@ -141,7 +174,7 @@ export function FeaturesTab({ features, onChange, onSave, isLoading }: FeaturesT
       )}
 
       {/* Save */}
-      {features.length > 0 && (
+      {onSave && features.length > 0 && (
         <div className="flex justify-end">
           <Button onClick={onSave} isLoading={isLoading}>Save Features</Button>
         </div>

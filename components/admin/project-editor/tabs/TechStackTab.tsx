@@ -3,15 +3,14 @@
 import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Input, Select, Button, Card, EmptyState } from '@/components/ui/FormElements'
-import { Badge } from '@/components/ui/Badge'
 import { TechStackItemType, TechCategoryType } from '@/lib/validations/project'
-import { generateId, getTechCategoryColor } from '@/lib/utils/project-helpers'
-import { Plus, Trash2, Cpu, Database, Globe, Server, Sparkles, Package, X } from 'lucide-react'
+import { Plus, Cpu, Database, Globe, Server, Sparkles, Package, X } from 'lucide-react'
 
 interface TechStackTabProps {
   techStack: TechStackItemType[]
   onChange: (techStack: TechStackItemType[]) => void
-  onSave: () => void
+  /** Omitted by the create wizard, which defers all saving to the final step. */
+  onSave?: () => void
   isLoading?: boolean
 }
 
@@ -91,36 +90,34 @@ export function TechStackTab({ techStack, onChange, onSave, isLoading }: TechSta
     <div className="space-y-6">
       {/* Add New Tech */}
       <Card>
-        <h3 className="text-lg font-semibold text-white mb-4">Add Technology</h3>
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+        <span className="pe-label">Add Technology</span>
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-3">
           <div className="md:col-span-2">
             <Input
               placeholder="Technology name..."
+              aria-label="Technology name"
               value={newTech.name}
               onChange={(e) => setNewTech(prev => ({ ...prev, name: e.target.value }))}
               onKeyDown={(e) => e.key === 'Enter' && addTech()}
             />
           </div>
           <Select
+            aria-label="Category"
             value={newTech.category}
             onChange={(e) => setNewTech(prev => ({ ...prev, category: e.target.value as TechCategoryType }))}
             options={categoryOptions}
           />
-          <Button onClick={() => addTech()} leftIcon={<Plus size={16} />} disabled={!newTech.name.trim()}>
+          <Button onClick={() => addTech()} leftIcon={<Plus size={15} />} disabled={!newTech.name.trim()}>
             Add Tech
           </Button>
         </div>
 
         {/* Quick Add Suggestions */}
-        <div className="mt-4">
-          <p className="text-sm text-gray-300 mb-2">Quick add:</p>
+        <div className="mt-5">
+          <span className="pe-label">Quick add</span>
           <div className="flex flex-wrap gap-2">
             {getSuggestions().slice(0, 8).map((tech) => (
-              <button
-                key={tech}
-                onClick={() => addTech(tech, newTech.category)}
-                className="px-3 py-1.5 text-sm bg-white/10 hover:bg-white/15 text-gray-200 hover:text-white rounded-lg border border-white/20 hover:border-white/30 transition-colors"
-              >
+              <button key={tech} onClick={() => addTech(tech, newTech.category)} className="pe-chip">
                 + {tech}
               </button>
             ))}
@@ -132,27 +129,19 @@ export function TechStackTab({ techStack, onChange, onSave, isLoading }: TechSta
       <div className="flex items-center gap-2 flex-wrap">
         <button
           onClick={() => setSelectedCategory('all')}
-          className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
-            selectedCategory === 'all' 
-              ? 'bg-blue-600 text-white' 
-              : 'bg-white/10 text-gray-300 hover:text-white'
-          }`}
+          className={`pe-chip ${selectedCategory === 'all' ? 'on' : ''}`}
         >
           All ({techStack.length})
         </button>
         {Object.entries(CATEGORY_CONFIG).map(([category, config]) => {
           const count = groupedTechStack[category as TechCategoryType]?.length || 0
           if (count === 0) return null
-          
+
           return (
             <button
               key={category}
               onClick={() => setSelectedCategory(category as TechCategoryType)}
-              className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
-                selectedCategory === category 
-                  ? 'bg-blue-600 text-white' 
-                  : 'bg-white/10 text-gray-300 hover:text-white'
-              }`}
+              className={`pe-chip ${selectedCategory === category ? 'on' : ''}`}
             >
               {config.icon}
               {config.label} ({count})
@@ -174,42 +163,40 @@ export function TechStackTab({ techStack, onChange, onSave, isLoading }: TechSta
           {Object.entries(groupedTechStack).map(([category, techs]) => {
             if (techs.length === 0) return null
             const config = CATEGORY_CONFIG[category as TechCategoryType]
-            const colors = getTechCategoryColor(category)
 
             return (
               <Card key={category}>
-                <div className="flex items-center gap-2 mb-4">
-                  <div className={`w-8 h-8 rounded-lg ${colors.bgColor} flex items-center justify-center ${colors.color}`}>
-                    {config.icon}
-                  </div>
-                  <h3 className="font-semibold text-white">{config.label}</h3>
-                  <Badge variant="default">{techs.length}</Badge>
+                <div className="flex items-center gap-2.5 mb-4">
+                  <span style={{ color: 'var(--accent)', display: 'flex' }}>{config.icon}</span>
+                  <h3 style={{ fontFamily: 'var(--adm-display)', fontSize: 13.5, fontWeight: 700 }}>
+                    {config.label}
+                  </h3>
+                  <span className="adm-mono" style={{ fontSize: 11, color: 'var(--ink-muted)' }}>
+                    {techs.length}
+                  </span>
                 </div>
 
                 <div className="flex flex-wrap gap-2">
                   <AnimatePresence>
                     {techs.map((tech) => (
-                      <motion.div
+                      <motion.span
                         key={tech.name}
-                        initial={{ scale: 0.8, opacity: 0 }}
-                        animate={{ scale: 1, opacity: 1 }}
-                        exit={{ scale: 0.8, opacity: 0 }}
-                        className={`group flex items-center gap-2 px-3 py-2 ${colors.bgColor} ${colors.color} 
-                          rounded-lg border ${colors.borderColor} hover:bg-opacity-20 transition-colors`}
+                        initial={{ opacity: 0, y: 6 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0, y: -6 }}
+                        className="pe-chip group"
+                        style={{ cursor: 'default' }}
                       >
-                        {tech.icon ? (
-                          <span className="text-sm">{tech.icon}</span>
-                        ) : (
-                          config.icon
-                        )}
-                        <span className="font-medium">{tech.name}</span>
+                        {tech.icon ? <span>{tech.icon}</span> : config.icon}
+                        <span style={{ color: 'var(--ink)' }}>{tech.name}</span>
                         <button
                           onClick={() => removeTech(tech.name)}
-                          className="opacity-0 group-hover:opacity-100 ml-1 p-1 hover:bg-white/10 rounded transition-all"
+                          aria-label={`Remove ${tech.name}`}
+                          className="opacity-0 group-hover:opacity-100 transition-opacity -mr-1"
                         >
-                          <X size={14} />
+                          <X size={13} />
                         </button>
-                      </motion.div>
+                      </motion.span>
                     ))}
                   </AnimatePresence>
                 </div>
@@ -222,35 +209,33 @@ export function TechStackTab({ techStack, onChange, onSave, isLoading }: TechSta
         <Card>
           <div className="flex flex-wrap gap-2">
             <AnimatePresence>
-              {filteredTechStack.map((tech) => {
-                const colors = getTechCategoryColor(tech.category)
-                return (
-                  <motion.div
-                    key={tech.name}
-                    initial={{ scale: 0.8, opacity: 0 }}
-                    animate={{ scale: 1, opacity: 1 }}
-                    exit={{ scale: 0.8, opacity: 0 }}
-                    className={`group flex items-center gap-2 px-3 py-2 ${colors.bgColor} ${colors.color} 
-                      rounded-lg border ${colors.borderColor} hover:bg-opacity-20 transition-colors`}
+              {filteredTechStack.map((tech) => (
+                <motion.span
+                  key={tech.name}
+                  initial={{ opacity: 0, y: 6 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -6 }}
+                  className="pe-chip group"
+                  style={{ cursor: 'default' }}
+                >
+                  {CATEGORY_CONFIG[tech.category].icon}
+                  <span style={{ color: 'var(--ink)' }}>{tech.name}</span>
+                  <button
+                    onClick={() => removeTech(tech.name)}
+                    aria-label={`Remove ${tech.name}`}
+                    className="opacity-0 group-hover:opacity-100 transition-opacity -mr-1"
                   >
-                    {CATEGORY_CONFIG[tech.category].icon}
-                    <span className="font-medium">{tech.name}</span>
-                    <button
-                      onClick={() => removeTech(tech.name)}
-                      className="opacity-0 group-hover:opacity-100 ml-1 p-1 hover:bg-white/10 rounded transition-all"
-                    >
-                      <X size={14} />
-                    </button>
-                  </motion.div>
-                )
-              })}
+                    <X size={13} />
+                  </button>
+                </motion.span>
+              ))}
             </AnimatePresence>
           </div>
         </Card>
       )}
 
       {/* Save Button */}
-      {techStack.length > 0 && (
+      {onSave && techStack.length > 0 && (
         <div className="flex justify-end">
           <Button onClick={onSave} isLoading={isLoading}>
             Save Tech Stack
