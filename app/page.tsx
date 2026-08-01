@@ -1,5 +1,6 @@
 import { Nav } from '@/components/site/Nav'
 import { Footer } from '@/components/site/Footer'
+import { ScrollSequenceBackground } from '@/components/site/ScrollSequenceBackground'
 import { Hero } from '@/components/site/home/Hero'
 import { ScrollStorySection } from '@/components/site/home/ScrollStorySection'
 import { ServicesSection } from '@/components/site/home/ServicesSection'
@@ -53,8 +54,9 @@ export default async function Home() {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(personJsonLd) }}
       />
+      <ScrollSequenceBackground />
       <Nav name={profile.name} resumeUrl={profile.resume} dark />
-      <main style={{ background: '#0b0b0c' }}>
+      <main className="seq-host">
         <Hero profile={profile} stats={stats} />
         <ScrollStorySection profile={profile} />
         <ServicesSection services={services} />

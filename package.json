@@ -7,6 +7,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint . --ext .js,.jsx,.ts,.tsx",
+    "frames": "node scripts/build-scroll-frames.mjs",
     "postinstall": "prisma generate && node scripts/sync-pdf-worker.mjs"
   },
   "dependencies": {

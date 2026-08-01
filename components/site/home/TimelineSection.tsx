@@ -69,7 +69,7 @@ export function TimelineSection({ experience, education }: TimelineSectionProps)
     <section
       id="experience"
       style={{
-        background: '#0b0b0c',
+        background: 'var(--section-ground, #0b0b0c)',
         color: '#ececea',
         paddingBlock: 'var(--space-section)',
         scrollMarginTop: '5rem',

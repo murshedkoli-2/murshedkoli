@@ -1,0 +1,15 @@
+{
+  "count": 100,
+  "aspect": 1.7778,
+  "tiers": [
+    {
+      "name": "lg",
+      "width": 540
+    },
+    {
+      "name": "sm",
+      "width": 300
+    }
+  ],
+  "generatedAt": "2026-08-01T11:06:01.535Z"
+}

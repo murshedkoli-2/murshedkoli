@@ -44,7 +44,7 @@ export function ScrollStorySection({ profile }: ScrollStorySectionProps) {
       id="philosophy"
       style={{
         position: 'relative',
-        background: '#0b0b0c',
+        background: 'var(--section-ground, #0b0b0c)',
         color: '#ececea',
         borderTop: '1px solid rgba(255, 255, 255, 0.09)',
         paddingBlock: 'clamp(6rem, 4rem + 8vh, 11rem)',

@@ -16,7 +16,7 @@ export function SkillsSection({ columns }: SkillsSectionProps) {
   return (
     <section
       style={{
-        background: '#0b0b0c',
+        background: 'var(--section-ground, #0b0b0c)',
         color: '#ececea',
         paddingBlock: 'var(--space-section)',
         borderTop: '1px solid rgba(255, 255, 255, 0.09)',

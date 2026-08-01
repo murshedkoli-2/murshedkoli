@@ -64,7 +64,7 @@ export function Hero({ profile, stats }: HeroProps) {
         minHeight: '100svh',
         display: 'flex',
         flexDirection: 'column',
-        background: '#0b0b0c',
+        background: 'var(--section-ground, #0b0b0c)',
         color: '#ececea',
         overflow: 'hidden',
       }}
