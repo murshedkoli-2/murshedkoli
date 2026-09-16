@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect, useRef, useState, type ReactNode } from 'react'
+import { AIGenerateButton } from '@/components/AIGenerateButton'
 
 interface EditableFieldProps {
   label: string
@@ -16,6 +17,9 @@ interface EditableFieldProps {
   extra?: ReactNode
   /** Renders the stored value as something other than plain text. */
   renderValue?: (value: string) => ReactNode
+  /** Optional AI prompt field type (e.g. 'profile-description', 'profile-title') */
+  aiField?: string
+  aiContextData?: Record<string, any>
 }
 
 /**
@@ -34,6 +38,8 @@ export function EditableField({
   emptyText = 'Not set',
   extra,
   renderValue,
+  aiField,
+  aiContextData,
 }: EditableFieldProps) {
   const [editing, setEditing] = useState(false)
   const [draft, setDraft] = useState(value)
@@ -115,13 +121,24 @@ export function EditableField({
             onKeyDown={onKeyDown}
           />
         )}
-        <div className="ef-actions">
+        <div className="ef-actions" style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
           <button className="adm-btn amber" onClick={commit} disabled={saving}>
             {saving ? 'Saving…' : 'Save'}
           </button>
           <button className="adm-btn" onClick={cancel} disabled={saving}>
             Cancel
           </button>
+          {aiField && (
+            <AIGenerateButton
+              label="AI Generate"
+              size="sm"
+              promptContext={{
+                field: aiField,
+                contextData: aiContextData || { currentText: draft },
+              }}
+              onGenerate={(text) => setDraft(text)}
+            />
+          )}
           {!multiline && <span className="ef-hint">Enter to save · Esc to cancel</span>}
         </div>
       </div>

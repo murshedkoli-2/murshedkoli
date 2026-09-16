@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { GoogleGenAI } from '@google/genai'
+import { generateUnifiedAICompletion } from '@/lib/ai/nvidia-nim'
 import { prisma } from '@/lib/prisma'
 import { requireAdmin } from '@/lib/auth/require-admin'
 import { CareerTask, CareerTaskEvaluation } from '@/lib/data/career-roadmap'
@@ -76,88 +76,32 @@ EVALUATION INSTRUCTIONS:
   "seniorTips": "One or two sentences of high-value advice on how this concept is evaluated in top-tier interviews and scaled in production systems."
 }`
 
-    // Fetch custom API keys from settings if available
-    let customGoogleKey: string | null = null
-    let customOpenRouterKey: string | null = null
-    try {
-      const googleAiSetting = await (prisma as any).settings.findUnique({ where: { key: 'googleAiKey' } })
-      const openRouterSetting = await (prisma as any).settings.findUnique({ where: { key: 'openRouterKey' } })
-      if (googleAiSetting?.value) customGoogleKey = String(googleAiSetting.value).replace(/^["']|["']$/g, '').trim()
-      if (openRouterSetting?.value) customOpenRouterKey = String(openRouterSetting.value).replace(/^["']|["']$/g, '').trim()
-    } catch (e) {
-      console.error('Settings DB error:', e)
-    }
-
     let evaluationResult: CareerTaskEvaluation | null = null
 
-    // Try Google Gemini (gemini-2.5-flash)
-    const googleKey = customGoogleKey || process.env.GOOGLE_AI_API_KEY
-    if (googleKey) {
-      try {
-        const ai = new GoogleGenAI({ apiKey: googleKey })
-        const response = await ai.models.generateContent({
-          model: 'gemini-2.5-flash',
-          contents: prompt,
-        })
+    try {
+      const aiResult = await generateUnifiedAICompletion({
+        prompt,
+        systemPrompt: 'You are an exacting Principal Staff Software Engineer and hiring bar-raiser grading a technical challenge. Return ONLY valid raw JSON conforming strictly to the requested schema with no markdown code blocks.',
+        temperature: 0.2,
+        responseFormat: 'json',
+      })
 
-        if (response.text) {
-          const cleaned = response.text.replace(/^```json\s*/i, '').replace(/\s*```$/i, '').trim()
-          const parsed = JSON.parse(cleaned)
-          evaluationResult = {
-            score: Math.min(100, Math.max(0, Number(parsed.score) || 75)),
-            passed: Boolean(parsed.passed ?? parsed.score >= 70),
-            summary: String(parsed.summary || 'Task evaluated successfully.'),
-            strengths: Array.isArray(parsed.strengths) ? parsed.strengths.map(String) : [],
-            improvements: Array.isArray(parsed.improvements) ? parsed.improvements.map(String) : [],
-            seniorTips: String(parsed.seniorTips || 'Keep building clean, modular systems.'),
-            evaluatedAt: new Date().toISOString(),
-            evaluator: 'ai',
-          }
-        }
-      } catch (err) {
-        console.error('Gemini evaluation failed, checking fallback:', err)
-      }
-    }
-
-    // Fallback: OpenRouter
-    if (!evaluationResult) {
-      const openRouterKey = customOpenRouterKey || process.env.OPENROUTER_API_KEY
-      if (openRouterKey) {
-        try {
-          const res = await fetch('https://openrouter.ai/api/v1/chat/completions', {
-            method: 'POST',
-            headers: {
-              'Authorization': `Bearer ${openRouterKey}`,
-              'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-              model: 'openai/gpt-4o-mini',
-              messages: [{ role: 'user', content: prompt }],
-            }),
-          })
-
-          if (res.ok) {
-            const data = await res.json()
-            const text = data.choices?.[0]?.message?.content
-            if (text) {
-              const cleaned = text.replace(/^```json\s*/i, '').replace(/\s*```$/i, '').trim()
-              const parsed = JSON.parse(cleaned)
-              evaluationResult = {
-                score: Math.min(100, Math.max(0, Number(parsed.score) || 75)),
-                passed: Boolean(parsed.passed ?? parsed.score >= 70),
-                summary: String(parsed.summary || 'Task evaluated successfully.'),
-                strengths: Array.isArray(parsed.strengths) ? parsed.strengths.map(String) : [],
-                improvements: Array.isArray(parsed.improvements) ? parsed.improvements.map(String) : [],
-                seniorTips: String(parsed.seniorTips || 'Keep building clean, modular systems.'),
-                evaluatedAt: new Date().toISOString(),
-                evaluator: 'ai',
-              }
-            }
-          }
-        } catch (err) {
-          console.error('OpenRouter evaluation failed:', err)
+      if (aiResult.text) {
+        const cleaned = aiResult.text.replace(/^```json\s*/i, '').replace(/\s*```$/i, '').trim()
+        const parsed = JSON.parse(cleaned)
+        evaluationResult = {
+          score: Math.min(100, Math.max(0, Number(parsed.score) || 75)),
+          passed: Boolean(parsed.passed ?? parsed.score >= 70),
+          summary: String(parsed.summary || 'Task evaluated successfully.'),
+          strengths: Array.isArray(parsed.strengths) ? parsed.strengths.map(String) : [],
+          improvements: Array.isArray(parsed.improvements) ? parsed.improvements.map(String) : [],
+          seniorTips: String(parsed.seniorTips || 'Keep building clean, modular systems.'),
+          evaluatedAt: new Date().toISOString(),
+          evaluator: 'ai',
         }
       }
+    } catch (err) {
+      console.error('AI evaluation execution error:', err)
     }
 
     // Algorithmic heuristic fallback if API keys unavailable

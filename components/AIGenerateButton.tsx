@@ -10,13 +10,24 @@ interface AIGenerateButtonProps {
     field: string
     contextData: Record<string, any>
   }
+  label?: string
   className?: string
+  size?: 'sm' | 'md'
 }
 
-export function AIGenerateButton({ onGenerate, promptContext, className = '' }: AIGenerateButtonProps) {
+export function AIGenerateButton({
+  onGenerate,
+  promptContext,
+  label = 'AI Generate',
+  className = '',
+  size = 'sm',
+}: AIGenerateButtonProps) {
   const [loading, setLoading] = useState(false)
 
-  const handleGenerate = async () => {
+  const handleGenerate = async (e: React.MouseEvent) => {
+    e.preventDefault()
+    e.stopPropagation()
+
     try {
       setLoading(true)
       const response = await fetch('/api/generate', {
@@ -24,17 +35,20 @@ export function AIGenerateButton({ onGenerate, promptContext, className = '' }: 
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(promptContext),
       })
+
       if (!response.ok) {
         throw new Error('Failed to generate content')
       }
+
       const data = await response.json()
       if (data.text) {
         onGenerate(data.text)
+        const providerName = data.provider === 'nvidia-nim' ? 'NVIDIA NIM (LLaMA 3.3)' : data.provider || 'AI'
+        toast.success(`Generated via ${providerName}`)
       }
     } catch (error) {
       console.error('AI Generation error:', error)
-      // Transient failure, not a decision — a toast is the right primitive here.
-      toast.error('Could not generate content. Check that your API keys are configured.')
+      toast.error('Could not generate content. Check your AI keys in Settings.')
     } finally {
       setLoading(false)
     }
@@ -45,15 +59,28 @@ export function AIGenerateButton({ onGenerate, promptContext, className = '' }: 
       type="button"
       onClick={handleGenerate}
       disabled={loading}
-      className={`pe-btn pe-btn-ghost pe-btn-sm ${className}`}
-      title="Auto-generate via AI"
+      className={`adm-btn ${className}`}
+      style={{
+        display: 'inline-flex',
+        alignItems: 'center',
+        gap: 6,
+        padding: size === 'sm' ? '3px 8px' : '6px 12px',
+        fontSize: size === 'sm' ? 11.5 : 13,
+        fontWeight: 600,
+        borderRadius: 8,
+        background: 'linear-gradient(135deg, rgba(16, 185, 129, 0.1) 0%, rgba(5, 150, 105, 0.15) 100%)',
+        border: '1px solid rgba(16, 185, 129, 0.3)',
+        color: '#10b981',
+        cursor: loading ? 'not-allowed' : 'pointer',
+      }}
+      title="Auto-generate or polish content using NVIDIA NIM AI"
     >
       {loading ? (
-        <Loader2 size={13} className="animate-spin" />
+        <Loader2 size={12} className="animate-spin" />
       ) : (
-        <Sparkles size={13} />
+        <Sparkles size={12} style={{ color: '#10b981' }} />
       )}
-      <span>Generate AI</span>
+      <span>{loading ? 'Thinking…' : label}</span>
     </button>
   )
 }

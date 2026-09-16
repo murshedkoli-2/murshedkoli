@@ -5,6 +5,7 @@ import Link from 'next/link'
 import { toast } from 'sonner'
 import { AdminShell } from '@/components/admin/AdminShell'
 import { confirmDialog } from '@/components/ui/ConfirmDialog'
+import { AIGenerateButton } from '@/components/AIGenerateButton'
 import { useAdminGuard } from '@/lib/admin/useAdminGuard'
 import { adminFetch } from '@/lib/admin/adminFetch'
 import {
@@ -658,7 +659,17 @@ export default function TourManager() {
               </div>
 
               <div className="adm-field adm-col-2">
-                <label className="adm-label">Notes & Visa Details for BD Passport</label>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 6 }}>
+                  <label className="adm-label" style={{ margin: 0 }}>Notes & Visa Details for BD Passport</label>
+                  <AIGenerateButton
+                    label="AI Travel Itinerary"
+                    promptContext={{
+                      field: 'tour-itinerary',
+                      contextData: { destination: editing.country || editing.name, region: editing.region },
+                    }}
+                    onGenerate={(text) => setEditing((prev) => prev ? { ...prev, notes: text } : null)}
+                  />
+                </div>
                 <textarea
                   className="adm-textarea"
                   value={editing.notes ?? ''}

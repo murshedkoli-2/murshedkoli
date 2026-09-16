@@ -4,6 +4,7 @@ import { useCallback, useEffect, useMemo, useState } from 'react'
 import { toast } from 'sonner'
 import { AdminShell } from '@/components/admin/AdminShell'
 import { confirmDialog } from '@/components/ui/ConfirmDialog'
+import { AIGenerateButton } from '@/components/AIGenerateButton'
 import { useAdminGuard } from '@/lib/admin/useAdminGuard'
 
 interface Service {
@@ -147,12 +148,22 @@ export default function ServicesManager() {
                 />
               </div>
               <div className="adm-field adm-col-2">
-                <label className="adm-label">Description</label>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 6 }}>
+                  <label className="adm-label" style={{ margin: 0 }}>Description</label>
+                  <AIGenerateButton
+                    label="AI Write Service"
+                    promptContext={{
+                      field: 'service-description',
+                      contextData: { title: editing.title || 'Custom Full-Stack Development' },
+                    }}
+                    onGenerate={(text) => setEditing((prev) => prev ? { ...prev, description: text } : null)}
+                  />
+                </div>
                 <textarea
                   className="adm-textarea"
                   value={editing.description}
                   onChange={(e) => setEditing({ ...editing, description: e.target.value })}
-                  placeholder="Short description of what you offer"
+                  placeholder="Compelling client-focused description of what you deliver"
                 />
               </div>
               <div className="adm-field">

@@ -4,6 +4,7 @@ import { useCallback, useEffect, useState } from 'react'
 import { toast } from 'sonner'
 import { AdminShell } from '@/components/admin/AdminShell'
 import { confirmDialog } from '@/components/ui/ConfirmDialog'
+import { AIGenerateButton } from '@/components/AIGenerateButton'
 import { useAdminGuard } from '@/lib/admin/useAdminGuard'
 import { period, toDateInput, type Education } from '@/lib/admin/timeline'
 
@@ -123,7 +124,21 @@ export default function EducationManager() {
                 </label>
               </div>
               <div className="adm-field adm-col-2">
-                <label className="adm-label">Description (optional)</label>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 6 }}>
+                  <label className="adm-label" style={{ margin: 0 }}>Description (optional)</label>
+                  <AIGenerateButton
+                    label="AI Polish Education"
+                    promptContext={{
+                      field: 'education-description',
+                      contextData: {
+                        degree: editing.degree,
+                        institution: editing.institution,
+                        currentDesc: editing.description,
+                      },
+                    }}
+                    onGenerate={(text) => setEditing((prev) => prev ? { ...prev, description: text } : null)}
+                  />
+                </div>
                 <textarea className="adm-textarea" value={editing.description || ''} onChange={(e) => setEditing({ ...editing, description: e.target.value })} />
               </div>
             </div>

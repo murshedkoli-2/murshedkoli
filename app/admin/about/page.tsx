@@ -186,6 +186,8 @@ export default function AboutManager() {
               label="Headline / title"
               value={profile.title}
               placeholder="Full-stack developer"
+              aiField="profile-title"
+              aiContextData={{ title: profile.title }}
               onSave={(v) => saveField({ title: v })}
             />
             <EditableField
@@ -211,6 +213,8 @@ export default function AboutManager() {
               label="Subheadline / bio"
               value={profile.description}
               multiline
+              aiField="profile-description"
+              aiContextData={{ name: profile.name, title: profile.title, currentDesc: profile.description }}
               onSave={(v) => saveField({ description: v })}
             />
 
