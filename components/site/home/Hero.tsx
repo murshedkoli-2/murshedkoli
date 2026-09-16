@@ -54,6 +54,21 @@ export function Hero({ profile, stats }: HeroProps) {
         transition: 'background 300ms ease, color 300ms ease',
       }}
     >
+      {/* Soft ambient bloom */}
+      <div
+        aria-hidden
+        style={{
+          position: 'absolute',
+          top: '-15%',
+          left: '50%',
+          transform: 'translateX(-50%)',
+          width: 'min(1280px, 100vw)',
+          height: '650px',
+          background: 'radial-gradient(ellipse 70% 55% at 50% 25%, var(--ambient-bloom), transparent 72%)',
+          pointerEvents: 'none',
+          zIndex: 0,
+        }}
+      />
       <Container>
         <div
           style={{

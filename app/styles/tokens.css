@@ -1,43 +1,45 @@
 /* Design tokens — Apple-grade minimalist system with seamless Light & Dark modes */
 :root,
 :root[data-theme="light"] {
-  --canvas: #ffffff;
+  /* Soft Studio Alabaster / Silk Palette — gentle on the eyes with tactile depth */
+  --canvas: #faf9f6;
   --surface: #ffffff;
-  --surface-2: #f5f5f7;
-  --ink: #1d1d1f;
-  --ink-muted: #6e6e73;
-  --line: rgba(0, 0, 0, 0.08);
-  --line-strong: rgba(0, 0, 0, 0.16);
+  --surface-2: #f3f2ee;
+  --ink: #222225;
+  --ink-muted: #6e6d76;
+  --line: rgba(30, 30, 35, 0.05);
+  --line-strong: rgba(30, 30, 35, 0.10);
 
-  /* Amber / Gold Accent */
-  --accent: #d97706;
+  /* Warm Ochre / Amber Accent */
+  --accent: #c26a0b;
   --accent-ink: #ffffff;
-  --accent-soft: rgba(217, 119, 6, 0.1);
-  --accent-2: #b45309;
-  --accent-3: #92400e;
-  --comment: #86868b;
-  --danger: #dc2626;
+  --accent-soft: rgba(194, 106, 11, 0.09);
+  --accent-2: #a35608;
+  --accent-3: #824105;
+  --comment: #7d7c85;
+  --danger: #d93838;
   --danger-ink: #ffffff;
-  --danger-soft: rgba(220, 38, 38, 0.1);
+  --danger-soft: rgba(217, 56, 56, 0.08);
 
-  /* Dynamic Island & Card Tokens */
-  --nav-bg: rgba(255, 255, 255, 0.82);
-  --nav-border: rgba(0, 0, 0, 0.08);
+  /* Soft Ambient Bloom & Tactile Glass */
+  --ambient-bloom: rgba(238, 232, 222, 0.55);
+  --nav-bg: rgba(250, 249, 246, 0.82);
+  --nav-border: rgba(30, 30, 35, 0.05);
   --card-bg: #ffffff;
-  --card-border: rgba(0, 0, 0, 0.08);
-  --card-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.05), 0 1px 3px rgba(0, 0, 0, 0.03);
-  --card-shadow-hover: 0 16px 36px -8px rgba(0, 0, 0, 0.1), 0 2px 6px rgba(0, 0, 0, 0.04);
+  --card-border: rgba(30, 30, 35, 0.05);
+  --card-shadow: 0 4px 20px -2px rgba(45, 38, 30, 0.035), 0 1px 3px rgba(45, 38, 30, 0.02);
+  --card-shadow-hover: 0 16px 36px -8px rgba(45, 38, 30, 0.06), 0 2px 6px rgba(45, 38, 30, 0.025);
   
-  --btn-primary-bg: #1d1d1f;
+  --btn-primary-bg: #222225;
   --btn-primary-ink: #ffffff;
-  --btn-secondary-bg: #f5f5f7;
-  --btn-secondary-border: rgba(0, 0, 0, 0.08);
-  --btn-secondary-ink: #1d1d1f;
-  --badge-bg: #f5f5f7;
-  --badge-ink: #424245;
+  --btn-secondary-bg: rgba(30, 30, 35, 0.035);
+  --btn-secondary-border: rgba(30, 30, 35, 0.05);
+  --btn-secondary-ink: #222225;
+  --badge-bg: rgba(30, 30, 35, 0.035);
+  --badge-ink: #4e4d56;
 
-  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.05);
-  --shadow-md: 0 8px 24px -4px rgba(0, 0, 0, 0.08);
+  --shadow-sm: 0 1px 3px rgba(45, 38, 30, 0.03);
+  --shadow-md: 0 8px 24px -4px rgba(45, 38, 30, 0.05);
 
   --font-display: var(--font-space-grotesk), "SF Pro Display", system-ui, sans-serif;
   --font-body: var(--font-inter), system-ui, sans-serif;
@@ -79,6 +81,7 @@
   --danger-soft: rgba(239, 68, 68, 0.14);
 
   /* Dynamic Island & Card Tokens */
+  --ambient-bloom: rgba(245, 176, 76, 0.04);
   --nav-bg: rgba(18, 18, 22, 0.82);
   --nav-border: rgba(255, 255, 255, 0.12);
   --card-bg: #121215;
