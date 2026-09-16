@@ -49,29 +49,26 @@ export async function POST(req: NextRequest) {
         )
       }
 
-      if (body.force) {
-        await prisma.careerStep.deleteMany({})
-      }
+      await prisma.careerStep.deleteMany({})
 
-      for (const item of INITIAL_CAREER_ROADMAP) {
-        const defaultTasks = generateDefaultTasksForStep(item)
-        await (prisma as any).careerStep.create({
-          data: {
-            stage: item.stage,
-            stageNumber: item.stageNumber,
-            stepNumber: item.stepNumber,
-            title: item.title,
-            category: item.category,
-            description: item.description,
-            keyConcepts: item.keyConcepts,
-            testQuestions: item.testQuestions,
-            deliverable: item.deliverable,
-            order: item.order,
-            status: 'todo',
-            tasks: defaultTasks,
-          },
-        })
-      }
+      const dataToInsert = INITIAL_CAREER_ROADMAP.map((item) => ({
+        stage: item.stage,
+        stageNumber: item.stageNumber,
+        stepNumber: item.stepNumber,
+        title: item.title,
+        category: item.category,
+        description: item.description,
+        keyConcepts: item.keyConcepts,
+        testQuestions: item.testQuestions,
+        deliverable: item.deliverable,
+        order: item.order,
+        status: 'todo',
+        tasks: generateDefaultTasksForStep(item),
+      }))
+
+      await (prisma as any).careerStep.createMany({
+        data: dataToInsert,
+      })
 
       return NextResponse.json({
         message: 'Successfully seeded industry career roadmap with granular sub-tasks',

@@ -283,19 +283,21 @@ export default function CareerRoadmapPage() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ action: 'seed', force }),
       })
+      const data = await res.json().catch(() => null)
       if (res.ok) {
         toast.success(
-          force
-            ? 'Roadmap reset to 32 industry milestones with granular sub-tasks.'
-            : 'Roadmap initialized with 32 milestones and exam systems!'
+          data?.message ||
+            (force
+              ? 'Roadmap reset to 32 industry milestones with granular sub-tasks.'
+              : 'Roadmap initialized with 32 milestones and exam systems!')
         )
         await loadData()
       } else {
-        toast.error('Failed to initialize roadmap.')
+        toast.error(data?.error || data?.message || 'Failed to initialize roadmap.')
       }
-    } catch (err) {
+    } catch (err: any) {
       console.error(err)
-      toast.error('Error seeding roadmap.')
+      toast.error(err?.message || 'Error seeding roadmap.')
     } finally {
       setSeeding(false)
     }
