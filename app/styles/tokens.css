@@ -1,25 +1,43 @@
-/* Design tokens — dev-minimalist. Light is default; dark overrides under [data-theme="dark"]. */
+/* Design tokens — Apple-grade minimalist system with seamless Light & Dark modes */
 :root,
 :root[data-theme="light"] {
-  --canvas: oklch(97.6% 0.003 255);
-  --surface: oklch(99.4% 0.002 255);
-  --surface-2: oklch(95.2% 0.004 255);
-  --ink: oklch(22% 0.012 260);
-  --ink-muted: oklch(51% 0.014 260);
-  --line: oklch(90% 0.006 260);
-  --line-strong: oklch(84% 0.008 260);
-  /* Amber — the homepage's single accent, darkened for contrast on light canvas. */
-  --accent: oklch(58% 0.12 68);
-  --accent-ink: oklch(99% 0.01 68);      /* text on accent */
-  --accent-soft: oklch(58% 0.12 68 / 0.1);
-  --accent-2: oklch(64% 0.11 52);        /* amber-adjacent, warmer */
-  --accent-3: oklch(52% 0.09 82);        /* amber-adjacent, deeper */
-  --comment: oklch(62% 0.02 68);         /* muted // prefix */
-  --danger: oklch(55% 0.19 25);          /* destructive actions */
-  --danger-ink: oklch(99% 0.01 25);
-  --danger-soft: oklch(55% 0.19 25 / 0.1);
-  --shadow-sm: 0 1px 2px oklch(22% 0.03 260 / 0.05), 0 1px 3px oklch(22% 0.03 260 / 0.06);
-  --shadow-md: 0 6px 20px oklch(22% 0.03 260 / 0.09), 0 2px 6px oklch(22% 0.03 260 / 0.06);
+  --canvas: #ffffff;
+  --surface: #ffffff;
+  --surface-2: #f5f5f7;
+  --ink: #1d1d1f;
+  --ink-muted: #6e6e73;
+  --line: rgba(0, 0, 0, 0.08);
+  --line-strong: rgba(0, 0, 0, 0.16);
+
+  /* Amber / Gold Accent */
+  --accent: #d97706;
+  --accent-ink: #ffffff;
+  --accent-soft: rgba(217, 119, 6, 0.1);
+  --accent-2: #b45309;
+  --accent-3: #92400e;
+  --comment: #86868b;
+  --danger: #dc2626;
+  --danger-ink: #ffffff;
+  --danger-soft: rgba(220, 38, 38, 0.1);
+
+  /* Dynamic Island & Card Tokens */
+  --nav-bg: rgba(255, 255, 255, 0.82);
+  --nav-border: rgba(0, 0, 0, 0.08);
+  --card-bg: #ffffff;
+  --card-border: rgba(0, 0, 0, 0.08);
+  --card-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.05), 0 1px 3px rgba(0, 0, 0, 0.03);
+  --card-shadow-hover: 0 16px 36px -8px rgba(0, 0, 0, 0.1), 0 2px 6px rgba(0, 0, 0, 0.04);
+  
+  --btn-primary-bg: #1d1d1f;
+  --btn-primary-ink: #ffffff;
+  --btn-secondary-bg: #f5f5f7;
+  --btn-secondary-border: rgba(0, 0, 0, 0.08);
+  --btn-secondary-ink: #1d1d1f;
+  --badge-bg: #f5f5f7;
+  --badge-ink: #424245;
+
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.05);
+  --shadow-md: 0 8px 24px -4px rgba(0, 0, 0, 0.08);
 
   --font-display: var(--font-space-grotesk), "SF Pro Display", system-ui, sans-serif;
   --font-body: var(--font-inter), system-ui, sans-serif;
@@ -33,31 +51,49 @@
   --text-eyebrow: 0.8rem;
   --text-mono: 0.82rem;
 
-  --space-section: clamp(4.5rem, 3rem + 6vw, 8.5rem);
-  --radius: 12px;
-  --radius-sm: 8px;
+  --space-section: clamp(4.5rem, 3.5rem + 5vw, 8rem);
+  --radius: 16px;
+  --radius-sm: 10px;
   --container: 1180px;
   --ease: cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 :root[data-theme="dark"] {
-  --canvas: oklch(17% 0.01 260);
-  --surface: oklch(20.5% 0.012 260);
-  --surface-2: oklch(24.5% 0.014 260);
-  --ink: oklch(95% 0.006 260);
-  --ink-muted: oklch(66% 0.016 260);
-  --line: oklch(30% 0.013 260);
-  --line-strong: oklch(38% 0.016 260);
-  /* Matches the homepage's #f5b04c exactly. */
-  --accent: oklch(79.5% 0.128 73);
-  --accent-ink: oklch(16% 0.005 260);
-  --accent-soft: oklch(79.5% 0.128 73 / 0.14);
-  --accent-2: oklch(82% 0.11 58);
-  --accent-3: oklch(74% 0.12 88);
-  --comment: oklch(56% 0.02 73);
-  --danger: oklch(66% 0.17 25);
-  --danger-ink: oklch(16% 0.02 25);
-  --danger-soft: oklch(66% 0.17 25 / 0.14);
-  --shadow-sm: 0 1px 2px oklch(0% 0 0 / 0.35), 0 1px 3px oklch(0% 0 0 / 0.3);
-  --shadow-md: 0 8px 26px oklch(0% 0 0 / 0.45), 0 2px 8px oklch(0% 0 0 / 0.35);
+  --canvas: #09090b;
+  --surface: #121215;
+  --surface-2: #18181d;
+  --ink: #f4f4f6;
+  --ink-muted: #a1a1aa;
+  --line: rgba(255, 255, 255, 0.09);
+  --line-strong: rgba(255, 255, 255, 0.18);
+
+  /* Amber Accent */
+  --accent: #f5b04c;
+  --accent-ink: #121215;
+  --accent-soft: rgba(245, 176, 76, 0.14);
+  --accent-2: #fbbf24;
+  --accent-3: #f59e0b;
+  --comment: #71717a;
+  --danger: #ef4444;
+  --danger-ink: #ffffff;
+  --danger-soft: rgba(239, 68, 68, 0.14);
+
+  /* Dynamic Island & Card Tokens */
+  --nav-bg: rgba(18, 18, 22, 0.82);
+  --nav-border: rgba(255, 255, 255, 0.12);
+  --card-bg: #121215;
+  --card-border: rgba(255, 255, 255, 0.09);
+  --card-shadow: 0 20px 40px -15px rgba(0, 0, 0, 0.7), 0 0 0 1px rgba(255, 255, 255, 0.04);
+  --card-shadow-hover: 0 30px 60px -20px rgba(0, 0, 0, 0.85), 0 0 25px -5px rgba(245, 176, 76, 0.15);
+  
+  --btn-primary-bg: #f4f4f6;
+  --btn-primary-ink: #09090b;
+  --btn-secondary-bg: rgba(255, 255, 255, 0.06);
+  --btn-secondary-border: rgba(255, 255, 255, 0.14);
+  --btn-secondary-ink: #f4f4f6;
+  --badge-bg: rgba(255, 255, 255, 0.06);
+  --badge-ink: rgba(255, 255, 255, 0.75);
+
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.4);
+  --shadow-md: 0 12px 32px rgba(0, 0, 0, 0.6);
 }

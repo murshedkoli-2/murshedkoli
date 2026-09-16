@@ -36,10 +36,11 @@ export function SkillsSection({ columns }: SkillsSectionProps) {
     <section
       id="stack"
       style={{
-        background: '#f5f5f7',
-        color: '#1d1d1f',
+        background: 'var(--surface-2)',
+        color: 'var(--ink)',
         paddingBlock: 'var(--space-section)',
-        borderTop: '1px solid rgba(0, 0, 0, 0.06)',
+        borderTop: '1px solid var(--line)',
+        transition: 'background 300ms ease, color 300ms ease',
       }}
     >
       <Container>
@@ -50,9 +51,9 @@ export function SkillsSection({ columns }: SkillsSectionProps) {
           style={{
             padding: '1.75rem',
             borderRadius: 20,
-            background: '#ffffff',
-            border: '1px solid rgba(0, 0, 0, 0.06)',
-            boxShadow: '0 4px 18px -2px rgba(0, 0, 0, 0.04)',
+            background: 'var(--card-bg)',
+            border: '1px solid var(--card-border)',
+            boxShadow: 'var(--card-shadow)',
             marginBottom: '2rem',
             display: 'flex',
             alignItems: 'center',
@@ -62,10 +63,10 @@ export function SkillsSection({ columns }: SkillsSectionProps) {
           }}
         >
           <div>
-            <div style={{ fontFamily: 'var(--font-mono)', fontSize: '0.75rem', color: '#d97706', marginBottom: 4, fontWeight: 600 }}>
+            <div style={{ fontFamily: 'var(--font-mono)', fontSize: '0.75rem', color: 'var(--accent)', marginBottom: 4, fontWeight: 600 }}>
               CORE ARSENAL
             </div>
-            <div style={{ fontSize: '1.1rem', fontWeight: 600, color: '#1d1d1f' }}>
+            <div style={{ fontSize: '1.1rem', fontWeight: 600, color: 'var(--ink)' }}>
               Daily production tools & modern runtimes
             </div>
           </div>
@@ -79,9 +80,9 @@ export function SkillsSection({ columns }: SkillsSectionProps) {
                   fontSize: '0.8rem',
                   padding: '6px 14px',
                   borderRadius: 999,
-                  background: tech.highlight ? 'rgba(217, 119, 6, 0.08)' : '#f5f5f7',
-                  border: `1px solid ${tech.highlight ? 'rgba(217, 119, 6, 0.25)' : 'rgba(0, 0, 0, 0.06)'}`,
-                  color: tech.highlight ? '#b45309' : '#1d1d1f',
+                  background: tech.highlight ? 'var(--accent-soft)' : 'var(--surface-2)',
+                  border: `1px solid ${tech.highlight ? 'var(--accent)' : 'var(--line)'}`,
+                  color: tech.highlight ? 'var(--accent)' : 'var(--ink)',
                   fontWeight: tech.highlight ? 600 : 500,
                 }}
               >
@@ -111,15 +112,15 @@ export function SkillsSection({ columns }: SkillsSectionProps) {
                 style={{
                   padding: '1.5rem',
                   borderRadius: 18,
-                  background: '#ffffff',
-                  border: '1px solid rgba(0, 0, 0, 0.06)',
-                  boxShadow: '0 2px 10px rgba(0, 0, 0, 0.02)',
+                  background: 'var(--card-bg)',
+                  border: '1px solid var(--line)',
+                  boxShadow: 'var(--shadow-sm)',
                   height: '100%',
                 }}
               >
                 <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: '1.25rem' }}>
-                  <Icon size={16} style={{ color: '#d97706' }} />
-                  <span style={{ fontSize: '0.92rem', fontWeight: 600, color: '#1d1d1f', letterSpacing: '-0.01em' }}>
+                  <Icon size={16} style={{ color: 'var(--accent)' }} />
+                  <span style={{ fontSize: '0.92rem', fontWeight: 600, color: 'var(--ink)', letterSpacing: '-0.01em' }}>
                     {col.label}
                   </span>
                 </div>
@@ -131,10 +132,10 @@ export function SkillsSection({ columns }: SkillsSectionProps) {
                       style={{
                         fontFamily: 'var(--font-mono)',
                         fontSize: '0.74rem',
-                        color: '#424245',
+                        color: 'var(--ink)',
                         padding: '4px 10px',
-                        background: '#f5f5f7',
-                        border: '1px solid rgba(0, 0, 0, 0.05)',
+                        background: 'var(--surface-2)',
+                        border: '1px solid var(--line)',
                         borderRadius: 6,
                         fontWeight: 500,
                       }}

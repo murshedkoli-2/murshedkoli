@@ -26,12 +26,12 @@ function TimelineColumn({
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
       <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: '0.5rem' }}>
-        <Icon size={16} style={{ color: '#d97706' }} />
+        <Icon size={16} style={{ color: 'var(--accent)' }} />
         <span
           style={{
             fontFamily: 'var(--font-mono)',
             fontSize: '0.75rem',
-            color: '#86868b',
+            color: 'var(--ink-muted)',
             textTransform: 'uppercase',
             letterSpacing: '0.05em',
             fontWeight: 600,
@@ -52,23 +52,23 @@ function TimelineColumn({
             style={{
               padding: '1.25rem 1.5rem',
               borderRadius: 18,
-              background: '#ffffff',
-              border: '1px solid rgba(0, 0, 0, 0.07)',
-              boxShadow: '0 2px 10px rgba(0, 0, 0, 0.03)',
+              background: 'var(--card-bg)',
+              border: '1px solid var(--card-border)',
+              boxShadow: 'var(--card-shadow)',
               display: 'flex',
               flexDirection: 'column',
               gap: 6,
             }}
           >
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 8 }}>
-              <div style={{ fontFamily: 'var(--font-display)', fontSize: '1.05rem', fontWeight: 600, color: '#1d1d1f' }}>
+              <div style={{ fontFamily: 'var(--font-display)', fontSize: '1.05rem', fontWeight: 600, color: 'var(--ink)' }}>
                 {e.title}
               </div>
               <div
                 style={{
                   fontFamily: 'var(--font-mono)',
                   fontSize: '0.72rem',
-                  color: e.current ? '#059669' : '#86868b',
+                  color: e.current ? '#10b981' : 'var(--ink-muted)',
                   display: 'flex',
                   alignItems: 'center',
                   gap: 6,
@@ -80,12 +80,12 @@ function TimelineColumn({
               </div>
             </div>
 
-            <div style={{ color: '#6e6e73', fontSize: '0.88rem' }}>{e.subtitle}</div>
+            <div style={{ color: 'var(--ink-muted)', fontSize: '0.88rem' }}>{e.subtitle}</div>
 
             {e.detail && (
               <div
                 style={{
-                  color: '#86868b',
+                  color: 'var(--ink-muted)',
                   fontSize: '0.82rem',
                   lineHeight: 1.45,
                   marginTop: 4,
@@ -113,11 +113,12 @@ export function TimelineSection({ experience, education }: TimelineSectionProps)
     <section
       id="experience"
       style={{
-        background: '#ffffff',
-        color: '#1d1d1f',
+        background: 'var(--canvas)',
+        color: 'var(--ink)',
         paddingBlock: 'var(--space-section)',
         scrollMarginTop: '5rem',
-        borderTop: '1px solid rgba(0, 0, 0, 0.06)',
+        borderTop: '1px solid var(--line)',
+        transition: 'background 300ms ease, color 300ms ease',
       }}
     >
       <Container>

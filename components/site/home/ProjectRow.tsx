@@ -24,13 +24,13 @@ export function ProjectRow({ project, index }: ProjectRowProps) {
       style={{
         borderRadius: 22,
         overflow: 'hidden',
-        background: '#ffffff',
-        border: '1px solid rgba(0, 0, 0, 0.07)',
-        boxShadow: '0 4px 20px -2px rgba(0, 0, 0, 0.05), 0 1px 3px rgba(0, 0, 0, 0.03)',
+        background: 'var(--card-bg)',
+        border: '1px solid var(--card-border)',
+        boxShadow: 'var(--card-shadow)',
         position: 'relative',
         display: 'flex',
         flexDirection: 'column',
-        transition: 'transform 250ms ease, box-shadow 250ms ease, border-color 250ms ease',
+        transition: 'transform 250ms ease, box-shadow 250ms ease, border-color 250ms ease, background 300ms ease',
       }}
       className="apple-project-card"
     >
@@ -43,7 +43,7 @@ export function ProjectRow({ project, index }: ProjectRowProps) {
           aspectRatio: '16 / 9',
           overflow: 'hidden',
           display: 'block',
-          background: '#f5f5f7',
+          background: 'var(--surface-2)',
         }}
       >
         {project.coverImage ? (
@@ -67,8 +67,9 @@ export function ProjectRow({ project, index }: ProjectRowProps) {
               placeItems: 'center',
               fontFamily: 'var(--font-mono)',
               fontSize: '2.5rem',
-              color: 'rgba(0, 0, 0, 0.15)',
-              background: '#f5f5f7',
+              color: 'var(--ink-muted)',
+              opacity: 0.3,
+              background: 'var(--surface-2)',
             }}
           >
             {project.number}
@@ -92,12 +93,12 @@ export function ProjectRow({ project, index }: ProjectRowProps) {
             style={{
               padding: '5px 12px',
               borderRadius: 999,
-              background: 'rgba(255, 255, 255, 0.9)',
+              background: 'var(--nav-bg)',
               backdropFilter: 'blur(12px)',
-              border: '1px solid rgba(0, 0, 0, 0.08)',
+              border: '1px solid var(--nav-border)',
               fontFamily: 'var(--font-mono)',
               fontSize: '0.72rem',
-              color: '#1d1d1f',
+              color: 'var(--ink)',
               textTransform: 'uppercase',
               letterSpacing: '0.04em',
               fontWeight: 600,
@@ -114,12 +115,12 @@ export function ProjectRow({ project, index }: ProjectRowProps) {
                 gap: 6,
                 padding: '5px 12px',
                 borderRadius: 999,
-                background: 'rgba(255, 255, 255, 0.9)',
+                background: 'var(--nav-bg)',
                 backdropFilter: 'blur(12px)',
                 border: '1px solid rgba(16, 185, 129, 0.3)',
                 fontFamily: 'var(--font-mono)',
                 fontSize: '0.72rem',
-                color: '#059669',
+                color: '#10b981',
                 fontWeight: 600,
                 letterSpacing: '0.03em',
               }}
@@ -131,7 +132,7 @@ export function ProjectRow({ project, index }: ProjectRowProps) {
         </div>
       </Link>
 
-      {/* Meta Content & Actions: Concise, Clean (No Walls of Text) */}
+      {/* Meta Content & Actions */}
       <div style={{ padding: '1.75rem', display: 'flex', flexDirection: 'column', gap: 14 }}>
         <div>
           <h3
@@ -139,7 +140,7 @@ export function ProjectRow({ project, index }: ProjectRowProps) {
               fontSize: '1.45rem',
               fontWeight: 600,
               letterSpacing: '-0.025em',
-              color: '#1d1d1f',
+              color: 'var(--ink)',
               marginBottom: 4,
             }}
           >
@@ -154,7 +155,7 @@ export function ProjectRow({ project, index }: ProjectRowProps) {
           {/* 1-Line Punchline */}
           <p
             style={{
-              color: '#6e6e73',
+              color: 'var(--ink-muted)',
               fontSize: '0.92rem',
               lineHeight: 1.5,
               margin: 0,
@@ -179,9 +180,9 @@ export function ProjectRow({ project, index }: ProjectRowProps) {
                   fontSize: '0.74rem',
                   padding: '3px 10px',
                   borderRadius: 6,
-                  background: '#f5f5f7',
-                  border: '1px solid rgba(0, 0, 0, 0.05)',
-                  color: '#424245',
+                  background: 'var(--badge-bg)',
+                  border: '1px solid var(--line)',
+                  color: 'var(--badge-ink)',
                   fontWeight: 500,
                 }}
               >
@@ -198,7 +199,7 @@ export function ProjectRow({ project, index }: ProjectRowProps) {
             alignItems: 'center',
             justifyContent: 'space-between',
             paddingTop: 14,
-            borderTop: '1px solid rgba(0, 0, 0, 0.06)',
+            borderTop: '1px solid var(--line)',
             marginTop: 4,
           }}
         >
@@ -210,13 +211,13 @@ export function ProjectRow({ project, index }: ProjectRowProps) {
               gap: 6,
               fontSize: '0.84rem',
               fontWeight: 600,
-              color: '#1d1d1f',
+              color: 'var(--ink)',
               textDecoration: 'none',
               fontFamily: 'var(--font-mono)',
             }}
           >
             <span>CASE STUDY</span>
-            <ArrowRight size={14} style={{ color: '#d97706' }} />
+            <ArrowRight size={14} style={{ color: 'var(--accent)' }} />
           </Link>
 
           {project.links.live && (
@@ -229,7 +230,7 @@ export function ProjectRow({ project, index }: ProjectRowProps) {
                 alignItems: 'center',
                 gap: 5,
                 fontSize: '0.8rem',
-                color: '#6e6e73',
+                color: 'var(--ink-muted)',
                 textDecoration: 'none',
                 fontFamily: 'var(--font-mono)',
                 fontWeight: 500,

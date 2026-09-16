@@ -30,11 +30,12 @@ export function ContactSection({ profile }: ContactSectionProps) {
     <section
       id="contact"
       style={{
-        background: '#ffffff',
-        color: '#1d1d1f',
+        background: 'var(--canvas)',
+        color: 'var(--ink)',
         paddingBlock: 'var(--space-section)',
         scrollMarginTop: '5rem',
-        borderTop: '1px solid rgba(0, 0, 0, 0.06)',
+        borderTop: '1px solid var(--line)',
+        transition: 'background 300ms ease, color 300ms ease',
       }}
     >
       <Container>
@@ -56,7 +57,7 @@ export function ContactSection({ profile }: ContactSectionProps) {
               style={{
                 fontFamily: 'var(--font-mono)',
                 fontSize: '0.75rem',
-                color: '#d97706',
+                color: 'var(--accent)',
                 display: 'block',
                 marginBottom: '1.25rem',
                 fontWeight: 600,
@@ -71,18 +72,18 @@ export function ContactSection({ profile }: ContactSectionProps) {
                 fontWeight: 600,
                 letterSpacing: '-0.03em',
                 lineHeight: 1.08,
-                color: '#1d1d1f',
+                color: 'var(--ink)',
                 marginBottom: '1.5rem',
               }}
             >
               Let&apos;s build something{' '}
-              <span className="serif-accent" style={{ color: '#d97706', fontStyle: 'italic' }}>
+              <span className="serif-accent" style={{ color: 'var(--accent)', fontStyle: 'italic' }}>
                 remarkable
               </span>
               .
             </h2>
 
-            <p style={{ color: '#6e6e73', fontSize: '1.05rem', lineHeight: 1.6, maxWidth: '28rem', marginBottom: '2.5rem' }}>
+            <p style={{ color: 'var(--ink-muted)', fontSize: '1.05rem', lineHeight: 1.6, maxWidth: '28rem', marginBottom: '2.5rem' }}>
               Have a project in mind, an engineering role, or a challenging problem to solve? Send a message directly.
             </p>
 
@@ -95,18 +96,19 @@ export function ContactSection({ profile }: ContactSectionProps) {
                   gap: 10,
                   padding: '12px 22px',
                   borderRadius: 999,
-                  background: '#f5f5f7',
-                  border: '1px solid rgba(0, 0, 0, 0.08)',
-                  color: '#1d1d1f',
+                  background: 'var(--surface-2)',
+                  border: '1px solid var(--line)',
+                  color: 'var(--ink)',
                   fontFamily: 'var(--font-mono)',
                   fontSize: '0.85rem',
                   fontWeight: 600,
                   textDecoration: 'none',
                   marginBottom: '2rem',
+                  transition: 'background 200ms ease, border-color 200ms ease',
                 }}
                 className="apple-secondary-btn"
               >
-                <Mail size={16} style={{ color: '#d97706' }} />
+                <Mail size={16} style={{ color: 'var(--accent)' }} />
                 <span>{profile.email}</span>
               </a>
             )}
@@ -122,7 +124,7 @@ export function ContactSection({ profile }: ContactSectionProps) {
                     style={{
                       fontFamily: 'var(--font-mono)',
                       fontSize: '0.78rem',
-                      color: '#6e6e73',
+                      color: 'var(--ink-muted)',
                       textDecoration: 'none',
                       display: 'inline-flex',
                       alignItems: 'center',
@@ -147,9 +149,10 @@ export function ContactSection({ profile }: ContactSectionProps) {
             style={{
               padding: '2.25rem',
               borderRadius: 24,
-              background: '#ffffff',
-              border: '1px solid rgba(0, 0, 0, 0.08)',
-              boxShadow: '0 10px 30px -5px rgba(0, 0, 0, 0.06)',
+              background: 'var(--card-bg)',
+              border: '1px solid var(--card-border)',
+              boxShadow: 'var(--card-shadow)',
+              transition: 'background 300ms ease, border-color 300ms ease',
             }}
           >
             <ContactForm />

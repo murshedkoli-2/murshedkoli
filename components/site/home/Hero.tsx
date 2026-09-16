@@ -46,11 +46,12 @@ export function Hero({ profile, stats }: HeroProps) {
         display: 'flex',
         flexDirection: 'column',
         justifyContent: 'center',
-        background: 'var(--canvas, #ffffff)',
-        color: 'var(--ink, #1d1d1f)',
+        background: 'var(--canvas)',
+        color: 'var(--ink)',
         overflow: 'hidden',
         paddingTop: 'clamp(7.5rem, 6.5rem + 5vh, 10.5rem)',
         paddingBottom: 'clamp(4rem, 3.5rem + 4vh, 6.5rem)',
+        transition: 'background 300ms ease, color 300ms ease',
       }}
     >
       <Container>
@@ -81,12 +82,12 @@ export function Hero({ profile, stats }: HeroProps) {
                   gap: 8,
                   padding: '6px 14px',
                   borderRadius: 999,
-                  background: 'rgba(16, 185, 129, 0.08)',
+                  background: 'rgba(16, 185, 129, 0.1)',
                   border: '1px solid rgba(16, 185, 129, 0.25)',
                   fontFamily: 'var(--font-mono)',
                   fontSize: '0.78rem',
                   letterSpacing: '0.04em',
-                  color: '#059669',
+                  color: '#10b981',
                   fontWeight: 600,
                 }}
               >
@@ -104,7 +105,7 @@ export function Hero({ profile, stats }: HeroProps) {
               </div>
             </motion.div>
 
-            {/* Oversized Clean Apple Headline */}
+            {/* Oversized Clean Headline */}
             <motion.h1
               custom={1}
               variants={fadeVariants}
@@ -115,12 +116,12 @@ export function Hero({ profile, stats }: HeroProps) {
                 fontWeight: 600,
                 lineHeight: 1.04,
                 letterSpacing: '-0.04em',
-                color: '#1d1d1f',
+                color: 'var(--ink)',
                 marginBottom: '1.5rem',
               }}
             >
               Building digital products with{' '}
-              <span className="serif-accent" style={{ color: '#d97706', fontStyle: 'italic' }}>
+              <span className="serif-accent" style={{ color: 'var(--accent)', fontStyle: 'italic' }}>
                 studio finish
               </span>
               .
@@ -135,7 +136,7 @@ export function Hero({ profile, stats }: HeroProps) {
               style={{
                 fontSize: 'clamp(1.05rem, 0.98rem + 0.3vw, 1.25rem)',
                 lineHeight: 1.55,
-                color: '#6e6e73',
+                color: 'var(--ink-muted)',
                 maxWidth: '34rem',
                 marginBottom: '2.25rem',
               }}
@@ -143,7 +144,7 @@ export function Hero({ profile, stats }: HeroProps) {
               {profile.name} — Full-Stack Engineer & Product Builder crafting fast, accessible web applications and high-fidelity interfaces.
             </motion.p>
 
-            {/* Metric Chips (Apple Clean Style) */}
+            {/* Metric Chips */}
             <motion.div
               custom={3}
               variants={fadeVariants}
@@ -160,18 +161,18 @@ export function Hero({ profile, stats }: HeroProps) {
                 style={{
                   padding: '8px 16px',
                   borderRadius: 14,
-                  background: '#ffffff',
-                  border: '1px solid rgba(0, 0, 0, 0.08)',
-                  boxShadow: '0 2px 8px rgba(0, 0, 0, 0.04)',
+                  background: 'var(--card-bg)',
+                  border: '1px solid var(--card-border)',
+                  boxShadow: 'var(--card-shadow)',
                   display: 'flex',
                   alignItems: 'baseline',
                   gap: 8,
                 }}
               >
-                <span style={{ fontSize: '1.25rem', fontWeight: 700, color: '#d97706', fontFamily: 'var(--font-display)' }}>
+                <span style={{ fontSize: '1.25rem', fontWeight: 700, color: 'var(--accent)', fontFamily: 'var(--font-display)' }}>
                   {stats.projectsShipped}+
                 </span>
-                <span style={{ fontSize: '0.75rem', fontFamily: 'var(--font-mono)', color: '#86868b', fontWeight: 500 }}>
+                <span style={{ fontSize: '0.75rem', fontFamily: 'var(--font-mono)', color: 'var(--ink-muted)', fontWeight: 500 }}>
                   SHIPPED APPS
                 </span>
               </div>
@@ -180,18 +181,18 @@ export function Hero({ profile, stats }: HeroProps) {
                 style={{
                   padding: '8px 16px',
                   borderRadius: 14,
-                  background: '#ffffff',
-                  border: '1px solid rgba(0, 0, 0, 0.08)',
-                  boxShadow: '0 2px 8px rgba(0, 0, 0, 0.04)',
+                  background: 'var(--card-bg)',
+                  border: '1px solid var(--card-border)',
+                  boxShadow: 'var(--card-shadow)',
                   display: 'flex',
                   alignItems: 'baseline',
                   gap: 8,
                 }}
               >
-                <span style={{ fontSize: '1.25rem', fontWeight: 700, color: '#1d1d1f', fontFamily: 'var(--font-display)' }}>
+                <span style={{ fontSize: '1.25rem', fontWeight: 700, color: 'var(--ink)', fontFamily: 'var(--font-display)' }}>
                   {stats.yearsExperience}+
                 </span>
-                <span style={{ fontSize: '0.75rem', fontFamily: 'var(--font-mono)', color: '#86868b', fontWeight: 500 }}>
+                <span style={{ fontSize: '0.75rem', fontFamily: 'var(--font-mono)', color: 'var(--ink-muted)', fontWeight: 500 }}>
                   YEARS EXP
                 </span>
               </div>
@@ -200,24 +201,24 @@ export function Hero({ profile, stats }: HeroProps) {
                 style={{
                   padding: '8px 16px',
                   borderRadius: 14,
-                  background: '#ffffff',
-                  border: '1px solid rgba(0, 0, 0, 0.08)',
-                  boxShadow: '0 2px 8px rgba(0, 0, 0, 0.04)',
+                  background: 'var(--card-bg)',
+                  border: '1px solid var(--card-border)',
+                  boxShadow: 'var(--card-shadow)',
                   display: 'flex',
                   alignItems: 'baseline',
                   gap: 8,
                 }}
               >
-                <span style={{ fontSize: '1.25rem', fontWeight: 700, color: '#059669', fontFamily: 'var(--font-display)' }}>
+                <span style={{ fontSize: '1.25rem', fontWeight: 700, color: '#10b981', fontFamily: 'var(--font-display)' }}>
                   &lt;1s
                 </span>
-                <span style={{ fontSize: '0.75rem', fontFamily: 'var(--font-mono)', color: '#86868b', fontWeight: 500 }}>
+                <span style={{ fontSize: '0.75rem', fontFamily: 'var(--font-mono)', color: 'var(--ink-muted)', fontWeight: 500 }}>
                   SPEED BENCHMARK
                 </span>
               </div>
             </motion.div>
 
-            {/* Tactile Apple CTAs */}
+            {/* Tactile CTAs */}
             <motion.div
               custom={4}
               variants={fadeVariants}
@@ -233,14 +234,14 @@ export function Hero({ profile, stats }: HeroProps) {
                   alignItems: 'center',
                   gap: 10,
                   padding: '14px 28px',
-                  background: '#1d1d1f',
-                  color: '#ffffff',
+                  background: 'var(--btn-primary-bg)',
+                  color: 'var(--btn-primary-ink)',
                   fontSize: '0.85rem',
                   fontWeight: 600,
                   borderRadius: 9999,
                   letterSpacing: '0.02em',
                   textDecoration: 'none',
-                  boxShadow: '0 8px 20px -4px rgba(0, 0, 0, 0.25)',
+                  boxShadow: 'var(--shadow-md)',
                   transition: 'all 200ms ease',
                 }}
               >
@@ -256,9 +257,9 @@ export function Hero({ profile, stats }: HeroProps) {
                   alignItems: 'center',
                   gap: 10,
                   padding: '14px 26px',
-                  background: 'rgba(0, 0, 0, 0.04)',
-                  border: '1px solid rgba(0, 0, 0, 0.09)',
-                  color: '#1d1d1f',
+                  background: 'var(--btn-secondary-bg)',
+                  border: '1px solid var(--btn-secondary-border)',
+                  color: 'var(--btn-secondary-ink)',
                   fontSize: '0.85rem',
                   fontWeight: 500,
                   borderRadius: 9999,
@@ -289,9 +290,9 @@ export function Hero({ profile, stats }: HeroProps) {
                 aspectRatio: '4 / 5',
                 borderRadius: 24,
                 overflow: 'hidden',
-                background: '#f5f5f7',
-                border: '1px solid rgba(0, 0, 0, 0.08)',
-                boxShadow: '0 24px 48px -12px rgba(0, 0, 0, 0.12), 0 0 0 1px rgba(0, 0, 0, 0.04)',
+                background: 'var(--surface-2)',
+                border: '1px solid var(--line)',
+                boxShadow: 'var(--card-shadow)',
                 marginInline: 'auto',
               }}
             >
@@ -314,18 +315,18 @@ export function Hero({ profile, stats }: HeroProps) {
                   right: 20,
                   padding: '12px 16px',
                   borderRadius: 16,
-                  background: 'rgba(255, 255, 255, 0.85)',
+                  background: 'var(--nav-bg)',
                   backdropFilter: 'blur(20px)',
-                  border: '1px solid rgba(0, 0, 0, 0.08)',
-                  boxShadow: '0 10px 25px -5px rgba(0, 0, 0, 0.08)',
+                  border: '1px solid var(--line)',
+                  boxShadow: 'var(--shadow-sm)',
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'space-between',
                 }}
               >
                 <div>
-                  <div style={{ fontSize: '0.88rem', fontWeight: 600, color: '#1d1d1f' }}>{profile.name}</div>
-                  <div style={{ fontSize: '0.74rem', fontFamily: 'var(--font-mono)', color: '#6e6e73' }}>
+                  <div style={{ fontSize: '0.88rem', fontWeight: 600, color: 'var(--ink)' }}>{profile.name}</div>
+                  <div style={{ fontSize: '0.74rem', fontFamily: 'var(--font-mono)', color: 'var(--ink-muted)' }}>
                     {profile.title}
                   </div>
                 </div>
@@ -333,11 +334,11 @@ export function Hero({ profile, stats }: HeroProps) {
                   style={{
                     padding: '4px 10px',
                     borderRadius: 999,
-                    background: 'rgba(217, 119, 6, 0.1)',
-                    border: '1px solid rgba(217, 119, 6, 0.25)',
+                    background: 'var(--accent-soft)',
+                    border: '1px solid var(--accent)',
                     fontSize: '0.7rem',
                     fontFamily: 'var(--font-mono)',
-                    color: '#b45309',
+                    color: 'var(--accent)',
                     fontWeight: 600,
                   }}
                 >

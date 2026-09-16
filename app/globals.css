@@ -501,24 +501,41 @@ a { color: inherit; text-decoration: none; }
   }
 }
 
-/* ── Apple Light Studio Styles ── */
+/* ── Theme-Harmonized Studio Styles ── */
 .apple-light-main {
-  background: var(--canvas, #ffffff);
-  color: var(--ink, #1d1d1f);
+  background: var(--canvas);
+  color: var(--ink);
   position: relative;
   z-index: 1;
 }
 
+.site-nav-pill-link:hover {
+  background: var(--btn-secondary-bg) !important;
+  color: var(--ink) !important;
+}
+
+.hero-primary-btn:hover {
+  filter: brightness(1.15);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md) !important;
+}
+
+.hero-secondary-btn:hover {
+  background: var(--btn-secondary-bg) !important;
+  border-color: var(--line-strong) !important;
+  transform: translateY(-2px);
+}
+
 .apple-studio-card:hover {
   transform: translateY(-3px) !important;
-  box-shadow: 0 12px 30px -4px rgba(0, 0, 0, 0.08), 0 2px 6px rgba(0, 0, 0, 0.04) !important;
-  border-color: rgba(0, 0, 0, 0.12) !important;
+  box-shadow: var(--card-shadow-hover) !important;
+  border-color: var(--line-strong) !important;
 }
 
 .apple-project-card:hover {
   transform: translateY(-4px) !important;
-  box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.1), 0 1px 3px rgba(0, 0, 0, 0.04) !important;
-  border-color: rgba(0, 0, 0, 0.12) !important;
+  box-shadow: var(--card-shadow-hover) !important;
+  border-color: var(--accent) !important;
 }
 
 .apple-project-card:hover .project-img-zoom {
@@ -527,13 +544,15 @@ a { color: inherit; text-decoration: none; }
 
 .apple-bento-card:hover {
   transform: translateY(-3px) !important;
-  background: #ffffff !important;
-  box-shadow: 0 10px 25px -4px rgba(0, 0, 0, 0.06) !important;
-  border-color: rgba(0, 0, 0, 0.09) !important;
+  background: var(--card-bg) !important;
+  box-shadow: var(--card-shadow-hover) !important;
+  border-color: var(--line-strong) !important;
 }
 
 .apple-secondary-btn:hover {
-  background: #eaeaea !important;
+  background: var(--surface) !important;
+  border-color: var(--line-strong) !important;
   transform: translateY(-2px);
-  color: #1d1d1f !important;
+  color: var(--ink) !important;
 }
+

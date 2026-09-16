@@ -68,15 +68,11 @@ export function Nav({ name, resumeUrl }: NavProps) {
           gap: 'clamp(0.5rem, 1.5vw, 1.5rem)',
           padding: '7px 12px 7px 18px',
           borderRadius: 9999,
-          background: scrolled
-            ? 'rgba(255, 255, 255, 0.88)'
-            : 'rgba(255, 255, 255, 0.72)',
-          backdropFilter: 'blur(24px) saturate(180%)',
-          WebkitBackdropFilter: 'blur(24px) saturate(180%)',
-          border: '1px solid rgba(0, 0, 0, 0.08)',
-          boxShadow: scrolled
-            ? '0 12px 32px -4px rgba(0, 0, 0, 0.08), 0 1px 2px rgba(0, 0, 0, 0.04)'
-            : '0 8px 24px -4px rgba(0, 0, 0, 0.04), 0 1px 2px rgba(0, 0, 0, 0.03)',
+          background: 'var(--nav-bg)',
+          backdropFilter: 'blur(24px) saturate(190%)',
+          WebkitBackdropFilter: 'blur(24px) saturate(190%)',
+          border: '1px solid var(--nav-border)',
+          boxShadow: scrolled ? 'var(--shadow-md)' : 'var(--shadow-sm)',
           transition: 'all 300ms cubic-bezier(0.16, 1, 0.3, 1)',
         }}
       >
@@ -91,7 +87,7 @@ export function Nav({ name, resumeUrl }: NavProps) {
             fontSize: '0.95rem',
             fontWeight: 700,
             letterSpacing: '-0.02em',
-            color: '#1d1d1f',
+            color: 'var(--ink)',
             textDecoration: 'none',
           }}
         >
@@ -105,7 +101,7 @@ export function Nav({ name, resumeUrl }: NavProps) {
             }}
           />
           <span>{first}</span>
-          <span style={{ color: '#d97706' }}>.</span>
+          <span style={{ color: 'var(--accent)' }}>.</span>
         </Link>
 
         {/* Desktop links */}
@@ -116,7 +112,7 @@ export function Nav({ name, resumeUrl }: NavProps) {
             alignItems: 'center',
             gap: 4,
             paddingLeft: 12,
-            borderLeft: '1px solid rgba(0, 0, 0, 0.08)',
+            borderLeft: '1px solid var(--line)',
           }}
         >
           {LINKS.map((l) => (
@@ -126,7 +122,7 @@ export function Nav({ name, resumeUrl }: NavProps) {
               style={{
                 fontFamily: 'var(--font-mono)',
                 fontSize: '0.78rem',
-                color: '#6e6e73',
+                color: 'var(--ink-muted)',
                 fontWeight: 500,
                 padding: '6px 12px',
                 borderRadius: 999,
@@ -156,9 +152,9 @@ export function Nav({ name, resumeUrl }: NavProps) {
                 gap: 6,
                 padding: '6px 14px',
                 borderRadius: 999,
-                background: 'rgba(0, 0, 0, 0.05)',
-                border: '1px solid rgba(0, 0, 0, 0.08)',
-                color: '#1d1d1f',
+                background: 'var(--btn-secondary-bg)',
+                border: '1px solid var(--btn-secondary-border)',
+                color: 'var(--btn-secondary-ink)',
                 fontFamily: 'var(--font-mono)',
                 fontSize: '0.76rem',
                 fontWeight: 500,
@@ -181,7 +177,7 @@ export function Nav({ name, resumeUrl }: NavProps) {
               padding: 6,
               background: 'transparent',
               border: 'none',
-              color: '#1d1d1f',
+              color: 'var(--ink)',
               cursor: 'pointer',
               display: 'none',
             }}
@@ -207,11 +203,11 @@ export function Nav({ name, resumeUrl }: NavProps) {
               maxWidth: 420,
               marginInline: 'auto',
               borderRadius: 24,
-              background: 'rgba(255, 255, 255, 0.95)',
+              background: 'var(--card-bg)',
               backdropFilter: 'blur(24px)',
-              border: '1px solid rgba(0, 0, 0, 0.08)',
+              border: '1px solid var(--card-border)',
               padding: '1.5rem',
-              boxShadow: '0 30px 60px rgba(0, 0, 0, 0.12)',
+              boxShadow: 'var(--shadow-md)',
               pointerEvents: 'auto',
               zIndex: 60,
             }}
@@ -226,7 +222,7 @@ export function Nav({ name, resumeUrl }: NavProps) {
                     fontFamily: 'var(--font-display)',
                     fontSize: '1.2rem',
                     fontWeight: 600,
-                    color: '#1d1d1f',
+                    color: 'var(--ink)',
                     padding: '10px 14px',
                     borderRadius: 12,
                     textDecoration: 'none',
@@ -236,7 +232,7 @@ export function Nav({ name, resumeUrl }: NavProps) {
                   }}
                 >
                   <span>{l.label}</span>
-                  <span style={{ fontSize: '0.8rem', color: '#d97706', fontFamily: 'var(--font-mono)' }}>→</span>
+                  <span style={{ fontSize: '0.8rem', color: 'var(--accent)', fontFamily: 'var(--font-mono)' }}>→</span>
                 </Link>
               ))}
 
@@ -254,8 +250,8 @@ export function Nav({ name, resumeUrl }: NavProps) {
                     gap: 8,
                     padding: '12px',
                     borderRadius: 12,
-                    background: '#1d1d1f',
-                    color: '#ffffff',
+                    background: 'var(--btn-primary-bg)',
+                    color: 'var(--btn-primary-ink)',
                     fontFamily: 'var(--font-mono)',
                     fontSize: '0.88rem',
                     fontWeight: 600,

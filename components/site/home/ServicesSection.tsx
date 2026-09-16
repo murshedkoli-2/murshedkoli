@@ -20,11 +20,12 @@ export function ServicesSection({ services }: ServicesSectionProps) {
     <section
       id="services"
       style={{
-        background: '#ffffff',
-        color: '#1d1d1f',
+        background: 'var(--canvas)',
+        color: 'var(--ink)',
         paddingBlock: 'var(--space-section)',
         scrollMarginTop: '5rem',
-        borderTop: '1px solid rgba(0, 0, 0, 0.06)',
+        borderTop: '1px solid var(--line)',
+        transition: 'background 300ms ease, color 300ms ease',
       }}
     >
       <Container>
@@ -51,8 +52,8 @@ export function ServicesSection({ services }: ServicesSectionProps) {
                 style={{
                   padding: '2rem',
                   borderRadius: 20,
-                  background: '#f5f5f7',
-                  border: '1px solid rgba(0, 0, 0, 0.04)',
+                  background: 'var(--surface-2)',
+                  border: '1px solid var(--line)',
                   display: 'flex',
                   flexDirection: 'column',
                   justifyContent: 'space-between',
@@ -67,12 +68,12 @@ export function ServicesSection({ services }: ServicesSectionProps) {
                       width: 42,
                       height: 42,
                       borderRadius: 12,
-                      background: '#ffffff',
-                      border: '1px solid rgba(0, 0, 0, 0.08)',
-                      boxShadow: '0 2px 6px rgba(0, 0, 0, 0.04)',
+                      background: 'var(--card-bg)',
+                      border: '1px solid var(--line)',
+                      boxShadow: 'var(--shadow-sm)',
                       display: 'grid',
                       placeItems: 'center',
-                      color: '#d97706',
+                      color: 'var(--accent)',
                     }}
                   >
                     <Icon size={20} />
@@ -81,7 +82,7 @@ export function ServicesSection({ services }: ServicesSectionProps) {
                     style={{
                       fontFamily: 'var(--font-mono)',
                       fontSize: '0.74rem',
-                      color: '#86868b',
+                      color: 'var(--ink-muted)',
                       fontWeight: 600,
                     }}
                   >
@@ -95,7 +96,7 @@ export function ServicesSection({ services }: ServicesSectionProps) {
                       fontSize: '1.25rem',
                       fontWeight: 600,
                       letterSpacing: '-0.02em',
-                      color: '#1d1d1f',
+                      color: 'var(--ink)',
                       marginBottom: '0.5rem',
                     }}
                   >
@@ -103,7 +104,7 @@ export function ServicesSection({ services }: ServicesSectionProps) {
                   </h3>
                   <p
                     style={{
-                      color: '#6e6e73',
+                      color: 'var(--ink-muted)',
                       lineHeight: 1.5,
                       fontSize: '0.9rem',
                       margin: 0,

@@ -16,10 +16,12 @@ export function FeaturedProjects({ projects }: FeaturedProjectsProps) {
     <section
       id="projects"
       style={{
-        background: '#ffffff',
-        color: '#1d1d1f',
+        background: 'var(--canvas)',
+        color: 'var(--ink)',
         paddingBlock: 'var(--space-section)',
         scrollMarginTop: '5rem',
+        borderTop: '1px solid var(--line)',
+        transition: 'background 300ms ease, color 300ms ease',
       }}
     >
       <Container>
@@ -52,9 +54,9 @@ export function FeaturedProjects({ projects }: FeaturedProjectsProps) {
               gap: 10,
               padding: '14px 28px',
               borderRadius: 999,
-              background: '#f5f5f7',
-              border: '1px solid rgba(0, 0, 0, 0.08)',
-              color: '#1d1d1f',
+              background: 'var(--btn-secondary-bg)',
+              border: '1px solid var(--btn-secondary-border)',
+              color: 'var(--btn-secondary-ink)',
               fontSize: '0.84rem',
               fontWeight: 600,
               letterSpacing: '0.04em',
@@ -65,7 +67,7 @@ export function FeaturedProjects({ projects }: FeaturedProjectsProps) {
             className="apple-secondary-btn"
           >
             <span>VIEW ALL ARCHIVES</span>
-            <ArrowRight size={15} style={{ color: '#d97706' }} />
+            <ArrowRight size={15} style={{ color: 'var(--accent)' }} />
           </Link>
         </div>
       </Container>

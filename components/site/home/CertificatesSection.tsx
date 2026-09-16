@@ -32,10 +32,11 @@ export function CertificatesSection({ certificates }: CertificatesSectionProps) 
   return (
     <section
       style={{
-        background: '#f5f5f7',
-        color: '#1d1d1f',
+        background: 'var(--surface-2)',
+        color: 'var(--ink)',
         paddingBlock: 'var(--space-section)',
-        borderTop: '1px solid rgba(0, 0, 0, 0.06)',
+        borderTop: '1px solid var(--line)',
+        transition: 'background 300ms ease, color 300ms ease',
       }}
     >
       <Container>
@@ -59,13 +60,14 @@ export function CertificatesSection({ certificates }: CertificatesSectionProps) 
                 style={{
                   padding: '1.5rem',
                   borderRadius: 18,
-                  background: '#ffffff',
-                  border: '1px solid rgba(0, 0, 0, 0.06)',
-                  boxShadow: '0 2px 10px rgba(0, 0, 0, 0.03)',
+                  background: 'var(--card-bg)',
+                  border: '1px solid var(--card-border)',
+                  boxShadow: 'var(--card-shadow)',
                   display: 'flex',
                   flexDirection: 'column',
                   justifyContent: 'space-between',
                   gap: 12,
+                  transition: 'background 300ms ease, border-color 300ms ease',
                 }}
               >
                 <div>
@@ -73,13 +75,13 @@ export function CertificatesSection({ certificates }: CertificatesSectionProps) 
                     style={{
                       fontFamily: 'var(--font-mono)',
                       fontSize: '0.72rem',
-                      color: '#86868b',
+                      color: 'var(--ink-muted)',
                       marginBottom: 6,
                     }}
                   >
                     {c.date} · {c.issuer}
                   </div>
-                  <div style={{ fontSize: '1.05rem', fontWeight: 600, color: '#1d1d1f', letterSpacing: '-0.01em' }}>
+                  <div style={{ fontSize: '1.05rem', fontWeight: 600, color: 'var(--ink)', letterSpacing: '-0.01em' }}>
                     {c.title}
                   </div>
                 </div>
@@ -92,7 +94,7 @@ export function CertificatesSection({ certificates }: CertificatesSectionProps) 
                       style={{
                         fontFamily: 'var(--font-mono)',
                         fontSize: '0.75rem',
-                        color: '#d97706',
+                        color: 'var(--accent)',
                         background: 'transparent',
                         border: 'none',
                         padding: 0,
@@ -114,7 +116,7 @@ export function CertificatesSection({ certificates }: CertificatesSectionProps) 
                         gap: 5,
                         fontFamily: 'var(--font-mono)',
                         fontSize: '0.75rem',
-                        color: '#d97706',
+                        color: 'var(--accent)',
                         textDecoration: 'none',
                         fontWeight: 600,
                       }}
