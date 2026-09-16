@@ -28,7 +28,7 @@ const EMPTY: SettingsForm = {
   heroSubheadline: '',
   copyrightText: '',
   nvidiaNimKey: '',
-  nvidiaNimModel: 'nvidia/llama-3.1-nemotron-70b-instruct',
+  nvidiaNimModel: 'meta/llama-3.2-11b-vision-instruct',
   googleAiKey: '',
   openRouterKey: '',
   maintenanceMode: false,
@@ -42,13 +42,15 @@ interface ModelItem {
 }
 
 const DEFAULT_MODELS: ModelItem[] = [
-  { id: 'nvidia/llama-3.1-nemotron-70b-instruct', name: 'nvidia/llama-3.1-nemotron-70b-instruct (NVIDIA Flagship · Free)', owner: 'nvidia', isChat: true },
+  { id: 'meta/llama-3.2-11b-vision-instruct', name: 'meta/llama-3.2-11b-vision-instruct (Verified Working · Fast Vision & Chat)', owner: 'meta', isChat: true },
+  { id: 'nvidia/nemotron-3.5-lightning-30b-a3b', name: 'nvidia/nemotron-3.5-lightning-30b-a3b (Verified Working · NVIDIA 30B Reasoning)', owner: 'nvidia', isChat: true },
+  { id: 'mistralai/mistral-nemotron', name: 'mistralai/mistral-nemotron (Verified Working · Mistral + Nemotron)', owner: 'mistralai', isChat: true },
+  { id: 'poolside/laguna-xs-2.1', name: 'poolside/laguna-xs-2.1 (Verified Working · Laguna)', owner: 'poolside', isChat: true },
+  { id: 'nvidia/llama-3.1-nemotron-70b-instruct', name: 'nvidia/llama-3.1-nemotron-70b-instruct (NVIDIA Flagship 70B)', owner: 'nvidia', isChat: true },
   { id: 'mistralai/mistral-large-2-instruct', name: 'mistralai/mistral-large-2-instruct (128k High-Context)', owner: 'mistralai', isChat: true },
   { id: 'nvidia/nemotron-4-340b-instruct', name: 'nvidia/nemotron-4-340b-instruct (Ultra Scale 340B)', owner: 'nvidia', isChat: true },
   { id: 'meta/llama-3.2-90b-vision-instruct', name: 'meta/llama-3.2-90b-vision-instruct (Multimodal 90B)', owner: 'meta', isChat: true },
-  { id: 'meta/llama-3.2-11b-vision-instruct', name: 'meta/llama-3.2-11b-vision-instruct (Fast 11B)', owner: 'meta', isChat: true },
-  { id: 'ibm/granite-3.0-8b-instruct', name: 'ibm/granite-3.0-8b-instruct (Fast Enterprise)', owner: 'ibm', isChat: true },
-  { id: 'nv-mistralai/mistral-nemo-12b-instruct', name: 'nv-mistralai/mistral-nemo-12b-instruct (Compact 12B)', owner: 'nv-mistralai', isChat: true },
+  { id: 'ibm/granite-3.0-8b-instruct', name: 'ibm/granite-3.0-8b-instruct (Enterprise 8B)', owner: 'ibm', isChat: true },
 ]
 
 export default function SettingsManager() {
@@ -70,6 +72,15 @@ export default function SettingsManager() {
       const res = await fetch('/api/settings')
       if (!res.ok) return
       const s = await res.json()
+      const rawModel = s.nvidiaNimModel
+      const normalizedModel =
+        !rawModel ||
+        rawModel === 'meta/llama-3.3-70b-instruct' ||
+        rawModel === 'meta/llama2-70b' ||
+        rawModel === 'nvidia/llama-3.1-nemotron-70b-instruct'
+          ? 'meta/llama-3.2-11b-vision-instruct'
+          : rawModel
+
       setForm({
         siteName: s.siteName || '',
         siteTitle: s.siteTitle || '',
@@ -78,10 +89,7 @@ export default function SettingsManager() {
         heroSubheadline: s.heroSubheadline || '',
         copyrightText: s.copyrightText || '',
         nvidiaNimKey: s.nvidiaNimKey || '',
-        nvidiaNimModel:
-          s.nvidiaNimModel === 'meta/llama-3.3-70b-instruct'
-            ? 'nvidia/llama-3.1-nemotron-70b-instruct'
-            : s.nvidiaNimModel || 'nvidia/llama-3.1-nemotron-70b-instruct',
+        nvidiaNimModel: normalizedModel,
         googleAiKey: s.googleAiKey || '',
         openRouterKey: s.openRouterKey || '',
         maintenanceMode: Boolean(s.maintenanceMode),

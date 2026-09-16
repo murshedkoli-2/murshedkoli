@@ -20,11 +20,13 @@ const STARTER_PROMPTS = [
 ]
 
 const DEFAULT_POPULAR_MODELS = [
+  { id: 'meta/llama-3.2-11b-vision-instruct', name: 'LLaMA 3.2 11B (Verified Live · Fast)' },
+  { id: 'nvidia/nemotron-3.5-lightning-30b-a3b', name: 'Nemotron 3.5 Lightning 30B (Reasoning)' },
+  { id: 'mistralai/mistral-nemotron', name: 'Mistral Nemotron (Verified Live)' },
+  { id: 'poolside/laguna-xs-2.1', name: 'Laguna XS 2.1' },
   { id: 'nvidia/llama-3.1-nemotron-70b-instruct', name: 'LLaMA 3.1 Nemotron 70B (Flagship)' },
   { id: 'mistralai/mistral-large-2-instruct', name: 'Mistral Large 2 (128k Context)' },
-  { id: 'nvidia/nemotron-4-340b-instruct', name: 'Nemotron 4 340B (Ultra)' },
   { id: 'meta/llama-3.2-90b-vision-instruct', name: 'LLaMA 3.2 90B (Vision)' },
-  { id: 'meta/llama-3.2-11b-vision-instruct', name: 'LLaMA 3.2 11B (Fast)' },
   { id: 'ibm/granite-3.0-8b-instruct', name: 'IBM Granite 3.0 8B' },
 ]
 
@@ -45,7 +47,7 @@ export function AIPortfolioAssistant() {
   const [isOpen, setIsOpen] = useState(false)
   const [input, setInput] = useState('')
   const [loading, setLoading] = useState(false)
-  const [selectedModel, setSelectedModel] = useState<string>('nvidia/llama-3.1-nemotron-70b-instruct')
+  const [selectedModel, setSelectedModel] = useState<string>('meta/llama-3.2-11b-vision-instruct')
   const [availableModels, setAvailableModels] = useState<Array<{ id: string; name: string }>>(DEFAULT_POPULAR_MODELS)
   const [isModelMenuOpen, setIsModelMenuOpen] = useState(false)
   const [messages, setMessages] = useState<Message[]>([
@@ -53,9 +55,9 @@ export function AIPortfolioAssistant() {
       id: 'welcome',
       role: 'assistant',
       content:
-        "Hello! I'm Murshed's **AI Portfolio Copilot**, powered by **NVIDIA NIM**. Ask me anything about Murshed's full-stack architecture skills, featured projects, or remote availability!",
+        "Hello! I'm Murshed's **AI Portfolio Copilot**, powered by **NVIDIA NIM (LLaMA 3.2 11B)**. Ask me anything about Murshed's full-stack architecture skills, featured projects, or remote availability!",
       timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-      model: 'nvidia/llama-3.1-nemotron-70b-instruct',
+      model: 'meta/llama-3.2-11b-vision-instruct',
     },
   ])
 

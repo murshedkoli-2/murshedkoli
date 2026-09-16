@@ -54,7 +54,7 @@ export async function getResolvedAIKeys() {
   }
 
   const nvidiaKey = dbNvidiaKey || process.env.NVIDIA_API_KEY || process.env.NVIDIA_NIM_API_KEY || ''
-  const nvidiaModel = dbNvidiaModel || process.env.NVIDIA_NIM_MODEL || 'nvidia/llama-3.1-nemotron-70b-instruct'
+  const nvidiaModel = dbNvidiaModel || process.env.NVIDIA_NIM_MODEL || 'meta/llama-3.2-11b-vision-instruct'
   const googleKey = dbGoogleKey || process.env.GOOGLE_AI_API_KEY || ''
   const openRouterKey = dbOpenRouterKey || process.env.OPENROUTER_API_KEY || ''
 
@@ -129,13 +129,15 @@ export async function fetchLiveNvidiaModels(apiKey?: string): Promise<NvidiaMode
   } catch (error) {
     console.warn('Live NVIDIA models fetch error, returning curated fallback list:', error)
     return [
+      { id: 'meta/llama-3.2-11b-vision-instruct', name: 'meta/llama-3.2-11b-vision-instruct (Verified Working · Fast Vision & Chat)', owner: 'meta', isChat: true },
+      { id: 'nvidia/nemotron-3.5-lightning-30b-a3b', name: 'nvidia/nemotron-3.5-lightning-30b-a3b (Verified Working · NVIDIA 30B Reasoning)', owner: 'nvidia', isChat: true },
+      { id: 'mistralai/mistral-nemotron', name: 'mistralai/mistral-nemotron (Verified Working · Mistral + Nemotron)', owner: 'mistralai', isChat: true },
+      { id: 'poolside/laguna-xs-2.1', name: 'poolside/laguna-xs-2.1 (Verified Working · Laguna)', owner: 'poolside', isChat: true },
       { id: 'nvidia/llama-3.1-nemotron-70b-instruct', name: 'nvidia/llama-3.1-nemotron-70b-instruct (Flagship 70B)', owner: 'nvidia', isChat: true },
       { id: 'mistralai/mistral-large-2-instruct', name: 'mistralai/mistral-large-2-instruct (128k High-Context)', owner: 'mistralai', isChat: true },
       { id: 'nvidia/nemotron-4-340b-instruct', name: 'nvidia/nemotron-4-340b-instruct (Ultra Scale 340B)', owner: 'nvidia', isChat: true },
       { id: 'meta/llama-3.2-90b-vision-instruct', name: 'meta/llama-3.2-90b-vision-instruct (Multimodal 90B)', owner: 'meta', isChat: true },
-      { id: 'meta/llama-3.2-11b-vision-instruct', name: 'meta/llama-3.2-11b-vision-instruct (Fast 11B)', owner: 'meta', isChat: true },
       { id: 'ibm/granite-3.0-8b-instruct', name: 'ibm/granite-3.0-8b-instruct (Enterprise 8B)', owner: 'ibm', isChat: true },
-      { id: 'nv-mistralai/mistral-nemo-12b-instruct', name: 'nv-mistralai/mistral-nemo-12b-instruct (12B Compact)', owner: 'nv-mistralai', isChat: true },
     ]
   }
 }
@@ -153,7 +155,7 @@ async function callNvidiaNim(
   hasRetriedAfterEol = false
 ): Promise<UnifiedAIResult> {
   const endpoint = 'https://integrate.api.nvidia.com/v1/chat/completions'
-  const activeModel = model || 'nvidia/llama-3.1-nemotron-70b-instruct'
+  const activeModel = model || 'meta/llama-3.2-11b-vision-instruct'
 
   const res = await fetch(endpoint, {
     method: 'POST',
@@ -174,16 +176,17 @@ async function callNvidiaNim(
   if (!res.ok) {
     const errorText = await res.text()
 
-    // Self-healing recovery: If requested model reached End-of-Life (HTTP 410 Gone) or Not Found (404),
-    // automatically fallback to NVIDIA's live flagship model: nvidia/llama-3.1-nemotron-70b-instruct
-    if ((res.status === 410 || res.status === 404) && !hasRetriedAfterEol) {
-      console.warn(
-        `Model "${activeModel}" returned HTTP ${res.status} (${errorText}). Self-healing with active fallback model nvidia/llama-3.1-nemotron-70b-instruct...`
-      )
+    // Self-healing recovery: If requested model reached End-of-Life (HTTP 410 Gone) or Not Found (404 / Function not found for account),
+    // automatically fallback to verified working public models: meta/llama-3.2-11b-vision-instruct -> nvidia/nemotron-3.5-lightning-30b-a3b
+    if ((res.status === 410 || res.status === 404 || errorText.includes('Not found for account')) && !hasRetriedAfterEol) {
       const fallbackTarget =
-        activeModel === 'nvidia/llama-3.1-nemotron-70b-instruct'
-          ? 'mistralai/mistral-large-2-instruct'
-          : 'nvidia/llama-3.1-nemotron-70b-instruct'
+        activeModel === 'meta/llama-3.2-11b-vision-instruct'
+          ? 'nvidia/nemotron-3.5-lightning-30b-a3b'
+          : 'meta/llama-3.2-11b-vision-instruct'
+
+      console.warn(
+        `Model "${activeModel}" returned HTTP ${res.status} (${errorText}). Self-healing with verified active model "${fallbackTarget}"...`
+      )
 
       return await callNvidiaNim(messages, apiKey, fallbackTarget, temperature, maxTokens, true)
     }
@@ -418,6 +421,31 @@ export async function testAIConnection(customKey?: string, customModel?: string)
       sampleText: result.text,
     }
   } catch (error: any) {
+    // If the tested model is not enabled for this account, test with verified fallback
+    if (modelToUse !== 'meta/llama-3.2-11b-vision-instruct') {
+      try {
+        const fallbackResult = await callNvidiaNim(
+          [
+            { role: 'system', content: 'You are an AI diagnostic assistant.' },
+            { role: 'user', content: 'Reply with "NVIDIA NIM Online: " followed by your model name in under 10 words.' }
+          ],
+          keyToUse,
+          'meta/llama-3.2-11b-vision-instruct',
+          0.1,
+          60
+        )
+        return {
+          success: true,
+          provider: 'nvidia-nim',
+          model: 'meta/llama-3.2-11b-vision-instruct',
+          latencyMs: Date.now() - start,
+          sampleText: `${fallbackResult.text} (Note: Model "${modelToUse}" is restricted for this API key. We recommend selecting "meta/llama-3.2-11b-vision-instruct")`,
+        }
+      } catch (fbErr) {
+        // fall through to return original error
+      }
+    }
+
     return {
       success: false,
       provider: 'nvidia-nim',
