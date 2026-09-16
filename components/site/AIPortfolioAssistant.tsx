@@ -1,7 +1,7 @@
 'use client'
 
 import React, { useState, useRef, useEffect } from 'react'
-import { Sparkles, Send, X, Bot, User, CornerDownLeft, RefreshCw, ChevronDown } from 'lucide-react'
+import { Sparkles, Send, X, Bot, RefreshCw, ChevronDown, Cpu, Check, Settings2 } from 'lucide-react'
 
 interface Message {
   id: string
@@ -9,6 +9,7 @@ interface Message {
   content: string
   timestamp: string
   provider?: string
+  model?: string
 }
 
 const STARTER_PROMPTS = [
@@ -18,29 +19,150 @@ const STARTER_PROMPTS = [
   '💼 How can I hire you for a project or contract?',
 ]
 
+const DEFAULT_POPULAR_MODELS = [
+  { id: 'nvidia/llama-3.1-nemotron-70b-instruct', name: 'LLaMA 3.1 Nemotron 70B (Flagship)' },
+  { id: 'mistralai/mistral-large-2-instruct', name: 'Mistral Large 2 (128k Context)' },
+  { id: 'nvidia/nemotron-4-340b-instruct', name: 'Nemotron 4 340B (Ultra)' },
+  { id: 'meta/llama-3.2-90b-vision-instruct', name: 'LLaMA 3.2 90B (Vision)' },
+  { id: 'meta/llama-3.2-11b-vision-instruct', name: 'LLaMA 3.2 11B (Fast)' },
+  { id: 'ibm/granite-3.0-8b-instruct', name: 'IBM Granite 3.0 8B' },
+]
+
+function formatModelShort(id: string): string {
+  if (!id) return 'NVIDIA NIM'
+  const name = id.split('/').pop() || id
+  return name
+    .replace(/-instruct$/i, '')
+    .replace(/^llama-/i, 'LLaMA ')
+    .replace(/^nemotron-/i, 'Nemotron ')
+    .replace(/^mistral-/i, 'Mistral ')
+    .replace(/^granite-/i, 'Granite ')
+    .replace(/-/g, ' ')
+    .replace(/\b\w/g, (c) => c.toUpperCase())
+}
+
 export function AIPortfolioAssistant() {
   const [isOpen, setIsOpen] = useState(false)
   const [input, setInput] = useState('')
   const [loading, setLoading] = useState(false)
+  const [selectedModel, setSelectedModel] = useState<string>('nvidia/llama-3.1-nemotron-70b-instruct')
+  const [availableModels, setAvailableModels] = useState<Array<{ id: string; name: string }>>(DEFAULT_POPULAR_MODELS)
+  const [isModelMenuOpen, setIsModelMenuOpen] = useState(false)
   const [messages, setMessages] = useState<Message[]>([
     {
       id: 'welcome',
       role: 'assistant',
       content:
-        "Hello! I'm Murshed's **AI Portfolio Copilot**, powered by **NVIDIA NIM (LLaMA 3.3 70B)**. Ask me anything about Murshed's full-stack architecture skills, featured projects, or remote availability!",
+        "Hello! I'm Murshed's **AI Portfolio Copilot**, powered by **NVIDIA NIM**. Ask me anything about Murshed's full-stack architecture skills, featured projects, or remote availability!",
       timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+      model: 'nvidia/llama-3.1-nemotron-70b-instruct',
     },
   ])
 
   const messagesEndRef = useRef<HTMLDivElement>(null)
   const inputRef = useRef<HTMLTextAreaElement>(null)
+  const modelMenuRef = useRef<HTMLDivElement>(null)
 
+  // Fetch initial active model & live available models on mount
+  useEffect(() => {
+    let isMounted = true
+
+    async function loadCopilotConfig() {
+      try {
+        const saved = typeof window !== 'undefined' ? localStorage.getItem('copilot_selected_model') : null
+
+        // 1. Fetch server configured model
+        const chatRes = await fetch('/api/ai/chat')
+        if (chatRes.ok) {
+          const chatData = await chatRes.json()
+          if (chatData.activeModel && isMounted) {
+            const initialModel = saved || chatData.activeModel
+            setSelectedModel(initialModel)
+
+            // Update initial greeting with active model name
+            setMessages((prev) =>
+              prev.map((m) =>
+                m.id === 'welcome'
+                  ? {
+                      ...m,
+                      content: `Hello! I'm Murshed's **AI Portfolio Copilot**, powered by **NVIDIA NIM (${formatModelShort(
+                        initialModel
+                      )})**. Ask me anything about Murshed's full-stack architecture skills, featured projects, or remote availability!`,
+                      model: initialModel,
+                    }
+                  : m
+              )
+            )
+          }
+        }
+
+        // 2. Fetch live models list for dropdown
+        const modelsRes = await fetch('/api/ai/models')
+        if (modelsRes.ok) {
+          const modelsData = await modelsRes.json()
+          if (Array.isArray(modelsData.models) && modelsData.models.length > 0 && isMounted) {
+            const chatModels = modelsData.models
+              .filter((m: any) => m.isChat)
+              .map((m: any) => ({
+                id: m.id,
+                name: formatModelShort(m.id),
+              }))
+
+            if (chatModels.length > 0) {
+              setAvailableModels(chatModels)
+            }
+          }
+        }
+      } catch (err) {
+        // Fallback to default popular models
+      }
+    }
+
+    loadCopilotConfig()
+    return () => {
+      isMounted = false
+    }
+  }, [])
+
+  // Auto-scroll and focus
   useEffect(() => {
     if (isOpen) {
       messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' })
       setTimeout(() => inputRef.current?.focus(), 150)
     }
   }, [isOpen, messages])
+
+  // Close model menu when clicking outside
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (modelMenuRef.current && !modelMenuRef.current.contains(event.target as Node)) {
+        setIsModelMenuOpen(false)
+      }
+    }
+    if (isModelMenuOpen) {
+      document.addEventListener('mousedown', handleClickOutside)
+    }
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside)
+    }
+  }, [isModelMenuOpen])
+
+  const handleSelectModel = (modelId: string) => {
+    setSelectedModel(modelId)
+    setIsModelMenuOpen(false)
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('copilot_selected_model', modelId)
+    }
+    // Add brief info message
+    const switchNotice: Message = {
+      id: `switch-${Date.now()}`,
+      role: 'assistant',
+      content: `Switched active AI model to **${formatModelShort(modelId)}**. How can I assist you?`,
+      timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+      model: modelId,
+    }
+    setMessages((prev) => [...prev, switchNotice])
+  }
 
   const handleSend = async (textToSend?: string) => {
     const text = (textToSend || input).trim()
@@ -59,7 +181,7 @@ export function AIPortfolioAssistant() {
 
     try {
       const history = messages
-        .filter((m) => m.id !== 'welcome')
+        .filter((m) => m.id !== 'welcome' && !m.id.startsWith('switch-'))
         .concat(userMessage)
         .map((m) => ({ role: m.role, content: m.content }))
 
@@ -69,6 +191,7 @@ export function AIPortfolioAssistant() {
         body: JSON.stringify({
           messages: history,
           userQuery: text,
+          model: selectedModel,
         }),
       })
 
@@ -81,6 +204,7 @@ export function AIPortfolioAssistant() {
         content: data.reply || "I'm available to answer any questions regarding Murshed's projects and skills!",
         timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
         provider: data.provider,
+        model: data.model || selectedModel,
       }
 
       setMessages((prev) => [...prev, assistantMessage])
@@ -93,6 +217,7 @@ export function AIPortfolioAssistant() {
           content:
             "I'm currently operating in low-latency standby mode. Please feel free to browse Murshed's projects or drop a direct message through the Contact section!",
           timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+          model: selectedModel,
         },
       ])
     } finally {
@@ -142,7 +267,7 @@ export function AIPortfolioAssistant() {
             onMouseLeave={(e) => {
               e.currentTarget.style.transform = 'translateY(0) scale(1)'
             }}
-            title="Chat with Murshed's AI Assistant"
+            title={`Chat with AI Copilot (${formatModelShort(selectedModel)})`}
           >
             <div
               style={{
@@ -162,13 +287,17 @@ export function AIPortfolioAssistant() {
               style={{
                 fontSize: '0.68rem',
                 fontFamily: 'var(--font-mono)',
-                background: 'rgba(0, 0, 0, 0.2)',
-                padding: '2px 6px',
+                background: 'rgba(0, 0, 0, 0.25)',
+                padding: '2px 8px',
                 borderRadius: 999,
-                letterSpacing: 0.4,
+                letterSpacing: 0.3,
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: 4,
               }}
             >
-              NVIDIA NIM
+              <span style={{ width: 5, height: 5, borderRadius: '50%', background: '#4ade80' }} />
+              {formatModelShort(selectedModel)}
             </span>
           </button>
         )}
@@ -181,8 +310,8 @@ export function AIPortfolioAssistant() {
             position: 'fixed',
             bottom: 24,
             right: 24,
-            width: 'min(420px, calc(100vw - 32px))',
-            height: 'min(580px, calc(100vh - 48px))',
+            width: 'min(430px, calc(100vw - 32px))',
+            height: 'min(590px, calc(100vh - 48px))',
             borderRadius: 20,
             background: 'var(--card-bg)',
             border: '1px solid var(--card-border)',
@@ -197,67 +326,191 @@ export function AIPortfolioAssistant() {
           {/* Header */}
           <div
             style={{
-              padding: '16px 18px',
+              padding: '14px 16px',
               borderBottom: '1px solid var(--line)',
               background: 'var(--surface-2)',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'space-between',
+              position: 'relative',
             }}
           >
-            <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 10, minWidth: 0 }}>
               <div
                 style={{
-                  width: 32,
-                  height: 32,
+                  width: 34,
+                  height: 34,
                   borderRadius: 10,
                   background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
                   color: '#ffffff',
+                  flexShrink: 0,
                 }}
               >
-                <Bot size={18} />
+                <Bot size={19} />
               </div>
-              <div>
-                <div style={{ fontSize: '0.92rem', fontWeight: 700, color: 'var(--ink)' }}>
+              <div style={{ minWidth: 0 }}>
+                <div style={{ fontSize: '0.90rem', fontWeight: 700, color: 'var(--ink)', lineHeight: 1.2 }}>
                   Murshed&apos;s AI Copilot
                 </div>
-                <div
+                {/* Clickable Model Selector Pill */}
+                <button
+                  type="button"
+                  onClick={() => setIsModelMenuOpen(!isModelMenuOpen)}
                   style={{
-                    fontSize: '0.72rem',
-                    color: '#10b981',
-                    fontFamily: 'var(--font-mono)',
-                    display: 'flex',
+                    display: 'inline-flex',
                     alignItems: 'center',
                     gap: 5,
+                    padding: '2px 7px',
+                    marginTop: 3,
+                    borderRadius: 999,
+                    background: 'rgba(16, 185, 129, 0.12)',
+                    border: '1px solid rgba(16, 185, 129, 0.3)',
+                    color: '#10b981',
+                    fontSize: '0.70rem',
+                    fontFamily: 'var(--font-mono)',
+                    fontWeight: 600,
+                    cursor: 'pointer',
+                    maxWidth: 240,
                   }}
+                  title="Click to switch active AI model"
                 >
-                  <span style={{ width: 6, height: 6, borderRadius: '50%', background: '#10b981', display: 'inline-block' }} />
-                  Powered by NVIDIA NIM (LLaMA 3.3)
-                </div>
+                  <span style={{ width: 5, height: 5, borderRadius: '50%', background: '#10b981', flexShrink: 0 }} />
+                  <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                    {formatModelShort(selectedModel)}
+                  </span>
+                  <ChevronDown
+                    size={11}
+                    style={{
+                      transform: isModelMenuOpen ? 'rotate(180deg)' : 'none',
+                      transition: 'transform 150ms ease',
+                      flexShrink: 0,
+                    }}
+                  />
+                </button>
               </div>
             </div>
 
-            <button
-              onClick={() => setIsOpen(false)}
-              style={{
-                width: 28,
-                height: 28,
-                borderRadius: 8,
-                border: '1px solid var(--line)',
-                background: 'transparent',
-                color: 'var(--ink-muted)',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                cursor: 'pointer',
-              }}
-              title="Close Assistant"
-            >
-              <X size={15} />
-            </button>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+              <button
+                onClick={() => setIsModelMenuOpen(!isModelMenuOpen)}
+                style={{
+                  width: 28,
+                  height: 28,
+                  borderRadius: 8,
+                  border: '1px solid var(--line)',
+                  background: isModelMenuOpen ? 'rgba(16, 185, 129, 0.15)' : 'transparent',
+                  color: isModelMenuOpen ? '#10b981' : 'var(--ink-muted)',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  cursor: 'pointer',
+                }}
+                title="Select Model"
+              >
+                <Cpu size={14} />
+              </button>
+              <button
+                onClick={() => setIsOpen(false)}
+                style={{
+                  width: 28,
+                  height: 28,
+                  borderRadius: 8,
+                  border: '1px solid var(--line)',
+                  background: 'transparent',
+                  color: 'var(--ink-muted)',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  cursor: 'pointer',
+                }}
+                title="Close Assistant"
+              >
+                <X size={15} />
+              </button>
+            </div>
+
+            {/* Model Selector Dropdown Popover */}
+            {isModelMenuOpen && (
+              <div
+                ref={modelMenuRef}
+                style={{
+                  position: 'absolute',
+                  top: '100%',
+                  left: 12,
+                  right: 12,
+                  background: 'var(--card-bg)',
+                  border: '1px solid var(--card-border)',
+                  borderRadius: 12,
+                  boxShadow: '0 20px 30px -10px rgba(0,0,0,0.4), 0 0 0 1px var(--line)',
+                  padding: 8,
+                  zIndex: 100,
+                  maxHeight: 260,
+                  overflowY: 'auto',
+                  backdropFilter: 'blur(20px)',
+                }}
+              >
+                <div
+                  style={{
+                    padding: '4px 8px 8px',
+                    fontSize: '0.68rem',
+                    fontWeight: 700,
+                    textTransform: 'uppercase',
+                    letterSpacing: 0.5,
+                    color: 'var(--ink-muted)',
+                    borderBottom: '1px solid var(--line)',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'space-between',
+                  }}
+                >
+                  <span>Select Active AI Model</span>
+                  <span style={{ fontSize: '0.62rem', color: '#10b981', fontFamily: 'var(--font-mono)' }}>
+                    NVIDIA NIM
+                  </span>
+                </div>
+                <div style={{ paddingTop: 4 }}>
+                  {availableModels.map((m) => {
+                    const isSelected = m.id === selectedModel
+                    return (
+                      <button
+                        key={m.id}
+                        type="button"
+                        onClick={() => handleSelectModel(m.id)}
+                        style={{
+                          width: '100%',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'space-between',
+                          padding: '7px 10px',
+                          borderRadius: 8,
+                          background: isSelected ? 'rgba(16, 185, 129, 0.12)' : 'transparent',
+                          border: isSelected ? '1px solid rgba(16, 185, 129, 0.25)' : '1px solid transparent',
+                          color: isSelected ? '#10b981' : 'var(--ink)',
+                          fontSize: '0.78rem',
+                          cursor: 'pointer',
+                          textAlign: 'left',
+                          marginBottom: 3,
+                          transition: 'background 120ms ease',
+                        }}
+                      >
+                        <div style={{ minWidth: 0, paddingRight: 6 }}>
+                          <div style={{ fontWeight: isSelected ? 700 : 500, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                            {m.name || formatModelShort(m.id)}
+                          </div>
+                          <div style={{ fontSize: '0.65rem', color: 'var(--ink-muted)', fontFamily: 'var(--font-mono)' }}>
+                            {m.id}
+                          </div>
+                        </div>
+                        {isSelected && <Check size={14} style={{ color: '#10b981', flexShrink: 0 }} />}
+                      </button>
+                    )
+                  })}
+                </div>
+              </div>
+            )}
           </div>
 
           {/* Messages Area */}
@@ -285,7 +538,7 @@ export function AIPortfolioAssistant() {
                 >
                   <div
                     style={{
-                      maxWidth: '86%',
+                      maxWidth: '88%',
                       padding: '10px 14px',
                       borderRadius: isUser ? '16px 16px 4px 16px' : '16px 16px 16px 4px',
                       background: isUser ? 'var(--accent)' : 'var(--surface-2)',
@@ -299,8 +552,36 @@ export function AIPortfolioAssistant() {
                   >
                     {m.content}
                   </div>
-                  <div style={{ fontSize: '0.68rem', color: 'var(--ink-muted)', padding: '0 4px' }}>
-                    {m.timestamp} {m.provider ? `· ${m.provider}` : ''}
+                  <div
+                    style={{
+                      fontSize: '0.68rem',
+                      color: 'var(--ink-muted)',
+                      padding: '0 4px',
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: 6,
+                    }}
+                  >
+                    <span>{m.timestamp}</span>
+                    {m.role === 'assistant' && (
+                      <span
+                        style={{
+                          display: 'inline-flex',
+                          alignItems: 'center',
+                          gap: 3,
+                          background: 'var(--surface)',
+                          padding: '1px 6px',
+                          borderRadius: 999,
+                          border: '1px solid var(--line)',
+                          fontFamily: 'var(--font-mono)',
+                          fontSize: '0.62rem',
+                          color: '#10b981',
+                        }}
+                      >
+                        <Cpu size={9} />
+                        {formatModelShort(m.model || selectedModel)}
+                      </span>
+                    )}
                   </div>
                 </div>
               )
@@ -317,13 +598,13 @@ export function AIPortfolioAssistant() {
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center',
-                    color: 'var(--accent)',
+                    color: '#10b981',
                   }}
                 >
                   <RefreshCw size={12} className="animate-spin" />
                 </div>
-                <span style={{ fontSize: '0.78rem', color: 'var(--ink-muted)' }}>
-                  Thinking with NVIDIA NIM…
+                <span style={{ fontSize: '0.76rem', color: 'var(--ink-muted)', fontFamily: 'var(--font-mono)' }}>
+                  Thinking with {formatModelShort(selectedModel)}…
                 </span>
               </div>
             )}
@@ -381,7 +662,7 @@ export function AIPortfolioAssistant() {
               value={input}
               onChange={(e) => setInput(e.target.value)}
               onKeyDown={handleKeyDown}
-              placeholder="Ask about projects, stack, hiring…"
+              placeholder={`Ask ${formatModelShort(selectedModel)} anything…`}
               style={{
                 flex: 1,
                 resize: 'none',

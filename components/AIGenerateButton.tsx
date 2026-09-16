@@ -43,7 +43,9 @@ export function AIGenerateButton({
       const data = await response.json()
       if (data.text) {
         onGenerate(data.text)
-        const providerName = data.provider === 'nvidia-nim' ? 'NVIDIA NIM (LLaMA 3.3)' : data.provider || 'AI'
+        const providerName = data.provider === 'nvidia-nim' 
+          ? `NVIDIA NIM (${data.model ? data.model.split('/').pop() : 'Active'})` 
+          : data.provider || 'AI'
         toast.success(`Generated via ${providerName}`)
       }
     } catch (error) {

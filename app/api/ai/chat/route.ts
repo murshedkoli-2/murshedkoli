@@ -1,10 +1,25 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
-import { generateUnifiedAICompletion, UnifiedAIMessage } from '@/lib/ai/nvidia-nim'
+import { generateUnifiedAICompletion, UnifiedAIMessage, getResolvedAIKeys } from '@/lib/ai/nvidia-nim'
+
+export async function GET() {
+  try {
+    const { nvidiaModel, nvidiaKey } = await getResolvedAIKeys()
+    return NextResponse.json({
+      activeModel: nvidiaModel || 'nvidia/llama-3.1-nemotron-70b-instruct',
+      hasKey: !!nvidiaKey,
+    })
+  } catch (error) {
+    return NextResponse.json({
+      activeModel: 'nvidia/llama-3.1-nemotron-70b-instruct',
+      hasKey: false,
+    })
+  }
+}
 
 export async function POST(req: NextRequest) {
   try {
-    const { messages, userQuery } = await req.json()
+    const { messages, userQuery, model } = await req.json()
 
     if (!userQuery && (!messages || messages.length === 0)) {
       return NextResponse.json({ error: 'Message content is required.' }, { status: 400 })
@@ -110,6 +125,7 @@ Guidelines:
       systemPrompt,
       temperature: 0.5,
       maxTokens: 1000,
+      model: typeof model === 'string' && model.trim() ? model.trim() : undefined,
     })
 
     return NextResponse.json({
