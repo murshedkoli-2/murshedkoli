@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useState } from 'react'
 import { toast } from 'sonner'
-import { Sparkles, CheckCircle2, AlertCircle, RefreshCw } from 'lucide-react'
+import { Sparkles, CheckCircle2, AlertCircle, RefreshCw, DownloadCloud } from 'lucide-react'
 import { AdminShell } from '@/components/admin/AdminShell'
 import { useAdminGuard } from '@/lib/admin/useAdminGuard'
 
@@ -28,18 +28,27 @@ const EMPTY: SettingsForm = {
   heroSubheadline: '',
   copyrightText: '',
   nvidiaNimKey: '',
-  nvidiaNimModel: 'meta/llama-3.3-70b-instruct',
+  nvidiaNimModel: 'nvidia/llama-3.1-nemotron-70b-instruct',
   googleAiKey: '',
   openRouterKey: '',
   maintenanceMode: false,
 }
 
-const NVIDIA_MODELS = [
-  { id: 'meta/llama-3.3-70b-instruct', name: 'meta/llama-3.3-70b-instruct (Recommended · Flagship)' },
-  { id: 'nvidia/llama-3.1-nemotron-70b-instruct', name: 'nvidia/llama-3.1-nemotron-70b-instruct (NVIDIA Optimized)' },
-  { id: 'deepseek-ai/deepseek-r1', name: 'deepseek-ai/deepseek-r1 (Reasoning & Algorithmic)' },
-  { id: 'mistralai/mistral-large-2-instruct', name: 'mistralai/mistral-large-2-instruct (128k Context)' },
-  { id: 'meta/llama-3.1-8b-instruct', name: 'meta/llama-3.1-8b-instruct (Ultra Low-Latency)' },
+interface ModelItem {
+  id: string
+  name: string
+  owner: string
+  isChat?: boolean
+}
+
+const DEFAULT_MODELS: ModelItem[] = [
+  { id: 'nvidia/llama-3.1-nemotron-70b-instruct', name: 'nvidia/llama-3.1-nemotron-70b-instruct (NVIDIA Flagship · Free)', owner: 'nvidia', isChat: true },
+  { id: 'mistralai/mistral-large-2-instruct', name: 'mistralai/mistral-large-2-instruct (128k High-Context)', owner: 'mistralai', isChat: true },
+  { id: 'nvidia/nemotron-4-340b-instruct', name: 'nvidia/nemotron-4-340b-instruct (Ultra Scale 340B)', owner: 'nvidia', isChat: true },
+  { id: 'meta/llama-3.2-90b-vision-instruct', name: 'meta/llama-3.2-90b-vision-instruct (Multimodal 90B)', owner: 'meta', isChat: true },
+  { id: 'meta/llama-3.2-11b-vision-instruct', name: 'meta/llama-3.2-11b-vision-instruct (Fast 11B)', owner: 'meta', isChat: true },
+  { id: 'ibm/granite-3.0-8b-instruct', name: 'ibm/granite-3.0-8b-instruct (Fast Enterprise)', owner: 'ibm', isChat: true },
+  { id: 'nv-mistralai/mistral-nemo-12b-instruct', name: 'nv-mistralai/mistral-nemo-12b-instruct (Compact 12B)', owner: 'nv-mistralai', isChat: true },
 ]
 
 export default function SettingsManager() {
@@ -47,6 +56,9 @@ export default function SettingsManager() {
   const [form, setForm] = useState<SettingsForm>(EMPTY)
   const [saving, setSaving] = useState(false)
   const [testingAI, setTestingAI] = useState(false)
+  const [fetchingModels, setFetchingModels] = useState(false)
+  const [availableModels, setAvailableModels] = useState<ModelItem[]>(DEFAULT_MODELS)
+  const [modelSearch, setModelSearch] = useState('')
   const [testResult, setTestResult] = useState<{
     success: boolean
     message: string
@@ -66,7 +78,10 @@ export default function SettingsManager() {
         heroSubheadline: s.heroSubheadline || '',
         copyrightText: s.copyrightText || '',
         nvidiaNimKey: s.nvidiaNimKey || '',
-        nvidiaNimModel: s.nvidiaNimModel || 'meta/llama-3.3-70b-instruct',
+        nvidiaNimModel:
+          s.nvidiaNimModel === 'meta/llama-3.3-70b-instruct'
+            ? 'nvidia/llama-3.1-nemotron-70b-instruct'
+            : s.nvidiaNimModel || 'nvidia/llama-3.1-nemotron-70b-instruct',
         googleAiKey: s.googleAiKey || '',
         openRouterKey: s.openRouterKey || '',
         maintenanceMode: Boolean(s.maintenanceMode),
@@ -77,8 +92,34 @@ export default function SettingsManager() {
     }
   }, [])
 
+  // Fetch live active models from NVIDIA API
+  const fetchLiveModels = async (explicitKey?: string) => {
+    setFetchingModels(true)
+    try {
+      const res = await fetch('/api/ai/models', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ apiKey: explicitKey || form.nvidiaNimKey }),
+      })
+      if (!res.ok) throw new Error('Failed to fetch models')
+      const data = await res.json()
+      if (Array.isArray(data.models) && data.models.length > 0) {
+        setAvailableModels(data.models)
+        toast.success(`Fetched ${data.models.length} active live models from NVIDIA API!`)
+      }
+    } catch (err: any) {
+      console.warn('Live models fetch failed:', err)
+      toast.error('Could not fetch models directly from NVIDIA. Using verified fallback catalog.')
+    } finally {
+      setFetchingModels(false)
+    }
+  }
+
   useEffect(() => {
-    if (ready) load()
+    if (ready) {
+      load()
+      fetchLiveModels()
+    }
   }, [ready, load])
 
   const save = async () => {
@@ -129,16 +170,16 @@ export default function SettingsManager() {
       if (data.success) {
         setTestResult({
           success: true,
-          message: `${data.sampleText} (${data.latencyMs}ms)`,
+          message: `${data.sampleText} (Model: ${data.model} · ${data.latencyMs}ms)`,
           latencyMs: data.latencyMs,
         })
-        toast.success(`NVIDIA NIM connected successfully in ${data.latencyMs}ms!`)
+        toast.success(`NVIDIA NIM connection successful (${data.latencyMs}ms)!`)
       } else {
         setTestResult({
           success: false,
           message: data.sampleText || data.message || 'Connection failed',
         })
-        toast.error('NVIDIA NIM connection failed. Check your API key.')
+        toast.error(data.sampleText || 'NVIDIA NIM connection failed. Check your API key or model.')
       }
     } catch (err: any) {
       setTestResult({
@@ -179,6 +220,14 @@ export default function SettingsManager() {
     </div>
   )
 
+  // Filter models based on search query
+  const filteredModels = availableModels.filter(
+    (m) =>
+      !modelSearch.trim() ||
+      m.id.toLowerCase().includes(modelSearch.toLowerCase().trim()) ||
+      m.owner.toLowerCase().includes(modelSearch.toLowerCase().trim())
+  )
+
   return (
     <AdminShell
       active="settings"
@@ -198,6 +247,8 @@ export default function SettingsManager() {
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'space-between',
+            flexWrap: 'wrap',
+            gap: 10,
             background: 'linear-gradient(90deg, rgba(16, 185, 129, 0.08) 0%, transparent 100%)',
           }}
         >
@@ -219,28 +270,48 @@ export default function SettingsManager() {
             </span>
           </div>
 
-          <button
-            type="button"
-            className="adm-btn"
-            onClick={handleTestAI}
-            disabled={testingAI}
-            style={{
-              fontSize: 12,
-              padding: '4px 10px',
-              display: 'inline-flex',
-              alignItems: 'center',
-              gap: 6,
-            }}
-          >
-            {testingAI ? <RefreshCw size={13} className="animate-spin" /> : <Sparkles size={13} />}
-            <span>{testingAI ? 'Testing…' : 'Test NIM Connection'}</span>
-          </button>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+            <button
+              type="button"
+              className="adm-btn"
+              onClick={() => fetchLiveModels()}
+              disabled={fetchingModels}
+              style={{
+                fontSize: 12,
+                padding: '4px 10px',
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: 6,
+              }}
+              title="Fetch all live active models from NVIDIA API"
+            >
+              <DownloadCloud size={13} className={fetchingModels ? 'animate-bounce' : ''} />
+              <span>{fetchingModels ? 'Fetching Models…' : `Fetch Live Models (${availableModels.length})`}</span>
+            </button>
+
+            <button
+              type="button"
+              className="adm-btn amber"
+              onClick={handleTestAI}
+              disabled={testingAI}
+              style={{
+                fontSize: 12,
+                padding: '4px 10px',
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: 6,
+              }}
+            >
+              {testingAI ? <RefreshCw size={13} className="animate-spin" /> : <Sparkles size={13} />}
+              <span>{testingAI ? 'Testing…' : 'Test NIM Connection'}</span>
+            </button>
+          </div>
         </div>
 
         <div className="adm-body">
           <p style={{ fontSize: 13, color: 'var(--ink-muted)', marginBottom: 16, lineHeight: 1.5 }}>
-            NVIDIA NIM (Inference Microservices) powers the portfolio&apos;s real-time AI generation, public AI Portfolio Copilot,
-            and task exam grading. If an NVIDIA key is absent, the system automatically falls back to Google Gemini or OpenRouter.
+            NVIDIA NIM (Inference Microservices) powers real-time portfolio AI generation, the public AI Portfolio Copilot,
+            and task exam evaluations. Select any currently active model fetched directly from NVIDIA API below.
           </p>
 
           <div className="adm-form-grid">
@@ -250,19 +321,58 @@ export default function SettingsManager() {
             })}
 
             <div className="adm-field">
-              <label className="adm-label">NVIDIA NIM Inference Model</label>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 6 }}>
+                <label className="adm-label" style={{ margin: 0 }}>Select Active NVIDIA NIM Model</label>
+                <span style={{ fontSize: 11, fontFamily: 'var(--font-mono)', color: '#10b981' }}>
+                  ✓ {availableModels.length} models available
+                </span>
+              </div>
+
+              {/* Model Search Filter */}
+              <input
+                type="text"
+                className="adm-input"
+                placeholder="Filter models (e.g. nemotron, llama, mistral)…"
+                value={modelSearch}
+                onChange={(e) => setModelSearch(e.target.value)}
+                style={{ fontSize: 12, padding: '4px 8px', marginBottom: 6 }}
+              />
+
+              {/* Dropdown with all live models */}
               <select
                 className="adm-input"
                 value={form.nvidiaNimModel}
                 onChange={(e) => setForm({ ...form, nvidiaNimModel: e.target.value })}
                 style={{ fontSize: 13 }}
               >
-                {NVIDIA_MODELS.map((m) => (
+                {/* Always make sure currently selected model is present */}
+                {!availableModels.some((m) => m.id === form.nvidiaNimModel) && (
+                  <option value={form.nvidiaNimModel}>
+                    {form.nvidiaNimModel} (Current Selected)
+                  </option>
+                )}
+
+                {filteredModels.map((m) => (
                   <option key={m.id} value={m.id}>
-                    {m.name}
+                    [{m.owner.toUpperCase()}] {m.name}
                   </option>
                 ))}
               </select>
+
+              {/* Custom Model Direct Input */}
+              <div style={{ marginTop: 6 }}>
+                <span style={{ fontSize: 11, color: 'var(--ink-muted)', display: 'block', marginBottom: 3 }}>
+                  Or enter custom model ID manually:
+                </span>
+                <input
+                  type="text"
+                  className="adm-input"
+                  value={form.nvidiaNimModel}
+                  onChange={(e) => setForm({ ...form, nvidiaNimModel: e.target.value.trim() })}
+                  placeholder="e.g. nvidia/llama-3.1-nemotron-70b-instruct"
+                  style={{ fontSize: 12, fontFamily: 'var(--font-mono)' }}
+                />
+              </div>
             </div>
           </div>
 
@@ -279,6 +389,7 @@ export default function SettingsManager() {
                 gap: 8,
                 fontSize: 12.5,
                 color: testResult.success ? '#10b981' : '#ef4444',
+                wordBreak: 'break-word',
               }}
             >
               {testResult.success ? <CheckCircle2 size={16} /> : <AlertCircle size={16} />}
@@ -295,7 +406,7 @@ export default function SettingsManager() {
               lineHeight: 1.6,
             }}
           >
-            Tip: Obtain free inference API credits directly from{' '}
+            Tip: Get your free API key at{' '}
             <a
               href="https://build.nvidia.com/"
               target="_blank"
@@ -304,7 +415,7 @@ export default function SettingsManager() {
             >
               build.nvidia.com
             </a>
-            .
+            . The system automatically retries with active fallback models if any selected model reaches end-of-life.
           </div>
         </div>
       </div>
@@ -340,7 +451,7 @@ export default function SettingsManager() {
             })}
           </div>
           <p className="adm-note">
-            Keys are encrypted on the server and used automatically when earlier tiers reach rate limits.
+            Keys are stored securely on the server and used automatically when earlier tiers reach rate limits.
           </p>
         </div>
       </div>

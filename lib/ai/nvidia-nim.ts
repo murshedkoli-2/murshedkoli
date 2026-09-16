@@ -54,7 +54,7 @@ export async function getResolvedAIKeys() {
   }
 
   const nvidiaKey = dbNvidiaKey || process.env.NVIDIA_API_KEY || process.env.NVIDIA_NIM_API_KEY || ''
-  const nvidiaModel = dbNvidiaModel || process.env.NVIDIA_NIM_MODEL || 'meta/llama-3.3-70b-instruct'
+  const nvidiaModel = dbNvidiaModel || process.env.NVIDIA_NIM_MODEL || 'nvidia/llama-3.1-nemotron-70b-instruct'
   const googleKey = dbGoogleKey || process.env.GOOGLE_AI_API_KEY || ''
   const openRouterKey = dbOpenRouterKey || process.env.OPENROUTER_API_KEY || ''
 
@@ -63,6 +63,80 @@ export async function getResolvedAIKeys() {
     nvidiaModel,
     googleKey,
     openRouterKey,
+  }
+}
+
+export interface NvidiaModelInfo {
+  id: string
+  name: string
+  owner: string
+  isChat: boolean
+}
+
+/**
+ * Fetches all currently active, live models directly from NVIDIA NIM API.
+ */
+export async function fetchLiveNvidiaModels(apiKey?: string): Promise<NvidiaModelInfo[]> {
+  try {
+    const headers: Record<string, string> = {
+      'Content-Type': 'application/json',
+    }
+    if (apiKey) {
+      headers['Authorization'] = `Bearer ${apiKey}`
+    }
+
+    const res = await fetch('https://integrate.api.nvidia.com/v1/models', {
+      method: 'GET',
+      headers,
+      next: { revalidate: 3600 },
+    })
+
+    if (!res.ok) {
+      throw new Error(`Failed to fetch models from NVIDIA NIM: HTTP ${res.status}`)
+    }
+
+    const data = await res.json()
+    if (!Array.isArray(data.data)) {
+      return []
+    }
+
+    const models: NvidiaModelInfo[] = data.data.map((m: any) => {
+      const id = String(m.id || '')
+      const isChat =
+        id.includes('instruct') ||
+        id.includes('chat') ||
+        id.includes('nemotron') ||
+        id.includes('llama') ||
+        id.includes('mistral') ||
+        id.includes('deepseek') ||
+        id.includes('granite') ||
+        id.includes('phi')
+
+      return {
+        id,
+        name: id,
+        owner: String(m.owned_by || id.split('/')[0] || 'nvidia'),
+        isChat,
+      }
+    })
+
+    // Sort chat/instruct models first, then alphabetically
+    return models.sort((a, b) => {
+      if (a.isChat && !b.isChat) return -1
+      if (!a.isChat && b.isChat) return 1
+      return a.id.localeCompare(b.id)
+    })
+  } catch (error) {
+    console.warn('Live NVIDIA models fetch error, returning curated fallback list:', error)
+    return [
+      { id: 'nvidia/llama-3.1-nemotron-70b-instruct', name: 'nvidia/llama-3.1-nemotron-70b-instruct (Flagship 70B)', owner: 'nvidia', isChat: true },
+      { id: 'mistralai/mistral-large-2-instruct', name: 'mistralai/mistral-large-2-instruct (128k High-Context)', owner: 'mistralai', isChat: true },
+      { id: 'nvidia/nemotron-4-340b-instruct', name: 'nvidia/nemotron-4-340b-instruct (Ultra Scale 340B)', owner: 'nvidia', isChat: true },
+      { id: 'meta/llama-3.2-90b-vision-instruct', name: 'meta/llama-3.2-90b-vision-instruct (Multimodal 90B)', owner: 'meta', isChat: true },
+      { id: 'meta/llama-3.2-11b-vision-instruct', name: 'meta/llama-3.2-11b-vision-instruct (Fast 11B)', owner: 'meta', isChat: true },
+      { id: 'ibm/granite-3.0-8b-instruct', name: 'ibm/granite-3.0-8b-instruct (Enterprise 8B)', owner: 'ibm', isChat: true },
+      { id: 'nv-mistralai/mistral-nemo-12b-instruct', name: 'nv-mistralai/mistral-nemo-12b-instruct (12B Compact)', owner: 'nv-mistralai', isChat: true },
+    ]
   }
 }
 
@@ -75,9 +149,11 @@ async function callNvidiaNim(
   apiKey: string,
   model: string,
   temperature = 0.3,
-  maxTokens = 1500
+  maxTokens = 1500,
+  hasRetriedAfterEol = false
 ): Promise<UnifiedAIResult> {
   const endpoint = 'https://integrate.api.nvidia.com/v1/chat/completions'
+  const activeModel = model || 'nvidia/llama-3.1-nemotron-70b-instruct'
 
   const res = await fetch(endpoint, {
     method: 'POST',
@@ -86,7 +162,7 @@ async function callNvidiaNim(
       'Authorization': `Bearer ${apiKey}`,
     },
     body: JSON.stringify({
-      model: model || 'meta/llama-3.3-70b-instruct',
+      model: activeModel,
       messages,
       temperature,
       max_tokens: maxTokens,
@@ -97,6 +173,21 @@ async function callNvidiaNim(
 
   if (!res.ok) {
     const errorText = await res.text()
+
+    // Self-healing recovery: If requested model reached End-of-Life (HTTP 410 Gone) or Not Found (404),
+    // automatically fallback to NVIDIA's live flagship model: nvidia/llama-3.1-nemotron-70b-instruct
+    if ((res.status === 410 || res.status === 404) && !hasRetriedAfterEol) {
+      console.warn(
+        `Model "${activeModel}" returned HTTP ${res.status} (${errorText}). Self-healing with active fallback model nvidia/llama-3.1-nemotron-70b-instruct...`
+      )
+      const fallbackTarget =
+        activeModel === 'nvidia/llama-3.1-nemotron-70b-instruct'
+          ? 'mistralai/mistral-large-2-instruct'
+          : 'nvidia/llama-3.1-nemotron-70b-instruct'
+
+      return await callNvidiaNim(messages, apiKey, fallbackTarget, temperature, maxTokens, true)
+    }
+
     throw new Error(`NVIDIA NIM API error [${res.status}]: ${errorText}`)
   }
 
@@ -109,7 +200,7 @@ async function callNvidiaNim(
   return {
     text: choice.message.content.trim(),
     provider: 'nvidia-nim',
-    model: data.model || model,
+    model: data.model || activeModel,
     usage: data.usage ? {
       promptTokens: data.usage.prompt_tokens,
       completionTokens: data.usage.completion_tokens,
