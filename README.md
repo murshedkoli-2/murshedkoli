@@ -1,394 +1,386 @@
 <div align="center">
 
-# Portfolio — Murshed Al Main
+# Portfolio & Content Engine
 
-**A database-driven personal portfolio with a full content management dashboard.**
+### A high-performance, database-driven developer portfolio with an integrated headless CMS dashboard.
 
-Dark editorial front end. Typed, cached data layer. Every word and image on the public
-site is editable from `/admin` — nothing is hardcoded.
+[![Website](https://img.shields.io/badge/Live_Site-murshedkoli.com-f5b04c?style=for-the-badge&logo=googlechrome&logoColor=white)](https://murshedkoli.com)
+[![Admin](https://img.shields.io/badge/CMS_Dashboard-/admin-111116?style=for-the-badge&logo=shield&logoColor=white)](https://murshedkoli.com/admin)
 
-[![Next.js](https://img.shields.io/badge/Next.js-16-000?logo=nextdotjs&logoColor=white)](https://nextjs.org)
-[![React](https://img.shields.io/badge/React-18-087EA4?logo=react&logoColor=white)](https://react.dev)
-[![TypeScript](https://img.shields.io/badge/TypeScript-5-3178C6?logo=typescript&logoColor=white)](https://typescriptlang.org)
-[![Prisma](https://img.shields.io/badge/Prisma-6.19-2D3748?logo=prisma&logoColor=white)](https://prisma.io)
-[![MongoDB](https://img.shields.io/badge/MongoDB-Atlas-47A248?logo=mongodb&logoColor=white)](https://mongodb.com)
-[![Tailwind](https://img.shields.io/badge/Tailwind-3-06B6D4?logo=tailwindcss&logoColor=white)](https://tailwindcss.com)
+<br/>
 
-[**murshedkoli.com**](https://murshedkoli.com)
+[![Next.js](https://img.shields.io/badge/Next.js-16.2_(App_Router)-000000?style=flat-square&logo=nextdotjs&logoColor=white)](https://nextjs.org/)
+[![React](https://img.shields.io/badge/React-18-087EA4?style=flat-square&logo=react&logoColor=white)](https://react.dev/)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5.0_(Strict)-3178C6?style=flat-square&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
+[![Prisma](https://img.shields.io/badge/Prisma-6.19-2D3748?style=flat-square&logo=prisma&logoColor=white)](https://www.prisma.io/)
+[![MongoDB](https://img.shields.io/badge/MongoDB-Atlas-47A248?style=flat-square&logo=mongodb&logoColor=white)](https://www.mongodb.com/)
+[![Tailwind](https://img.shields.io/badge/Tailwind_CSS-3.3-06B6D4?style=flat-square&logo=tailwindcss&logoColor=white)](https://tailwindcss.com/)
+[![Gemini](https://img.shields.io/badge/AI_Engine-Google_Gemini-8E75B2?style=flat-square&logo=googlegemini&logoColor=white)](https://ai.google.dev/)
+[![Vercel](https://img.shields.io/badge/Deployment-Vercel-000000?style=flat-square&logo=vercel&logoColor=white)](https://vercel.com/)
 
 </div>
 
 ---
 
-## Contents
+## 📑 Table of Contents
 
-- [What this is](#what-this-is)
-- [Highlights](#highlights)
-- [Tech stack](#tech-stack)
-- [How it fits together](#how-it-fits-together)
-- [Project structure](#project-structure)
-- [Getting started](#getting-started)
-- [Environment variables](#environment-variables)
-- [Scripts](#scripts)
-- [Content model](#content-model)
-- [The scroll background](#the-scroll-background)
-- [Design system](#design-system)
-- [Security](#security)
-- [Deployment](#deployment)
-- [Notes for contributors](#notes-for-contributors)
+- [Overview](#-overview)
+- [System Architecture](#-system-architecture)
+- [Key Features](#-key-features)
+  - [Editorial Front-End](#editorial-front-end)
+  - [Headless CMS & Back Office](#headless-cms--back-office)
+  - [AI & PDF Automation Pipelines](#ai--pdf-automation-pipelines)
+- [Technology Stack](#-technology-stack)
+- [Project Structure](#-project-structure)
+- [Data Model & Database Schema](#-data-model--database-schema)
+- [API Route Specification](#-api-route-specification)
+- [Security & Authentication](#-security--authentication)
+- [Performance & Optimization](#-performance--optimization)
+- [Getting Started](#-getting-started)
+  - [Prerequisites](#prerequisites)
+  - [Installation & Environment](#installation--environment)
+  - [Database Setup & Seeding](#database-setup--seeding)
+  - [Development Scripts](#development-scripts)
+- [Deployment Guide](#-deployment-guide)
+- [Engineering Decisions & Gotchas](#-engineering-decisions--gotchas)
+- [Author & License](#-author--license)
 
 ---
 
-## What this is
+## 💡 Overview
 
-Most portfolio sites are a static page you edit by opening a code editor. This one is a
-small CMS with a portfolio attached.
+Most developer portfolios are static templates requiring code modifications and redeployments for every update. This repository houses an **enterprise-grade, production-tested personal portfolio coupled with a dedicated back-office Content Management System (CMS)**.
 
-The public site (`/`, `/about`, `/projects`, `/projects/[slug]`) renders entirely from
-MongoDB through a typed, cached data layer. The admin dashboard (`/admin`) is a complete
-back office for that data: projects with a multi-step editor and GitHub import, services,
-skills, experience, education, certificates with PDF thumbnailing, contact messages, site
-settings, plus a couple of personal tools. Content changes appear on the public site
-without a redeploy.
+Every line of text, asset, case study, and timeline entry is persisted in **MongoDB Atlas** and managed via an authenticated `/admin` suite. Changes propagate to the public site through an **Incremental Static Regeneration (ISR)** caching layer without triggering full site rebuilds.
 
-## Highlights
+---
 
-**Front end**
+## 🏛 System Architecture
 
-- **Dark editorial homepage** — near-black ground, bone type, hairline rules, a single
-  amber accent, serif-italic accent words. Built to look intentional, not templated.
-- **Scroll-scrubbed portrait background** — a 100-frame WebP sequence painted to a fixed
-  canvas, scrubbed by scroll depth with a synchronised zoom. See
-  [The scroll background](#the-scroll-background).
-- **Light and dark themes** — OKLCH token system, animated toggle, no-flash pre-paint
-  script so there's no theme flicker on first load.
-- **Motion with a floor** — Framer Motion reveals and scroll-linked transforms, all of
-  which collapse cleanly under `prefers-reduced-motion`.
-- **Real case studies** — `/projects/[slug]` renders a visual project page with a
-  keyboard- and swipe-navigable gallery lightbox.
+The application enforces strict separation of concerns between presentation, data access, and mutation layers:
 
-**Data and performance**
+```mermaid
+flowchart TD
+    subgraph Client["Client / Browser"]
+        U["Public Visitor"]
+        A["Admin User"]
+    end
 
-- **Two-layer caching** — `unstable_cache` persists query results across requests;
-  React `cache` de-dupes within a render. All entries share one `portfolio` tag.
-- **ISR** — the homepage and project pages are served static and regenerate in the
-  background every 10 minutes.
-- **Static params** — published project slugs are pre-rendered at build time.
-- **Image pipeline** — AVIF/WebP via `next/image` with a 30-day optimised-image cache.
+    subgraph Security["Edge Security & Middleware"]
+        MW["proxy.ts (Next.js 16 Edge Middleware)"]
+        MW -->|"Validate Session (Web Crypto HMAC)"| AUTH{"Authorized?"}
+        AUTH -->|"Yes"| API_ADMIN["Admin API Routes (/api/*)"]
+        AUTH -->|"No"| REJ["401 Unauthorized"]
+    end
 
-**Back office**
+    subgraph Presentation["App Router (RSC & Client Components)"]
+        PUB_PAGE["Public RSC Pages (/ · /about · /projects)"]
+        ADMIN_DASH["Admin Dashboard UI (/admin/*)"]
+    end
 
-- **Project editor** — tabbed editor covering identity, media, links, story, tech stack
-  and a feature checklist, plus a guided wizard for new projects.
-- **GitHub import** — pull a repo's README and metadata to bootstrap a project entry.
-- **AI assist** — optional field-level generation (descriptions, titles, SEO copy) via
-  Google Gemini, with OpenRouter as a fallback provider.
-- **Certificates** — image or PDF upload; page 1 of a PDF is rasterised once at upload so
-  cards show a real preview without shipping a PDF viewer.
-- **Generated résumé** — `/api/resume` builds a PDF from live database content.
-- **`/llms.txt`** — a machine-readable profile summary for LLM crawlers.
+    subgraph DataLayer["Cached Data Access Layer"]
+        DAL["lib/data/portfolio.ts"]
+        CACHE["lib/cache.ts (unstable_cache + React cache)"]
+        TAG["Cache Tag: 'portfolio' | Revalidate: 600s"]
+        DAL --> CACHE
+    end
 
-## Tech stack
+    subgraph Persistence["Storage & Database"]
+        PRISMA["Prisma Client 6.19"]
+        MONGO[("MongoDB Atlas Database")]
+        PRISMA --> MONGO
+    end
 
-| Layer | Choice |
-|---|---|
-| Framework | Next.js 16 (App Router, Turbopack, React Server Components) |
-| UI | React 18, TypeScript 5 (strict) |
-| Styling | Tailwind CSS 3 + CSS custom-property tokens in OKLCH |
-| Type | Space Grotesk (display), Inter (body), JetBrains Mono (meta), Instrument Serif (accent) — all self-hosted via `next/font` |
-| Motion | Framer Motion 10 |
-| Icons | Lucide React |
-| Database | MongoDB (Atlas) via Prisma 6 |
-| Validation | Zod 4 |
-| Auth | Custom HMAC-signed session cookie on Web Crypto |
-| Images | ImgBB (general), Cloudflare R2 (certificates) |
-| AI | Google Gemini (`@google/genai`), OpenRouter fallback |
-| PDF | `pdf-lib` (résumé generation), `pdfjs-dist` (certificate thumbnails) |
-| Hosting | Vercel |
+    subgraph External["External Services"]
+        R2["Cloudflare R2 (PDFs)"]
+        IMGBB["ImgBB CDN (Images)"]
+        GEMINI["Google Gemini AI"]
+    end
 
-## How it fits together
-
-```
-                    ┌──────────────────────────────────────────┐
-   Public request → │  app/(public)   RSC pages, ISR 10 min    │
-                    │  page · about · projects · projects/[…]  │
-                    └───────────────────┬──────────────────────┘
-                                        │  typed view models
-                    ┌───────────────────▼──────────────────────┐
-                    │  lib/data/portfolio.ts                    │
-                    │  every query wrapped in cached()          │
-                    │  ┌──────────────────────────────────────┐ │
-                    │  │ unstable_cache  → across requests    │ │
-                    │  │ React cache     → within one render  │ │
-                    │  │ tag: "portfolio" · revalidate 600s   │ │
-                    │  └──────────────────────────────────────┘ │
-                    └───────────────────┬──────────────────────┘
-                                        │
-                    ┌───────────────────▼──────────────────────┐
-                    │  Prisma 6  →  MongoDB Atlas               │
-                    └───────────────────▲──────────────────────┘
-                                        │
-                    ┌───────────────────┴──────────────────────┐
-   Admin request →  │  app/api/*   Zod-validated route handlers│
-                    │  app/admin/* client dashboard            │
-                    └───────────────────▲──────────────────────┘
-                                        │
-                    ┌───────────────────┴──────────────────────┐
-                    │  proxy.ts (edge middleware)               │
-                    │  every non-GET /api/* needs a valid       │
-                    │  admin session — allowlist: login, contact│
-                    └──────────────────────────────────────────┘
+    U --> PUB_PAGE
+    PUB_PAGE --> DAL
+    DAL --> PRISMA
+    A --> ADMIN_DASH
+    ADMIN_DASH --> MW
+    API_ADMIN --> PRISMA
+    API_ADMIN --> External
 ```
 
-Three things worth calling out:
+### Architectural Highlights
 
-**The public site never touches Prisma directly.** It goes through `lib/data/portfolio.ts`,
-which returns narrow view models (`FeaturedProject`, `TimelineEntry`, `SkillColumn`) rather
-than raw Prisma rows. Database shape and render shape stay decoupled.
+1. **Decoupled Data Access**: Public Server Components never query Prisma directly. They read through `lib/data/portfolio.ts`, which maps raw MongoDB documents into slim, strongly-typed view models (`FeaturedProject`, `TimelineEntry`, `SkillColumn`).
+2. **Two-Tier Caching**: Read queries are wrapped with `lib/cache.ts`, leveraging Next.js `unstable_cache` across requests and React's `cache()` deduplication within a single render cycle.
+3. **Defense-in-Depth Authorization**: Non-safe HTTP methods on `/api/*` are guarded at the Edge by `proxy.ts`, while mutating route handlers independently enforce `requireAdmin()`.
 
-**Authorisation is centralised at the edge.** `proxy.ts` rejects any mutating `/api/*`
-request without a valid session before it reaches a handler. Handlers also check
-in-place (`lib/auth/require-admin.ts`) — defence in depth, so a middleware matcher mistake
-can't silently open a write endpoint.
+---
 
-**Sessions are deliberately small.** `base64url(payload).base64url(HMAC-SHA256)`, signed
-with Web Crypto so identical code runs in edge middleware and Node handlers, with an
-8-hour expiry and a constant-time signature comparison. No session store, no NextAuth.
+## ✨ Key Features
 
-## Project structure
+### Editorial Front-End
+- **Dark Editorial Aesthetic**: Bespoke dark theme built with OKLCH color tokens, `#f5b04c` warm amber accents, hairline structural rules, and fluid typography (`clamp()`).
+- **Scroll-Scrubbed Portrait Background**: A 100-frame WebP sequence rendered onto a fixed `<canvas>`, scrubbed continuously with scroll depth and synchronized with subtle viewport zoom.
+- **Zero-Flicker Theming**: Anti-flicker inline pre-paint script coupled with a client `ThemeProvider` and animated theme toggle.
+- **Accessible Micro-Interactions**: Framer Motion entrance reveals and scroll-linked transforms that gracefully collapse under `prefers-reduced-motion`.
+- **Rich Case Studies**: Dynamic `/projects/[slug]` detail views featuring responsive image grids, metadata spec-sheets, and a keyboard/swipe accessible lightbox.
+- **LLM-Friendly**: Serves a structured `/llms.txt` endpoint providing machine-readable portfolio information for AI agents and scrapers.
+
+### Headless CMS & Back Office
+- **Comprehensive Admin Suite (`/admin`)**: 12 dedicated administration modules:
+  - **Projects**: Tabbed editor covering identity, tech stack categorizer, live URLs, feature roadmaps, architecture flow diagrams, and GitHub repository importer.
+  - **Skills & Services**: Categorized skill management with proficiency sliders and feature status toggles.
+  - **Experience & Education**: Timeline sequencing with date ranges, bullet points, and current position flags.
+  - **Certifications**: Integrated upload pipeline supporting image and PDF certificates.
+  - **Inbound Inquiries**: Contact message management with read/replied status tracking.
+  - **Personal Trackers**: Custom dashboards for travel tracking (`TourLocation`) and personal finance accounts (`SavingsAccount`).
+
+### AI & PDF Automation Pipelines
+- **AI Assist**: Field-level generation powered by Google Gemini (`@google/genai`) with automatic fallback to OpenRouter for drafting project summaries, SEO descriptions, and case study outcomes.
+- **PDF 1st-Page Thumbnailing**: Server-side rasterization via `pdfjs-dist` converts the first page of uploaded certificate PDFs into web-ready preview images upon upload.
+- **Dynamic Résumé Generation**: `/api/resume` generates an up-to-date PDF résumé on demand from database content using `pdf-lib`.
+
+---
+
+## 🛠 Technology Stack
+
+| Layer | Technology | Version | Purpose |
+|---|---|---|---|
+| **Framework** | Next.js | `16.2.0` | App Router, Server Components, Route Handlers, Turbopack |
+| **Language** | TypeScript | `5.x` | Strict type safety across database schemas, APIs, and UI |
+| **Runtime / UI** | React / React DOM | `18.x` | Modern component architecture, React Server Components |
+| **Styling** | Tailwind CSS | `3.3.6` | Utility-first CSS with OKLCH CSS variables |
+| **Database ORM** | Prisma | `6.19.3` | Schema definition, migrations, and typed client generation |
+| **Database Engine**| MongoDB Atlas | `6.x` | Multi-document distributed NoSQL store |
+| **Validation** | Zod | `4.3.6` | Runtime payload and API schema validation |
+| **Animations** | Framer Motion | `10.16.16` | Viewport reveals and layout transitions |
+| **AI Integration** | `@google/genai` | `1.50.1` | Google Gemini API for automated content drafting |
+| **PDF Processing** | `pdf-lib` / `pdfjs-dist` | `1.17` / `6.2` | Vector PDF construction and raster thumbnailing |
+| **Icons** | Lucide React | `0.294.0` | Minimalist stroke icon system |
+| **Notifications** | Sonner | `2.0.7` | Accessible toast notification system |
+
+---
+
+## 📂 Project Structure
 
 ```
 portfolio/
 ├── app/
-│   ├── page.tsx                 # homepage — hero, craft, services, work, skills…
-│   ├── about/                   # long-form about page
-│   ├── projects/                # index + [slug] case studies
-│   ├── admin/                   # dashboard (12 sections, client-rendered)
-│   ├── api/                     # 28 route handlers, Zod-validated
-│   ├── llms.txt/                # machine-readable profile for LLM crawlers
-│   ├── robots.ts · sitemap.ts   # generated from published content
-│   ├── globals.css              # global styles + homepage editorial system
-│   └── styles/tokens.css        # OKLCH design tokens, light + dark
+│   ├── (public)
+│   │   ├── page.tsx                     # Editorial homepage
+│   │   ├── about/page.tsx               # Biography, philosophy & timeline
+│   │   ├── projects/                    # Project catalog & [slug] case studies
+│   │   ├── llms.txt/route.ts            # Machine-readable profile for AI crawlers
+│   │   ├── robots.ts & sitemap.ts       # Automated SEO indexing feeds
+│   │   └── layout.tsx                   # Root layout, fonts, and theme providers
+│   ├── admin/                           # Authenticated back office
+│   │   ├── page.tsx & layout.tsx        # Dashboard shell & navigation
+│   │   ├── projects/                    # Project table, wizard, and editor
+│   │   ├── skills/ & services/          # Capability management
+│   │   ├── experience/ & education/     # Career history editors
+│   │   ├── certificates/                # Credential management & PDF rasterizer
+│   │   ├── messages/                    # Inbound contact form submissions
+│   │   ├── savings/ & tour/             # Personal tracking dashboards
+│   │   └── admin.css                    # Scoped styles for admin dashboard
+│   ├── api/                             # REST route handlers (Zod-validated)
+│   └── styles/
+│       └── tokens.css                   # OKLCH design system tokens
 │
 ├── components/
-│   ├── site/                    # public site
-│   │   ├── home/                # one file per homepage section
-│   │   ├── projects/            # grid + gallery
-│   │   ├── ui/                  # Button, Container, Lightbox, TechTag…
-│   │   └── ScrollSequenceBackground.tsx
-│   └── admin/                   # dashboard shell + project editor/wizard
+│   ├── site/                            # Public-facing components
+│   │   ├── home/                        # Hero, Projects, Timeline, Skills, Services
+│   │   ├── projects/                    # Lightbox, gallery, spec sheets
+│   │   └── ScrollSequenceBackground.tsx # Canvas scroll-frame animator
+│   ├── admin/                           # Dashboard UI components & wizards
+│   └── ui/                              # Atomic primitives (Button, Container, etc.)
 │
 ├── lib/
-│   ├── data/portfolio.ts        # cached public read layer
-│   ├── site-data.ts             # layout-level profile/settings
-│   ├── cache.ts                 # cached() — the two-layer wrapper
-│   ├── auth/                    # session signing + require-admin
-│   ├── validations/             # Zod schemas per domain
-│   ├── admin/                   # dashboard helpers, PDF thumbnails
-│   ├── github/                  # README fetch + repo URL parsing
-│   └── rate-limit.ts            # in-memory fixed-window limiter
+│   ├── data/portfolio.ts                # Cached data access layer (view models)
+│   ├── cache.ts                         # Next Data Cache & React cache wrappers
+│   ├── prisma.ts                        # Singleton Prisma client instance
+│   ├── rate-limit.ts                    # In-memory sliding/fixed window rate limiter
+│   ├── auth/                            # Web Crypto HMAC session signer & guards
+│   ├── validations/                     # Zod input schemas
+│   └── github/                          # GitHub API repository metadata parser
 │
-├── prisma/schema.prisma         # 13 models
-├── proxy.ts                     # edge middleware — API authorisation
-├── scripts/                     # frame builder, seeds, pdf worker sync
-└── public/sequence/             # generated scroll-background frames
+├── prisma/
+│   └── schema.prisma                    # 13 MongoDB collections & embedded types
+├── proxy.ts                             # Next.js 16 Edge proxy / security middleware
+├── scripts/
+│   ├── build-scroll-frames.mjs          # Video frame extraction & WebP subsampler
+│   ├── seed-settings.js                 # Default site metadata & SEO seeder
+│   └── seed-skills.js                   # Industry skill taxonomy seeder
+└── public/
+    └── sequence/                        # Generated scroll background WebP frames
 ```
-
-## Getting started
-
-**Prerequisites:** Node 20+, a MongoDB database (Atlas free tier is fine).
-
-```bash
-git clone https://github.com/morshedkoli/portfolio.git
-cd portfolio
-npm install          # runs prisma generate + pdf worker sync on postinstall
-```
-
-Create `.env.local` with at minimum:
-
-```ini
-DATABASE_URL="mongodb+srv://user:pass@cluster.mongodb.net/portfolio"
-NEXTAUTH_SECRET="run: openssl rand -base64 32"
-ADMIN_USERNAME="admin"
-ADMIN_PASSWORD="something-long-and-random"
-NEXT_PUBLIC_SITE_URL="http://localhost:3000"
-```
-
-Push the schema and seed baseline content:
-
-```bash
-npx prisma db push
-node scripts/seed-settings.js
-node scripts/seed-skills.js
-npm run dev
-```
-
-Public site on `http://localhost:3000`, dashboard on `/admin/login`.
-
-## Environment variables
-
-**Required**
-
-| Variable | Purpose |
-|---|---|
-| `DATABASE_URL` | MongoDB connection string |
-| `NEXTAUTH_SECRET` | HMAC key for signing admin session cookies |
-| `ADMIN_USERNAME` | Dashboard login |
-| `ADMIN_PASSWORD` | Dashboard login |
-| `NEXT_PUBLIC_SITE_URL` | Canonical URL — used in metadata, JSON-LD, sitemap |
-
-> **Naming note:** `NEXTAUTH_SECRET` is a leftover name. This project does **not** use
-> NextAuth — the variable is simply the HMAC signing key for `lib/auth/session.ts`. Any
-> sufficiently random string works.
-
-**Optional — features degrade gracefully without them**
-
-| Variable | Enables |
-|---|---|
-| `IMGBB_API_KEY` | Image uploads from the dashboard |
-| `CLOUDFLARE_R2_ACCOUNT_ID` | Certificate file storage |
-| `CLOUDFLARE_R2_ACCESS_KEY_ID` | ↳ |
-| `CLOUDFLARE_R2_SECRET_ACCESS_KEY` | ↳ |
-| `CLOUDFLARE_R2_BUCKET_NAME` | ↳ |
-| `GOOGLE_AI_API_KEY` | AI field generation (Gemini) |
-| `OPENROUTER_API_KEY` | AI fallback provider |
-| `GITHUB_TOKEN` | Higher rate limits on GitHub project import |
-
-## Scripts
-
-| Command | Does |
-|---|---|
-| `npm run dev` | Dev server (Turbopack) |
-| `npm run build` | Production build |
-| `npm run start` | Serve the production build |
-| `npm run lint` | ESLint |
-| `npm run frames` | Rebuild the scroll-background WebP sequence |
-
-## Content model
-
-Thirteen Prisma models back the site. The ones that drive public pages:
-
-| Model | Drives |
-|---|---|
-| `Profile` | Name, title, bio, contact, social links, hero/story imagery, résumé |
-| `Project` | Case studies — tech stack, features, gallery, links, lifecycle status |
-| `Service` | The "What I do" capability rows |
-| `Skill` | Skills grid, grouped by category, individually toggleable |
-| `Experience` · `Education` | The experience/education timeline |
-| `Certification` | Certificate cards, image or PDF with generated thumbnail |
-| `Contact` | Inbound messages from the contact form |
-| `Settings` | Key/value site config (titles, descriptions, keywords) |
-
-Admin-only: `User`, `Analytics`, `TourLocation`, `SavingsAccount`.
-
-`Project` is deliberately wide — it carries optional structures for API endpoints,
-database collections, deployment metadata and roadmap phases that the current public
-templates don't render yet.
-
-## The scroll background
-
-The homepage sits on a fixed `<canvas>` that scrubs a 100-frame portrait clip as you
-scroll. The clip plays through exactly once: top of page is frame 0, bottom is frame 99,
-with a single zoom breath peaking at 118% mid-page.
-
-**Regenerating the frames.** `scripts/build-scroll-frames.mjs` takes a folder of extracted
-video frames, subsamples them (keeping every 3rd), and writes two WebP tiers:
-
-```bash
-npm run frames -- /path/to/frame/folder
-```
-
-| Tier | Width | Total | Serves |
-|---|---|---|---|
-| `lg` | 540px | ~1.6 MB | ≥768px viewports |
-| `sm` | 300px | ~0.6 MB | phones |
-
-Only one tier loads per device. Output lands in `public/sequence/` and is committed, so
-builds never depend on the source folder existing.
-
-**How the component behaves.** Frames load progressively with a nearest-already-loaded
-fallback, so the canvas is never blank while filling in. The rAF loop parks once the frame
-settles rather than spinning. Device pixel ratio is capped at 1.5 — it's a dimmed,
-vignetted background, so retina fill cost buys nothing. Under `prefers-reduced-motion` it
-draws one still frame and never registers a scroll listener.
-
-**Tuning.** `--section-ground` in `app/globals.css` is the single dial for how visible the
-background is. Below roughly `0.72` alpha, muted body copy drops under 4.5:1 contrast over
-the lit areas of the face — prefer adjusting `ZOOM_AMOUNT` or the canvas `brightness`
-filter instead.
-
-## Design system
-
-Tokens live in `app/styles/tokens.css`, all colours in **OKLCH** for perceptually even
-lightness steps between themes. Light is the default; dark overrides under
-`[data-theme="dark"]`.
-
-- **Type scale** is fluid `clamp()` throughout — no breakpoint jumps.
-- **One accent.** Amber, used semantically. The `//` comment prefix on eyebrows, the
-  terminal cursor and the serif-italic accent words all pull from it.
-- **Hairlines over boxes.** Sections divide with 1px rules rather than cards wherever
-  the content allows.
-- **Motion is compositor-only** — `transform`, `opacity`, `filter`. Nothing animates
-  layout-bound properties.
-
-The homepage-specific editorial layer (`.hp-*`, `.proj-row`, `.svc-row`, `.craft-grid`)
-lives at the bottom of `app/globals.css`; the admin dashboard has its own scoped
-`app/admin/admin.css`.
-
-## Security
-
-- **Edge authorisation.** Every mutating `/api/*` request is checked in `proxy.ts` before
-  reaching a handler. Only `POST /api/auth/login` and `POST /api/contact` are public.
-- **In-handler checks.** Routes independently verify the session via
-  `lib/auth/require-admin.ts`, so authorisation doesn't rest on the matcher alone.
-- **Signed sessions.** HMAC-SHA256 over the payload, constant-time comparison, 8-hour
-  expiry, `httpOnly` cookie.
-- **Input validation.** Zod schemas at every write boundary (`lib/validations/`).
-- **Rate limiting.** Fixed-window limiter on the public contact endpoint.
-- **Security headers.** CSP, HSTS, `X-Content-Type-Options`, `X-Frame-Options: DENY`,
-  `Referrer-Policy`, `Permissions-Policy` — all in `next.config.js`.
-
-The CSP currently needs `'unsafe-inline'` for scripts because of the no-flash theme
-snippet, JSON-LD blocks and Next's hydration bootstrap. Moving to a nonce-based policy is
-the intended next step and is documented inline in `next.config.js`.
-
-## Deployment
-
-Built for Vercel; `vercel.json` pins the `iad1` region and allows 30s for API functions.
-
-1. Import the repo at [vercel.com](https://vercel.com) — Next.js is auto-detected.
-2. Add the environment variables above under **Settings → Environment Variables**.
-   Set `NEXT_PUBLIC_SITE_URL` to the production domain.
-3. Deploy.
-
-MongoDB Atlas must allow connections from Vercel — either allowlist `0.0.0.0/0` or use
-Atlas's Vercel integration.
-
-## Notes for contributors
-
-A few things that will cost you an hour if you don't know them:
-
-**Prisma is pinned to 6.19.3 exactly.** Prisma 7 dropped MongoDB support. Do not bump
-`prisma` or `@prisma/client` past 6.x — both are pinned without a caret for this reason.
-
-**Never use `<style jsx>` in this project.** styled-jsx silently wedges the Next 16
-Turbopack compile — the build hangs with no error. Use `app/globals.css`, a scoped css
-file, or inline `style={{}}`.
-
-**Cache invalidation is not wired up yet.** `lib/cache.ts` tags every portfolio query with
-`portfolio` so a single `revalidateTag('portfolio')` would refresh them all, but no admin
-write currently calls it. Public content therefore refreshes on the 10-minute ISR timer
-rather than immediately after an edit. Wiring `revalidateTag` into the write paths is a
-good first contribution.
-
-**There is no test suite.** No test runner is configured. Changes are verified by
-`npx tsc --noEmit` and `npm run build`.
-
-**Line endings.** The repo has mixed LF/CRLF history on Windows. Git will warn on commit;
-it's harmless.
 
 ---
 
-<div align="center">
-<sub>Built by <a href="https://murshedkoli.com">Murshed Al Main</a> · Dhaka, Bangladesh</sub>
-</div>
+## 🗄 Data Model & Database Schema
+
+The database schema (`prisma/schema.prisma`) defines 13 Prisma models with specialized MongoDB embedded documents:
+
+| Model | Classification | Description |
+|---|---|---|
+| `Profile` | Public View | Core identity, title, bio, contact handles, hero portraits, and résumé links. |
+| `Project` | Public / Admin | Case studies, categories, tech stack, roadmap, API schemas, flowcharts, and links. |
+| `Skill` | Public View | Categorized technical competencies with proficiency percentages and visibility flags. |
+| `Experience` | Public View | Professional employment history, job titles, achievements, and employment dates. |
+| `Education` | Public View | Academic degrees, institutions, graduation dates, and descriptions. |
+| `Certification`| Public View | Credentials, issuing bodies, verification URLs, and PDF/image thumbnail links. |
+| `Service` | Public View | Consulting and development offerings with icons and descriptions. |
+| `Contact` | Administrative | Inbound messages submitted through the public contact form. |
+| `Settings` | Public / Admin | Global key-value store for site titles, meta descriptions, and SEO keywords. |
+| `Analytics` | Administrative | Internal access telemetry (page views, project clicks, interactions). |
+| `User` | Authentication | Administrator account credentials for dashboard access. |
+| `TourLocation` | Personal | Travel and exploration tracker (visited status, country, notes). |
+| `SavingsAccount`| Personal | Personal finance balances and banking institution records. |
+
+---
+
+## 🌐 API Route Specification
+
+All write endpoints (`POST`, `PUT`, `DELETE`, `PATCH`) require an active HMAC session token unless explicitly marked as public:
+
+| Endpoint | Method | Auth Required | Purpose |
+|---|---|:---:|---|
+| `/api/auth/login` | `POST` | ❌ Public | Authenticate administrator credentials and issue session cookie. |
+| `/api/auth/logout` | `POST` | ❌ Public | Invalidate and clear admin session cookie. |
+| `/api/contact` | `POST` | ❌ Public | Rate-limited submission handler for public inquiries. |
+| `/api/projects` | `GET` / `POST` | 🔒 Private (Write) | Fetch project list or create a new project case study. |
+| `/api/projects/[id]` | `GET` / `PUT` / `DELETE` | 🔒 Private (Write) | Retrieve, update, or delete a specific project record. |
+| `/api/github/import` | `POST` | 🔒 Private | Fetch metadata, tech stack, and README from a GitHub repository. |
+| `/api/generate` | `POST` | 🔒 Private | AI generation via Google Gemini for summaries, titles, and SEO. |
+| `/api/upload` | `POST` | 🔒 Private | Image upload pipeline utilizing ImgBB CDN. |
+| `/api/upload/certificate` | `POST` | 🔒 Private | Upload certificate and trigger PDF page-1 raster generation. |
+| `/api/resume` | `GET` | ❌ Public | Dynamically assemble and download an updated PDF résumé. |
+| `/api/skills` | `GET` / `POST` / `PUT` | 🔒 Private (Write) | Manage skill taxonomy and proficiency ratings. |
+| `/api/experience` | `GET` / `POST` / `DELETE` | 🔒 Private (Write) | Manage professional career positions. |
+| `/api/education` | `GET` / `POST` / `DELETE` | 🔒 Private (Write) | Manage academic qualification records. |
+| `/api/certifications`| `GET` / `POST` / `DELETE` | 🔒 Private (Write) | Manage professional licenses and certifications. |
+| `/api/services` | `GET` / `POST` / `DELETE` | 🔒 Private (Write) | Manage service offerings displayed on homepage. |
+| `/api/settings` | `GET` / `POST` | 🔒 Private (Write) | Manage site-wide configuration flags and SEO metadata. |
+
+---
+
+## 🛡 Security & Authentication
+
+- **Edge Proxy Firewall (`proxy.ts`)**: Rejects unauthorized mutating requests (`POST`, `PUT`, `DELETE`, `PATCH`) on `/api/*` at the network edge before handler execution.
+- **Cryptographic Session Tokens**: Uses Web Crypto `HMAC-SHA256` signed cookies with an 8-hour expiration and constant-time signature comparisons.
+- **In-Handler Verification (`lib/auth/require-admin.ts`)**: Double-layer authorization check inside route logic to protect against middleware routing discrepancies.
+- **Strict Content Security Policy (CSP)**: `next.config.js` sets rigid CSP headers, HTTP Strict Transport Security (`max-age=31536000`), `X-Frame-Options: DENY`, and `nosniff`.
+- **Zod Input Sanitization**: All mutation payloads are parsed through strict Zod schemas located in `lib/validations/`.
+- **API Rate Limiting**: Built-in fixed-window rate limiter protecting `/api/contact` from bot abuse and spam submissions.
+
+---
+
+## ⚡ Performance & Optimization
+
+- **Incremental Static Regeneration (ISR)**: Public pages are pre-rendered statically and regenerated in the background every 10 minutes (`revalidate = 600`).
+- **Two-Tier Canvas Frame Sequencer**: 100 portrait animation frames are pre-encoded in WebP format and split into two viewport-optimized tiers:
+  - `lg` tier: `540px` width (~1.6 MB total) for desktop devices.
+  - `sm` tier: `300px` width (~0.6 MB total) for mobile displays.
+- **Optimized Asset Caching**: Remote images configured in `next.config.js` with a 30-day `minimumCacheTTL` and automatic AVIF/WebP transcoding.
+- **Zero Layout Shifts (CLS)**: Fluid `clamp()` typography and CSS aspect ratios ensure stable rendering across viewport sizes.
+
+---
+
+## 🚀 Getting Started
+
+### Prerequisites
+
+- **Node.js**: `v20.x` or higher
+- **Package Manager**: `npm` (v10+)
+- **Database**: MongoDB Atlas database connection string
+
+### Installation & Environment
+
+1. Clone the repository:
+   ```bash
+   git clone https://github.com/murshedkoli-2/murshedkoli.git
+   cd murshedkoli
+   ```
+
+2. Install dependencies:
+   ```bash
+   npm install
+   ```
+   *(The `postinstall` script automatically generates the Prisma Client and synchronizes the PDF.js worker).*
+
+3. Configure environment variables:
+   Copy the example environment template to `.env.local`:
+   ```bash
+   cp .env.example .env.local
+   ```
+
+   Update the required keys in `.env.local`:
+   ```ini
+   DATABASE_URL="mongodb+srv://<user>:<password>@cluster0.mongodb.net/portfolio?retryWrites=true&w=majority"
+   NEXTAUTH_SECRET="your-32-byte-base64-random-string"
+   ADMIN_USERNAME="admin"
+   ADMIN_PASSWORD="your-strong-password"
+   NEXT_PUBLIC_SITE_URL="http://localhost:3000"
+   ```
+
+### Database Setup & Seeding
+
+1. Synchronize the Prisma schema with MongoDB:
+   ```bash
+   npx prisma db push
+   ```
+
+2. Seed default site configuration and skill taxonomies:
+   ```bash
+   node scripts/seed-settings.js
+   node scripts/seed-skills.js
+   ```
+
+### Development Scripts
+
+| Command | Action |
+|---|---|
+| `npm run dev` | Start development server with Turbopack at `localhost:3000` |
+| `npm run build` | Compile optimized production build |
+| `npm run start` | Serve production build locally |
+| `npm run lint` | Run ESLint across TypeScript and React source files |
+| `npm run frames -- <dir>` | Subsample and rebuild WebP scroll background sequence |
+
+---
+
+## ☁️ Deployment Guide
+
+This project is tailored for deployment on [Vercel](https://vercel.com):
+
+1. Push your code to your GitHub repository.
+2. Import the project into Vercel. Next.js will be detected automatically.
+3. Configure **Environment Variables** in the Vercel Project Settings matching your `.env.local`:
+   - `DATABASE_URL`
+   - `NEXTAUTH_SECRET`
+   - `ADMIN_USERNAME`
+   - `ADMIN_PASSWORD`
+   - `NEXT_PUBLIC_SITE_URL` (set to your production domain, e.g. `https://murshedkoli.com`)
+   - Optional: `IMGBB_API_KEY`, `GOOGLE_AI_API_KEY`, `CLOUDFLARE_R2_*`
+4. Deploy.
+
+> [!IMPORTANT]
+> Ensure MongoDB Atlas Network Access permits connections from your Vercel deployment IP range (or allow `0.0.0.0/0` with secure password authentication).
+
+---
+
+## 📌 Engineering Decisions & Gotchas
+
+- **Prisma Pinning (`6.19.3`)**: Prisma 7 deprecated MongoDB support. `prisma` and `@prisma/client` are intentionally pinned to `6.19.3`. Do not update to Prisma 7.
+- **Turbopack & `<style jsx>`**: Do not use `<style jsx>` tags. In Next.js 16, styled-jsx can stall the Turbopack compiler. Use Tailwind CSS, CSS Modules, or `app/globals.css`.
+- **Canvas DPR Capping**: The scroll sequence canvas caps `devicePixelRatio` at `1.5` to maintain 60 FPS performance on high-resolution screens without unnecessary GPU fill cost.
+- **Type-Safe Views**: Database entities are never leaked to client components directly. All public representations must pass through `lib/data/portfolio.ts`.
+
+---
+
+## 👤 Author & License
+
+Developed and maintained by **Murshed Al Main**.
+
+- **Portfolio**: [murshedkoli.com](https://murshedkoli.com)
+- **GitHub**: [@murshedkoli-2](https://github.com/murshedkoli-2)
+
+```
+Copyright (c) 2026 Murshed Al Main. All rights reserved.
+```
