@@ -408,6 +408,7 @@ model CareerStep {
   deliverableUrl String?   // GitHub or live demo URL
   status         String    @default("todo") // "todo" | "in_progress" | "completed"
   notes          String?
+  tasks          Json?     // Granular sub-tasks with exam prompts, rubrics, submissions & AI evaluations
   completedAt    DateTime?
   order          Int       @default(0)
   createdAt      DateTime  @default(now())

@@ -31,6 +31,7 @@ export async function PUT(req: NextRequest, { params }: RouteParams) {
     }
 
     if (body.notes !== undefined) data.notes = body.notes
+    if (body.tasks !== undefined) data.tasks = body.tasks
     if (body.deliverableUrl !== undefined) data.deliverableUrl = body.deliverableUrl
     if (body.title !== undefined) data.title = body.title
     if (body.description !== undefined) data.description = body.description
@@ -40,7 +41,7 @@ export async function PUT(req: NextRequest, { params }: RouteParams) {
     if (body.category !== undefined) data.category = body.category
     if (body.order !== undefined) data.order = Number(body.order)
 
-    const updated = await prisma.careerStep.update({
+    const updated = await (prisma as any).careerStep.update({
       where: { id },
       data,
     })

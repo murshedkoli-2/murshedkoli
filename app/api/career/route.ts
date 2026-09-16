@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { requireAdmin } from '@/lib/auth/require-admin'
-import { INITIAL_CAREER_ROADMAP } from '@/lib/data/career-roadmap'
+import { INITIAL_CAREER_ROADMAP, generateDefaultTasksForStep } from '@/lib/data/career-roadmap'
 
 export async function GET() {
   try {
@@ -54,7 +54,8 @@ export async function POST(req: NextRequest) {
       }
 
       for (const item of INITIAL_CAREER_ROADMAP) {
-        await prisma.careerStep.create({
+        const defaultTasks = generateDefaultTasksForStep(item)
+        await (prisma as any).careerStep.create({
           data: {
             stage: item.stage,
             stageNumber: item.stageNumber,
@@ -67,12 +68,13 @@ export async function POST(req: NextRequest) {
             deliverable: item.deliverable,
             order: item.order,
             status: 'todo',
+            tasks: defaultTasks,
           },
         })
       }
 
       return NextResponse.json({
-        message: 'Successfully seeded industry career roadmap',
+        message: 'Successfully seeded industry career roadmap with granular sub-tasks',
         count: INITIAL_CAREER_ROADMAP.length,
       })
     }
@@ -90,6 +92,7 @@ export async function POST(req: NextRequest) {
       deliverable,
       deliverableUrl,
       notes,
+      tasks,
     } = body
 
     if (!title || !description || !deliverable) {
@@ -100,8 +103,17 @@ export async function POST(req: NextRequest) {
     }
 
     const count = await prisma.careerStep.count({ where: { stageNumber: Number(stageNumber) } })
+    const computedTasks = tasks || generateDefaultTasksForStep({
+      stepNumber: Number(stepNumber) || count + 1,
+      title,
+      category,
+      description,
+      keyConcepts: Array.isArray(keyConcepts) ? keyConcepts : [],
+      testQuestions: Array.isArray(testQuestions) ? testQuestions : [],
+      deliverable,
+    })
 
-    const step = await prisma.careerStep.create({
+    const step = await (prisma as any).careerStep.create({
       data: {
         title,
         stage: stage || `Stage ${stageNumber}`,
@@ -116,6 +128,7 @@ export async function POST(req: NextRequest) {
         notes: notes || null,
         status: 'todo',
         order: count + 1,
+        tasks: computedTasks,
       },
     })
 

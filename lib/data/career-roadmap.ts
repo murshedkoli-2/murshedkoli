@@ -1,3 +1,40 @@
+export interface CareerTaskExam {
+  prompt: string
+  rubric: string[]
+  referenceSolution: string
+  testQuestions?: string[]
+}
+
+export interface CareerTaskSubmission {
+  answerText: string
+  codeSnippet?: string
+  repoUrl?: string
+  submittedAt?: string
+}
+
+export interface CareerTaskEvaluation {
+  score: number
+  passed: boolean
+  summary: string
+  strengths: string[]
+  improvements: string[]
+  seniorTips: string
+  evaluatedAt: string
+  evaluator: 'ai' | 'self'
+}
+
+export interface CareerTask {
+  id: string
+  title: string
+  description: string
+  estimatedMinutes: number
+  status: 'todo' | 'in_progress' | 'completed'
+  completedAt?: string | null
+  exam: CareerTaskExam
+  submission?: CareerTaskSubmission
+  evaluation?: CareerTaskEvaluation
+}
+
 export interface InitialCareerStep {
   stage: string
   stageNumber: number
@@ -9,6 +46,128 @@ export interface InitialCareerStep {
   testQuestions: string[]
   deliverable: string
   order: number
+  tasks?: CareerTask[]
+}
+
+/**
+ * Generates structured, high-value granular sub-tasks for any career milestone.
+ * Each sub-task includes a dedicated coding challenge/exam prompt, evaluation rubric,
+ * and a senior engineer benchmark reference solution.
+ */
+export function generateDefaultTasksForStep(step: {
+  id?: string
+  stepNumber?: number
+  title: string
+  category: string
+  description: string
+  keyConcepts?: string[]
+  testQuestions?: string[]
+  deliverable?: string
+}): CareerTask[] {
+  const baseId = step.id || `step-${step.stepNumber || 1}`
+  const concepts = step.keyConcepts && step.keyConcepts.length > 0
+    ? step.keyConcepts
+    : ['Core Architecture', 'Design Patterns', 'Performance & Safety']
+  const questions = step.testQuestions && step.testQuestions.length > 0
+    ? step.testQuestions
+    : ['How does this system behave under high concurrent load?', 'What are the main edge cases and failure modes?']
+  const deliverable = step.deliverable || `Build a production-grade module demonstrating ${step.title}.`
+
+  return [
+    {
+      id: `${baseId}-t1`,
+      title: `Deep Dive: ${concepts[0]}`,
+      description: `Understand the internal mechanics, execution lifecycle, and mental model of ${concepts[0]}.`,
+      estimatedMinutes: 30,
+      status: 'todo',
+      exam: {
+        prompt: `Explain the technical mechanics and architectural implications of "${concepts[0]}" in modern production systems. Highlight:
+1. Exact execution flow or type evaluation order.
+2. How this prevents runtime failure or resource leaks.
+3. Common anti-patterns to avoid.`,
+        rubric: [
+          'Thorough technical explanation without superficial buzzwords',
+          'Demonstrates execution lifecycle or underlying mechanics accurately',
+          'Identifies memory, concurrency, or performance pitfalls',
+        ],
+        referenceSolution: `// BENCHMARK REFERENCE SOLUTION: ${concepts[0]}
+// Core Principle:
+// In enterprise systems, ${concepts[0]} guarantees deterministic execution and resource predictability.
+// Key Points:
+// 1. Separation of concerns: Keep core state logic decoupled from transport/UI wrappers.
+// 2. Failure modes: Always handle edge cases like null/undefined boundaries, memory leaks, or unhandled rejections.
+// 3. Performance: Minimize unnecessary allocations, avoid synchronous blocking on hot paths.`,
+      },
+    },
+    {
+      id: `${baseId}-t2`,
+      title: `Hands-on Implementation: ${concepts[1] || 'Core Mechanics'}`,
+      description: `Implement real-world code patterns and handle critical edge cases for ${concepts[1] || concepts[0]}.`,
+      estimatedMinutes: 45,
+      status: 'todo',
+      exam: {
+        prompt: questions[0] || `Write a production-ready implementation demonstrating ${concepts[1] || concepts[0]}, with robust error handling and type safety.`,
+        rubric: [
+          'Correct implementation handling edge cases and empty states',
+          'Strict type safety with no unsafe `any` assertions',
+          'Clean, idiomatic structure following SOLID principles',
+        ],
+        referenceSolution: `// BENCHMARK REFERENCE IMPLEMENTATION
+// Highlights:
+// - Defensive programming with input validation
+// - Clean functional or class-based interfaces
+// - Safe resource cleanup and error propagation
+export async function executeProductionPattern<T>(input: T): Promise<{ success: boolean; data: T }> {
+  try {
+    if (!input) throw new Error('Invalid input parameter');
+    return { success: true, data: input };
+  } catch (error) {
+    console.error('Execution failure:', error);
+    throw error;
+  }
+}`,
+      },
+    },
+    {
+      id: `${baseId}-t3`,
+      title: `Build Deliverable: ${deliverable.slice(0, 48)}…`,
+      description: deliverable,
+      estimatedMinutes: 60,
+      status: 'todo',
+      exam: {
+        prompt: `Build and document the project deliverable: "${deliverable}". Provide your implementation code or repository URL, and outline your architectural choices.`,
+        rubric: [
+          'Fully functional implementation meeting deliverable specifications',
+          'Clean modular organization (repositories, services, or component layers)',
+          'Clear documentation or architectural explanation',
+        ],
+        referenceSolution: `// DELIVERABLE ARCHITECTURAL BLUEPRINT
+// 1. Architecture: Modular layer (Types -> Service -> Controller / Hook -> View)
+// 2. Testing: Unit test core pure functions, integration test async flows
+// 3. Deployment Readiness: Zero hardcoded secrets, environment variable configuration, clean build pass.`,
+      },
+    },
+    {
+      id: `${baseId}-t4`,
+      title: `Senior Evaluation: ${questions[1] ? 'Interview Challenge' : 'System Review'}`,
+      description: `Prepare for staff/senior-level technical evaluations on ${step.title}.`,
+      estimatedMinutes: 30,
+      status: 'todo',
+      exam: {
+        prompt: questions[1] || `How would you architect this feature to scale to 100,000+ users with high availability and minimal latency?`,
+        rubric: [
+          'Demonstrates senior-level understanding of trade-offs (e.g. latency vs consistency)',
+          'Clear reasoning between competing technical approaches',
+          'Actionable observability, monitoring, and failure recovery plans',
+        ],
+        referenceSolution: `// SENIOR INTERVIEW & SYSTEM ARCHITECTURE EVALUATION
+// Trade-offs:
+// - Caching Strategy: Use Redis or edge cache for P99 < 50ms reads with TTL and cache invalidation hooks.
+// - Resilience: Implement circuit breakers and graceful degradation during partial outages.
+// - Observability: Structured JSON logging, OpenTelemetry traces, and error alerts.`,
+      },
+    },
+  ]
 }
 
 export const STAGE_NAMES = [
