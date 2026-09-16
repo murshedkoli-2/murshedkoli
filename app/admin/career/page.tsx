@@ -431,8 +431,23 @@ export default function CareerRoadmapPage() {
         const matchesTitle = step.title.toLowerCase().includes(q)
         const matchesDesc = step.description.toLowerCase().includes(q)
         const matchesConcepts = step.keyConcepts?.some((c) => c.toLowerCase().includes(q))
+        const matchesQuestions = step.testQuestions?.some((quest) => quest.toLowerCase().includes(q))
         const matchesDeliv = step.deliverable.toLowerCase().includes(q)
-        if (!matchesTitle && !matchesDesc && !matchesConcepts && !matchesDeliv) return false
+        const matchesTasks = step.tasks?.some(
+          (t) =>
+            t.title.toLowerCase().includes(q) ||
+            t.description.toLowerCase().includes(q) ||
+            t.exam?.prompt?.toLowerCase().includes(q)
+        )
+        if (
+          !matchesTitle &&
+          !matchesDesc &&
+          !matchesConcepts &&
+          !matchesQuestions &&
+          !matchesDeliv &&
+          !matchesTasks
+        )
+          return false
       }
       return true
     })
@@ -911,12 +926,17 @@ export default function CareerRoadmapPage() {
                       style={{
                         fontSize: 11,
                         fontFamily: 'var(--font-mono)',
-                        color: 'var(--ink-muted)',
+                        color: 'var(--accent)',
                         textTransform: 'uppercase',
-                        marginBottom: 6,
+                        marginBottom: 8,
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: 6,
+                        fontWeight: 600,
                       }}
                     >
-                      Key Competencies to Master
+                      <span>💡</span>
+                      <span>Interview Micro-Topics & Sub-Concepts ({step.keyConcepts.length})</span>
                     </div>
                     <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
                       {step.keyConcepts.map((concept, idx) => (
