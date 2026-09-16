@@ -4,7 +4,6 @@ import { Metadata, Viewport } from 'next'
 import ToasterProvider from '@/components/ToasterProvider'
 import { ConfirmDialogHost } from '@/components/ui/ConfirmDialog'
 import { ThemeProvider } from '@/components/site/ThemeProvider'
-import { AIPortfolioAssistant } from '@/components/site/AIPortfolioAssistant'
 import { themeInitScript } from '@/lib/theme'
 import { getPublicProfile, getSettingsMap } from '@/lib/site-data'
 
@@ -210,7 +209,6 @@ export default async function RootLayout({
       <body className="overflow-x-hidden" suppressHydrationWarning>
         <ThemeProvider>
           {children}
-          <AIPortfolioAssistant />
           <ToasterProvider />
           <ConfirmDialogHost />
         </ThemeProvider>

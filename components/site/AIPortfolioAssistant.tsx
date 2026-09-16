@@ -1,6 +1,7 @@
 'use client'
 
 import React, { useState, useRef, useEffect } from 'react'
+import { usePathname } from 'next/navigation'
 import { Sparkles, Send, X, Bot, RefreshCw, ChevronDown, Cpu, Check, Settings2 } from 'lucide-react'
 
 interface Message {
@@ -13,10 +14,10 @@ interface Message {
 }
 
 const STARTER_PROMPTS = [
-  '🚀 What are your top featured projects?',
-  '⚡ What is your core tech stack & backend experience?',
-  '🌍 Are you available for remote full-time roles?',
-  '💼 How can I hire you for a project or contract?',
+  '🚀 Summarize my featured projects & achievements',
+  '⚡ Review my core tech stack & competencies',
+  '✍️ Help me draft a professional project description',
+  '💡 Suggest improvements for my career bio',
 ]
 
 const DEFAULT_POPULAR_MODELS = [
@@ -44,6 +45,7 @@ function formatModelShort(id: string): string {
 }
 
 export function AIPortfolioAssistant() {
+  const pathname = usePathname()
   const [isOpen, setIsOpen] = useState(false)
   const [input, setInput] = useState('')
   const [loading, setLoading] = useState(false)
@@ -55,7 +57,7 @@ export function AIPortfolioAssistant() {
       id: 'welcome',
       role: 'assistant',
       content:
-        "Hello! I'm Murshed's **AI Portfolio Copilot**, powered by **NVIDIA NIM (LLaMA 3.2 11B)**. Ask me anything about Murshed's full-stack architecture skills, featured projects, or remote availability!",
+        "Hello! I'm your **Admin AI Copilot**, powered by **NVIDIA NIM (LLaMA 3.2 11B)**. Ask me anything to help draft project summaries, review skills, inspect achievements, or query your portfolio information!",
       timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
       model: 'meta/llama-3.2-11b-vision-instruct',
     },
@@ -87,9 +89,9 @@ export function AIPortfolioAssistant() {
                 m.id === 'welcome'
                   ? {
                       ...m,
-                      content: `Hello! I'm Murshed's **AI Portfolio Copilot**, powered by **NVIDIA NIM (${formatModelShort(
+                      content: `Hello! I'm your **Admin AI Copilot**, powered by **NVIDIA NIM (${formatModelShort(
                         initialModel
-                      )})**. Ask me anything about Murshed's full-stack architecture skills, featured projects, or remote availability!`,
+                      )})**. Ask me anything to help draft project summaries, review skills, inspect achievements, or query your portfolio information!`,
                       model: initialModel,
                     }
                   : m
@@ -234,6 +236,11 @@ export function AIPortfolioAssistant() {
     }
   }
 
+  // Only render on admin pages, never on public routes or login screen
+  if (!pathname?.startsWith('/admin') || pathname.startsWith('/admin/login')) {
+    return null
+  }
+
   return (
     <>
       {/* ── FLOATING TOGGLE BADGE ────────────────────────────────────────── */}
@@ -269,7 +276,7 @@ export function AIPortfolioAssistant() {
             onMouseLeave={(e) => {
               e.currentTarget.style.transform = 'translateY(0) scale(1)'
             }}
-            title={`Chat with AI Copilot (${formatModelShort(selectedModel)})`}
+            title={`Chat with Admin AI Copilot (${formatModelShort(selectedModel)})`}
           >
             <div
               style={{
@@ -284,7 +291,7 @@ export function AIPortfolioAssistant() {
             >
               <Sparkles size={14} className="text-white" />
             </div>
-            <span>AI Copilot</span>
+            <span>Admin Copilot</span>
             <span
               style={{
                 fontSize: '0.68rem',
@@ -355,7 +362,7 @@ export function AIPortfolioAssistant() {
               </div>
               <div style={{ minWidth: 0 }}>
                 <div style={{ fontSize: '0.90rem', fontWeight: 700, color: 'var(--ink)', lineHeight: 1.2 }}>
-                  Murshed&apos;s AI Copilot
+                  Admin AI Copilot
                 </div>
                 {/* Clickable Model Selector Pill */}
                 <button

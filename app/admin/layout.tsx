@@ -1,5 +1,6 @@
 import { Metadata } from 'next'
 import './admin.css'
+import { AIPortfolioAssistant } from '@/components/site/AIPortfolioAssistant'
 
 export const metadata: Metadata = {
   title: 'Admin Dashboard | Portfolio',
@@ -15,6 +16,7 @@ export default function AdminLayout({
   return (
     <div className="admin-layout">
       {children}
+      <AIPortfolioAssistant />
     </div>
   )
 }

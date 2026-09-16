@@ -318,7 +318,7 @@ export default function SettingsManager() {
 
         <div className="adm-body">
           <p style={{ fontSize: 13, color: 'var(--ink-muted)', marginBottom: 16, lineHeight: 1.5 }}>
-            NVIDIA NIM (Inference Microservices) powers real-time portfolio AI generation, the public AI Portfolio Copilot,
+            NVIDIA NIM (Inference Microservices) powers real-time portfolio AI generation, the Admin AI Portfolio Copilot,
             and task exam evaluations. Select any currently active model fetched directly from NVIDIA API below.
           </p>
 
