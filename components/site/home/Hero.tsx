@@ -4,7 +4,7 @@ import Image from 'next/image'
 import Link from 'next/link'
 import { useRef } from 'react'
 import { motion, useReducedMotion, useScroll, useTransform } from 'framer-motion'
-import { ArrowUpRight, ArrowDown } from 'lucide-react'
+import { ArrowDown, ArrowUpRight, Sparkles } from 'lucide-react'
 import type { ProfileView, HeroStats } from '@/lib/data/portfolio'
 import { Container } from '@/components/site/ui/Container'
 
@@ -24,35 +24,20 @@ export function Hero({ profile, stats }: HeroProps) {
     offset: ['start start', 'end start'],
   })
 
-  const copyY = useTransform(scrollYProgress, [0, 1], [0, reduce ? 0 : -60])
-  const copyOpacity = useTransform(scrollYProgress, [0, 0.7], [1, 0.2])
-  const plateY = useTransform(scrollYProgress, [0, 1], [0, reduce ? 0 : 80])
+  const copyY = useTransform(scrollYProgress, [0, 1], [0, reduce ? 0 : -50])
+  const copyOpacity = useTransform(scrollYProgress, [0, 0.75], [1, 0.15])
+  const plateY = useTransform(scrollYProgress, [0, 1], [0, reduce ? 0 : 70])
 
   const words = profile.name.split(' ')
   const lastWord = words[words.length - 1]
   const leadWords = words.slice(0, -1).join(' ')
-  const subhead = profile.subheadline || profile.description
-
-  const meta = [
-    profile.location ? `based in ${profile.location}` : 'based in bangladesh',
-    `${stats.projectsShipped}+ projects shipped`,
-    `${stats.yearsExperience}+ years`,
-  ]
-
-  const lineVariants = {
-    hidden: reduce ? {} : { y: '110%' },
-    show: (i: number) => ({
-      y: '0%',
-      transition: { duration: 0.9, ease: EASE, delay: 0.08 * i },
-    }),
-  }
 
   const fadeVariants = {
-    hidden: reduce ? {} : { opacity: 0, y: 14 },
+    hidden: reduce ? {} : { opacity: 0, y: 16 },
     show: (i: number) => ({
       opacity: 1,
       y: 0,
-      transition: { duration: 0.7, ease: EASE, delay: 0.08 * i },
+      transition: { duration: 0.65, ease: EASE, delay: 0.07 * i },
     }),
   }
 
@@ -64,227 +49,312 @@ export function Hero({ profile, stats }: HeroProps) {
         minHeight: '100svh',
         display: 'flex',
         flexDirection: 'column',
+        justifyContent: 'center',
         background: 'var(--section-ground, #0b0b0c)',
         color: '#ececea',
         overflow: 'hidden',
+        paddingTop: 'clamp(7rem, 6rem + 5vh, 10rem)',
+        paddingBottom: 'clamp(4rem, 3rem + 4vh, 6rem)',
       }}
     >
-      <Container
-        style={{
-          flex: 1,
-          display: 'flex',
-          alignItems: 'center',
-          width: '100%',
-          paddingTop: 'clamp(6rem, 5rem + 4vh, 9rem)',
-          paddingBottom: '3rem',
-        }}
-      >
+      <Container>
         <div
           style={{
-            display: 'flex',
+            display: 'grid',
+            gridTemplateColumns: 'minmax(0, 1.4fr) minmax(0, 1fr)',
             alignItems: 'center',
-            justifyContent: 'space-between',
-            gap: 'clamp(2.5rem, 4vw, 5rem)',
+            gap: 'clamp(3rem, 5vw, 6rem)',
             width: '100%',
           }}
+          className="hero-grid-layout"
         >
-          {/* Copy */}
+          {/* Main Visual Typography & Action */}
           <motion.div style={{ y: copyY, opacity: copyOpacity, minWidth: 0 }}>
+            {/* Live Status Pill */}
             <motion.div
               custom={0}
               variants={fadeVariants}
               initial="hidden"
               animate="show"
-              style={{ display: 'flex', alignItems: 'center', gap: 14, marginBottom: '2rem', flexWrap: 'wrap' }}
+              style={{ display: 'inline-flex', alignItems: 'center', gap: 10, marginBottom: '1.75rem' }}
             >
-              <span className="hp-meta" style={{ color: 'rgba(255, 255, 255, 0.55)' }}>
-                {profile.title || 'Full-stack developer'}
-              </span>
-              {profile.availability && (
-                <span className="hp-meta" style={{ display: 'inline-flex', alignItems: 'center', gap: 8, color: '#f5b04c' }}>
-                  <span
-                    style={{
-                      width: 6,
-                      height: 6,
-                      borderRadius: 999,
-                      background: '#34d399',
-                    }}
-                  />
-                  open to work
-                </span>
-              )}
+              <div
+                style={{
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: 8,
+                  padding: '6px 14px',
+                  borderRadius: 999,
+                  background: 'rgba(52, 211, 153, 0.08)',
+                  border: '1px solid rgba(52, 211, 153, 0.25)',
+                  fontFamily: 'var(--font-mono)',
+                  fontSize: '0.78rem',
+                  letterSpacing: '0.04em',
+                  color: '#34d399',
+                }}
+              >
+                <span
+                  style={{
+                    width: 7,
+                    height: 7,
+                    borderRadius: 999,
+                    background: '#34d399',
+                    boxShadow: '0 0 10px #34d399',
+                  }}
+                  className="status-pulse"
+                />
+                <span>AVAILABLE FOR SELECT WORK</span>
+              </div>
             </motion.div>
 
-            <h1
-              aria-label={profile.name}
+            {/* Oversized Studio Headline */}
+            <motion.h1
+              custom={1}
+              variants={fadeVariants}
+              initial="hidden"
+              animate="show"
               style={{
-                fontSize: 'clamp(3.2rem, 1.6rem + 8.5vw, 8.25rem)',
+                fontSize: 'clamp(2.8rem, 1.5rem + 5.5vw, 6.2rem)',
                 fontWeight: 600,
-                lineHeight: 0.98,
+                lineHeight: 1.02,
                 letterSpacing: '-0.04em',
-                marginBottom: '2rem',
+                marginBottom: '1.5rem',
               }}
             >
-              <span style={{ display: 'block', overflow: 'hidden', paddingBlock: '0.06em' }}>
-                <motion.span
-                  custom={1}
-                  variants={lineVariants}
-                  initial="hidden"
-                  animate="show"
-                  style={{ display: 'block', color: '#ececea' }}
-                >
-                  {leadWords || profile.name}
-                </motion.span>
+              Building digital products with{' '}
+              <span className="serif-accent" style={{ color: '#f5b04c', fontStyle: 'italic' }}>
+                studio finish
               </span>
-              {leadWords && (
-                <span style={{ display: 'block', overflow: 'hidden', paddingBlock: '0.06em' }}>
-                  <motion.span
-                    custom={2}
-                    variants={lineVariants}
-                    initial="hidden"
-                    animate="show"
-                    className="serif-accent"
-                    style={{ display: 'block', color: '#f5b04c', fontSize: '1.04em' }}
-                  >
-                    {lastWord}
-                  </motion.span>
-                </span>
-              )}
-            </h1>
+              .
+            </motion.h1>
 
+            {/* Ultra-Concise Subheadline (No Paragraphs) */}
             <motion.p
+              custom={2}
+              variants={fadeVariants}
+              initial="hidden"
+              animate="show"
+              style={{
+                fontSize: 'clamp(1.05rem, 0.98rem + 0.3vw, 1.25rem)',
+                lineHeight: 1.55,
+                color: 'rgba(255, 255, 255, 0.65)',
+                maxWidth: '34rem',
+                marginBottom: '2.25rem',
+              }}
+            >
+              {profile.name} — Full-Stack Engineer & Product Builder specializing in high-performance web systems and bespoke UI.
+            </motion.p>
+
+            {/* Metric Chips (Campsite Style) */}
+            <motion.div
               custom={3}
               variants={fadeVariants}
               initial="hidden"
               animate="show"
               style={{
-                fontSize: 'clamp(1.02rem, 0.96rem + 0.3vw, 1.18rem)',
-                lineHeight: 1.7,
-                color: 'rgba(255, 255, 255, 0.6)',
-                maxWidth: '34rem',
+                display: 'flex',
+                gap: '10px',
+                flexWrap: 'wrap',
                 marginBottom: '2.5rem',
               }}
             >
-              {subhead}
-            </motion.p>
+              <div
+                style={{
+                  padding: '8px 16px',
+                  borderRadius: 12,
+                  background: 'rgba(255, 255, 255, 0.04)',
+                  border: '1px solid rgba(255, 255, 255, 0.09)',
+                  display: 'flex',
+                  alignItems: 'baseline',
+                  gap: 8,
+                }}
+              >
+                <span style={{ fontSize: '1.25rem', fontWeight: 700, color: '#f5b04c', fontFamily: 'var(--font-display)' }}>
+                  {stats.projectsShipped}+
+                </span>
+                <span style={{ fontSize: '0.75rem', fontFamily: 'var(--font-mono)', color: 'rgba(255, 255, 255, 0.6)' }}>
+                  SHIPPED APPS
+                </span>
+              </div>
 
+              <div
+                style={{
+                  padding: '8px 16px',
+                  borderRadius: 12,
+                  background: 'rgba(255, 255, 255, 0.04)',
+                  border: '1px solid rgba(255, 255, 255, 0.09)',
+                  display: 'flex',
+                  alignItems: 'baseline',
+                  gap: 8,
+                }}
+              >
+                <span style={{ fontSize: '1.25rem', fontWeight: 700, color: '#ececea', fontFamily: 'var(--font-display)' }}>
+                  {stats.yearsExperience}+
+                </span>
+                <span style={{ fontSize: '0.75rem', fontFamily: 'var(--font-mono)', color: 'rgba(255, 255, 255, 0.6)' }}>
+                  YEARS EXP
+                </span>
+              </div>
+
+              <div
+                style={{
+                  padding: '8px 16px',
+                  borderRadius: 12,
+                  background: 'rgba(255, 255, 255, 0.04)',
+                  border: '1px solid rgba(255, 255, 255, 0.09)',
+                  display: 'flex',
+                  alignItems: 'baseline',
+                  gap: 8,
+                }}
+              >
+                <span style={{ fontSize: '1.25rem', fontWeight: 700, color: '#34d399', fontFamily: 'var(--font-display)' }}>
+                  &lt;1s
+                </span>
+                <span style={{ fontSize: '0.75rem', fontFamily: 'var(--font-mono)', color: 'rgba(255, 255, 255, 0.6)' }}>
+                  SPEED BENCHMARK
+                </span>
+              </div>
+            </motion.div>
+
+            {/* Tactile CTAs */}
             <motion.div
               custom={4}
               variants={fadeVariants}
               initial="hidden"
               animate="show"
-              style={{ display: 'flex', gap: 12, flexWrap: 'wrap', alignItems: 'center' }}
+              style={{ display: 'flex', gap: 14, flexWrap: 'wrap', alignItems: 'center' }}
             >
               <Link
                 href="/#projects"
-                className="mono hero-cta"
+                className="hero-primary-btn"
                 style={{
                   display: 'inline-flex',
                   alignItems: 'center',
                   gap: 10,
-                  padding: '14px 26px',
+                  padding: '14px 28px',
                   background: '#ececea',
                   color: '#0b0b0c',
                   fontSize: '0.85rem',
                   fontWeight: 600,
-                  letterSpacing: '0.04em',
-                  transition: 'background 250ms var(--ease)',
+                  borderRadius: 9999,
+                  letterSpacing: '0.02em',
+                  textDecoration: 'none',
+                  boxShadow: '0 10px 25px -5px rgba(255, 255, 255, 0.25)',
+                  transition: 'all 200ms ease',
                 }}
               >
-                VIEW WORK <ArrowDown size={15} />
+                <span>View Selected Work</span>
+                <ArrowDown size={15} />
               </Link>
+
               <Link
                 href="/#contact"
-                className="mono"
+                className="hero-secondary-btn"
                 style={{
                   display: 'inline-flex',
                   alignItems: 'center',
                   gap: 10,
                   padding: '14px 26px',
-                  border: '1px solid rgba(255, 255, 255, 0.2)',
+                  background: 'rgba(255, 255, 255, 0.05)',
+                  border: '1px solid rgba(255, 255, 255, 0.15)',
                   color: '#ececea',
                   fontSize: '0.85rem',
                   fontWeight: 500,
-                  letterSpacing: '0.04em',
-                  transition: 'border-color 250ms var(--ease)',
+                  borderRadius: 9999,
+                  letterSpacing: '0.02em',
+                  textDecoration: 'none',
+                  transition: 'all 200ms ease',
                 }}
               >
-                GET IN TOUCH <ArrowUpRight size={15} />
+                <span>Get in Touch</span>
+                <ArrowUpRight size={16} />
               </Link>
             </motion.div>
           </motion.div>
 
-          {/* Portrait plate: contained, duotone at rest */}
+          {/* Visual Showcase Portrait */}
           <motion.div
-            className="hero-plate-wrap"
-            style={{ y: plateY, flexShrink: 0 }}
-            initial={reduce ? {} : { opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 1, ease: EASE, delay: 0.5 }}
+            style={{ y: plateY }}
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.8, ease: EASE, delay: 0.2 }}
+            className="hero-portrait-container"
           >
             <div
-              className="hp-plate"
               style={{
-                width: 'clamp(240px, 24vw, 330px)',
-                aspectRatio: '3 / 4',
+                position: 'relative',
+                width: '100%',
+                maxWidth: 440,
+                aspectRatio: '4 / 5',
+                borderRadius: 24,
+                overflow: 'hidden',
+                background: 'rgba(255, 255, 255, 0.03)',
+                border: '1px solid rgba(255, 255, 255, 0.12)',
+                boxShadow: '0 30px 60px -15px rgba(0, 0, 0, 0.8), inset 0 0 0 1px rgba(255, 255, 255, 0.08)',
+                marginInline: 'auto',
               }}
             >
               <Image
-                src={profile.heroPortrait || '/images/hero-1.png'}
+                src={profile.heroPortrait || profile.avatar || '/developer.jpg'}
                 alt={profile.name}
                 fill
                 priority
-                sizes="(max-width: 900px) 0px, 24vw"
-                style={{ objectFit: 'cover', objectPosition: 'center 20%' }}
+                sizes="(max-width: 900px) 90vw, 440px"
+                style={{
+                  objectFit: 'cover',
+                  filter: 'grayscale(25%) contrast(105%)',
+                }}
               />
-            </div>
-            <div
-              className="hp-meta"
-              style={{
-                marginTop: 12,
-                display: 'flex',
-                justifyContent: 'space-between',
-                color: 'rgba(255, 255, 255, 0.35)',
-              }}
-            >
-              <span>portrait</span>
-              <span>dhaka, bd</span>
+              {/* Studio lighting gradient overlays */}
+              <div
+                style={{
+                  position: 'absolute',
+                  inset: 0,
+                  background: 'linear-gradient(180deg, rgba(11, 11, 12, 0.05) 0%, rgba(11, 11, 12, 0.75) 100%)',
+                  pointerEvents: 'none',
+                }}
+              />
+              <div
+                style={{
+                  position: 'absolute',
+                  bottom: 20,
+                  left: 20,
+                  right: 20,
+                  padding: '12px 16px',
+                  borderRadius: 16,
+                  background: 'rgba(15, 15, 18, 0.7)',
+                  backdropFilter: 'blur(16px)',
+                  border: '1px solid rgba(255, 255, 255, 0.1)',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'space-between',
+                }}
+              >
+                <div>
+                  <div style={{ fontSize: '0.86rem', fontWeight: 600, color: '#ececea' }}>{profile.name}</div>
+                  <div style={{ fontSize: '0.72rem', fontFamily: 'var(--font-mono)', color: 'rgba(255, 255, 255, 0.5)' }}>
+                    {profile.title}
+                  </div>
+                </div>
+                <div
+                  style={{
+                    padding: '4px 10px',
+                    borderRadius: 999,
+                    background: 'rgba(245, 176, 76, 0.12)',
+                    border: '1px solid rgba(245, 176, 76, 0.3)',
+                    fontSize: '0.7rem',
+                    fontFamily: 'var(--font-mono)',
+                    color: '#f5b04c',
+                    fontWeight: 600,
+                  }}
+                >
+                  ENGINEER
+                </div>
+              </div>
             </div>
           </motion.div>
         </div>
       </Container>
-
-      {/* Meta rail */}
-      <motion.div
-        initial={reduce ? {} : { opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ duration: 0.8, delay: 0.9 }}
-        style={{ borderTop: '1px solid rgba(255, 255, 255, 0.09)' }}
-      >
-        <Container>
-          <div
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'space-between',
-              gap: 16,
-              paddingBlock: '1.1rem',
-              flexWrap: 'wrap',
-            }}
-          >
-            <div style={{ display: 'flex', gap: 'clamp(1rem, 3vw, 2.5rem)', flexWrap: 'wrap' }}>
-              {meta.map((m) => (
-                <span key={m} className="hp-meta">
-                  {m}
-                </span>
-              ))}
-            </div>
-            <span className="hp-meta" style={{ display: 'inline-flex', alignItems: 'center', gap: 8 }}>
-              scroll <ArrowDown size={12} />
-            </span>
-          </div>
-        </Container>
-      </motion.div>
     </section>
   )
 }

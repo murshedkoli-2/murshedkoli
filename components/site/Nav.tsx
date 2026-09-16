@@ -5,7 +5,6 @@ import { useEffect, useState } from 'react'
 import { AnimatePresence, motion, useReducedMotion } from 'framer-motion'
 import { Menu, X, FileText } from 'lucide-react'
 import { ThemeToggle } from '@/components/site/ThemeToggle'
-import { Container } from '@/components/site/ui/Container'
 import { DARK_THEME_SCOPE } from '@/lib/dark-theme'
 
 interface NavLink {
@@ -14,10 +13,10 @@ interface NavLink {
 }
 
 const LINKS: NavLink[] = [
-  { label: 'About', href: '/#about' },
-  { label: 'Services', href: '/#services' },
-  { label: 'Work', href: '/projects' },
-  { label: 'Experience', href: '/#experience' },
+  { label: 'Work', href: '/#projects' },
+  { label: 'Craft', href: '/#philosophy' },
+  { label: 'Capabilities', href: '/#services' },
+  { label: 'Stack', href: '/#stack' },
   { label: 'Contact', href: '/#contact' },
 ]
 
@@ -34,13 +33,12 @@ export function Nav({ name, resumeUrl, dark }: NavProps) {
   const reduce = useReducedMotion()
 
   useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 12)
+    const onScroll = () => setScrolled(window.scrollY > 20)
     onScroll()
     window.addEventListener('scroll', onScroll, { passive: true })
     return () => window.removeEventListener('scroll', onScroll)
   }, [])
 
-  // Lock body scroll while the mobile menu is open.
   useEffect(() => {
     document.body.style.overflow = open ? 'hidden' : ''
     return () => {
@@ -54,179 +52,196 @@ export function Nav({ name, resumeUrl, dark }: NavProps) {
     <header
       style={{
         ...(dark ? DARK_THEME_SCOPE : undefined),
-        color: 'var(--ink)',
-        position: 'sticky',
-        top: 0,
+        position: 'fixed',
+        top: 'clamp(0.75rem, 1.5vh, 1.25rem)',
+        left: 0,
+        right: 0,
         zIndex: 50,
-        background: scrolled
-          ? 'color-mix(in oklch, var(--canvas) 82%, transparent)'
-          : dark
-            ? 'var(--canvas)'
-            : 'transparent',
-        backdropFilter: scrolled ? 'saturate(180%) blur(12px)' : 'none',
-        WebkitBackdropFilter: scrolled ? 'saturate(180%) blur(12px)' : 'none',
-        borderBottom: `1px solid ${scrolled ? 'var(--line)' : 'transparent'}`,
-        transition: 'background 300ms var(--ease), border-color 300ms var(--ease)',
+        display: 'flex',
+        justifyContent: 'center',
+        paddingInline: '1rem',
+        pointerEvents: 'none',
       }}
     >
-      <Container>
-        <nav
-          aria-label="Main navigation"
+      <nav
+        aria-label="Main navigation"
+        style={{
+          pointerEvents: 'auto',
+          display: 'flex',
+          alignItems: 'center',
+          gap: 'clamp(0.5rem, 1.5vw, 1.5rem)',
+          padding: '7px 12px 7px 18px',
+          borderRadius: 9999,
+          background: scrolled
+            ? 'rgba(12, 12, 14, 0.82)'
+            : 'rgba(15, 15, 18, 0.65)',
+          backdropFilter: 'blur(20px) saturate(190%)',
+          WebkitBackdropFilter: 'blur(20px) saturate(190%)',
+          border: '1px solid rgba(255, 255, 255, 0.12)',
+          boxShadow: '0 20px 40px -15px rgba(0, 0, 0, 0.7), 0 0 0 1px rgba(255, 255, 255, 0.05)',
+          transition: 'all 300ms cubic-bezier(0.16, 1, 0.3, 1)',
+        }}
+      >
+        {/* Brand logo / monogram */}
+        <Link
+          href="/"
           style={{
             display: 'flex',
             alignItems: 'center',
-            justifyContent: 'space-between',
-            height: 72,
-            gap: 16,
+            gap: 8,
+            fontFamily: 'var(--font-display)',
+            fontSize: '0.95rem',
+            fontWeight: 700,
+            letterSpacing: '-0.02em',
+            color: '#ececea',
+            textDecoration: 'none',
           }}
         >
-          <Link
-            href="/"
-            style={{ fontFamily: 'var(--font-display)', fontSize: '1.3rem', fontWeight: 700, letterSpacing: '-0.03em' }}
-          >
-            {first}
-            {rest.length > 0 && <span style={{ color: 'var(--accent)' }}>{rest.join('')}</span>}
-            <span style={{ color: 'var(--accent)' }}>.</span>
-          </Link>
+          <span
+            style={{
+              width: 8,
+              height: 8,
+              borderRadius: 999,
+              background: '#34d399',
+              boxShadow: '0 0 10px #34d399',
+            }}
+          />
+          <span>{first}</span>
+          <span style={{ color: '#f5b04c' }}>.</span>
+        </Link>
 
-          {/* Desktop links */}
-          <div className="site-nav-desktop" style={{ alignItems: 'center', gap: 26 }}>
-            {LINKS.map((l) => (
-              <Link
-                key={l.href}
-                href={l.href}
-                style={{
-                  fontFamily: 'var(--font-mono)',
-                  fontSize: '0.82rem',
-                  color: 'var(--ink-muted)',
-                  fontWeight: 500,
-                }}
-                className="site-nav-link"
-              >
-                <span style={{ color: 'var(--accent)' }}>{'//'}</span> {l.label.toLowerCase()}
-              </Link>
-            ))}
-          </div>
+        {/* Desktop links */}
+        <div
+          className="site-nav-desktop"
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: 4,
+            paddingLeft: 12,
+            borderLeft: '1px solid rgba(255, 255, 255, 0.1)',
+          }}
+        >
+          {LINKS.map((l) => (
+            <Link
+              key={l.href}
+              href={l.href}
+              style={{
+                fontFamily: 'var(--font-mono)',
+                fontSize: '0.78rem',
+                color: 'rgba(255, 255, 255, 0.65)',
+                fontWeight: 500,
+                padding: '6px 12px',
+                borderRadius: 999,
+                transition: 'all 180ms ease',
+                textDecoration: 'none',
+              }}
+              className="site-nav-pill-link"
+            >
+              {l.label}
+            </Link>
+          ))}
+        </div>
 
-          <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-            <ThemeToggle />
-            {resumeUrl && (
-              <a
-                href={resumeUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="site-nav-resume"
-                style={{
-                  display: 'none',
-                  alignItems: 'center',
-                  gap: 7,
-                  padding: '9px 16px',
-                  borderRadius: 'var(--radius-sm)',
-                  background: 'var(--surface)',
-                  border: '1px solid var(--line-strong)',
-                  color: 'var(--ink)',
-                  fontFamily: 'var(--font-mono)',
-                  fontSize: '0.8rem',
-                  fontWeight: 500,
-                }}
-              >
-                <FileText size={15} /> resume ↗
-              </a>
-            )}
-            <button
-              type="button"
-              className="site-nav-burger"
-              aria-label="Open menu"
-              aria-expanded={open}
-              onClick={() => setOpen(true)}
+        {/* Actions */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: 6, paddingLeft: 6 }}>
+          <ThemeToggle />
+
+          {resumeUrl && (
+            <a
+              href={resumeUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="site-nav-resume"
               style={{
                 display: 'inline-flex',
-                width: 40,
-                height: 40,
                 alignItems: 'center',
-                justifyContent: 'center',
+                gap: 6,
+                padding: '6px 13px',
                 borderRadius: 999,
-                border: '1px solid var(--line)',
-                background: 'var(--surface)',
-                color: 'var(--ink)',
-                cursor: 'pointer',
+                background: 'rgba(255, 255, 255, 0.08)',
+                border: '1px solid rgba(255, 255, 255, 0.12)',
+                color: '#ececea',
+                fontFamily: 'var(--font-mono)',
+                fontSize: '0.76rem',
+                fontWeight: 500,
+                textDecoration: 'none',
+                transition: 'all 200ms ease',
               }}
             >
-              <Menu size={18} />
-            </button>
-          </div>
-        </nav>
-      </Container>
+              <FileText size={13} />
+              <span>CV</span>
+            </a>
+          )}
 
-      {/* Mobile menu */}
+          <button
+            type="button"
+            className="site-nav-burger"
+            aria-label="Open menu"
+            aria-expanded={open}
+            onClick={() => setOpen((o) => !o)}
+            style={{
+              padding: 6,
+              background: 'transparent',
+              border: 'none',
+              color: '#ececea',
+              cursor: 'pointer',
+              display: 'none',
+            }}
+          >
+            {open ? <X size={20} /> : <Menu size={20} />}
+          </button>
+        </div>
+      </nav>
+
+      {/* Mobile Drawer */}
       <AnimatePresence>
         {open && (
           <motion.div
-            initial={reduce ? { opacity: 0 } : { opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.2 }}
-            style={{ position: 'fixed', inset: 0, zIndex: 60 }}
+            initial={{ opacity: 0, y: -20, scale: 0.96 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: -20, scale: 0.96 }}
+            transition={{ duration: 0.25, ease: [0.16, 1, 0.3, 1] }}
+            style={{
+              position: 'fixed',
+              top: '4.5rem',
+              left: '1rem',
+              right: '1rem',
+              maxWidth: 420,
+              marginInline: 'auto',
+              borderRadius: 24,
+              background: 'rgba(16, 16, 20, 0.95)',
+              backdropFilter: 'blur(24px)',
+              border: '1px solid rgba(255, 255, 255, 0.15)',
+              padding: '1.5rem',
+              boxShadow: '0 30px 60px rgba(0, 0, 0, 0.8)',
+              pointerEvents: 'auto',
+              zIndex: 60,
+            }}
           >
-            <div
-              onClick={() => setOpen(false)}
-              style={{ position: 'absolute', inset: 0, background: 'color-mix(in oklch, var(--ink) 45%, transparent)' }}
-            />
-            <motion.aside
-              initial={reduce ? { x: 0 } : { x: '100%' }}
-              animate={{ x: 0 }}
-              exit={reduce ? { opacity: 0 } : { x: '100%' }}
-              transition={{ duration: 0.28, ease: [0.16, 1, 0.3, 1] }}
-              style={{
-                position: 'absolute',
-                top: 0,
-                right: 0,
-                height: '100%',
-                width: 'min(320px, 82vw)',
-                background: 'var(--surface)',
-                borderLeft: '1px solid var(--line)',
-                padding: '24px',
-                display: 'flex',
-                flexDirection: 'column',
-                gap: 8,
-              }}
-            >
-              <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: 12 }}>
-                <button
-                  type="button"
-                  aria-label="Close menu"
-                  onClick={() => setOpen(false)}
-                  style={{
-                    width: 40,
-                    height: 40,
-                    display: 'inline-flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    borderRadius: 999,
-                    border: '1px solid var(--line)',
-                    background: 'var(--surface)',
-                    color: 'var(--ink)',
-                    cursor: 'pointer',
-                  }}
-                >
-                  <X size={18} />
-                </button>
-              </div>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
               {LINKS.map((l) => (
                 <Link
                   key={l.href}
                   href={l.href}
                   onClick={() => setOpen(false)}
                   style={{
-                    padding: '13px 8px',
-                    fontSize: '1rem',
-                    fontFamily: 'var(--font-mono)',
-                    borderBottom: '1px solid var(--line)',
+                    fontFamily: 'var(--font-display)',
+                    fontSize: '1.25rem',
+                    fontWeight: 600,
+                    color: '#ececea',
+                    padding: '10px 14px',
+                    borderRadius: 12,
+                    textDecoration: 'none',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'space-between',
                   }}
                 >
-                  <span style={{ color: 'var(--accent)' }}>{'//'}</span> {l.label.toLowerCase()}
+                  <span>{l.label}</span>
+                  <span style={{ fontSize: '0.8rem', color: '#f5b04c', fontFamily: 'var(--font-mono)' }}>→</span>
                 </Link>
               ))}
+
               {resumeUrl && (
                 <a
                   href={resumeUrl}
@@ -234,24 +249,25 @@ export function Nav({ name, resumeUrl, dark }: NavProps) {
                   rel="noopener noreferrer"
                   onClick={() => setOpen(false)}
                   style={{
-                    marginTop: 16,
-                    display: 'inline-flex',
+                    marginTop: 10,
+                    display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center',
                     gap: 8,
-                    padding: '13px 18px',
-                    borderRadius: 'var(--radius-sm)',
-                    background: 'var(--accent)',
-                    color: 'var(--accent-ink)',
+                    padding: '12px',
+                    borderRadius: 12,
+                    background: '#ececea',
+                    color: '#0b0b0c',
                     fontFamily: 'var(--font-mono)',
-                    fontSize: '0.85rem',
-                    fontWeight: 500,
+                    fontSize: '0.88rem',
+                    fontWeight: 600,
+                    textDecoration: 'none',
                   }}
                 >
-                  <FileText size={16} /> resume ↗
+                  <FileText size={16} /> View Résumé
                 </a>
               )}
-            </motion.aside>
+            </div>
           </motion.div>
         )}
       </AnimatePresence>

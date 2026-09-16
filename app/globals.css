@@ -423,3 +423,81 @@ a { color: inherit; text-decoration: none; }
   }
   .site-card--interactive:hover { transform: none; }
 }
+
+/* ── Apple Pro / Campsite Visual Studio Utilities ── */
+.site-nav-pill-link:hover {
+  background: rgba(255, 255, 255, 0.09) !important;
+  color: #ececea !important;
+}
+
+.site-nav-resume:hover {
+  background: rgba(255, 255, 255, 0.15) !important;
+  border-color: rgba(255, 255, 255, 0.3) !important;
+}
+
+.hero-primary-btn:hover {
+  background: #ffffff !important;
+  transform: translateY(-2px);
+  box-shadow: 0 14px 30px -5px rgba(255, 255, 255, 0.35) !important;
+}
+
+.hero-secondary-btn:hover {
+  background: rgba(255, 255, 255, 0.09) !important;
+  border-color: rgba(255, 255, 255, 0.28) !important;
+  transform: translateY(-2px);
+}
+
+.project-viewport-card:hover {
+  border-color: rgba(245, 176, 76, 0.35) !important;
+  transform: translateY(-4px);
+  box-shadow: 0 40px 80px -20px rgba(0, 0, 0, 0.9), 0 0 30px -10px rgba(245, 176, 76, 0.15) !important;
+}
+
+.project-viewport-card:hover .project-img-zoom {
+  transform: scale(1.04) !important;
+}
+
+.studio-card:hover {
+  border-color: rgba(245, 176, 76, 0.3) !important;
+  background: rgba(255, 255, 255, 0.045) !important;
+  transform: translateY(-2px);
+}
+
+.bento-service-card:hover {
+  border-color: rgba(245, 176, 76, 0.3) !important;
+  background: rgba(255, 255, 255, 0.045) !important;
+  transform: translateY(-3px);
+}
+
+.view-all-btn:hover {
+  background: rgba(255, 255, 255, 0.1) !important;
+  border-color: rgba(255, 255, 255, 0.3) !important;
+  transform: translateY(-2px);
+}
+
+@keyframes pulseGlow {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.4; transform: scale(0.85); }
+}
+
+.status-pulse {
+  animation: pulseGlow 2s ease-in-out infinite;
+}
+
+@media (max-width: 900px) {
+  .hero-grid-layout {
+    grid-template-columns: 1fr !important;
+    gap: 2.5rem !important;
+  }
+  .hero-portrait-container {
+    order: -1;
+    max-width: 320px !important;
+  }
+  .site-nav-desktop {
+    display: none !important;
+  }
+  .site-nav-burger {
+    display: flex !important;
+  }
+}
+

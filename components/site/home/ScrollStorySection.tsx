@@ -1,8 +1,7 @@
 'use client'
 
-import { useRef } from 'react'
-import Image from 'next/image'
-import { motion, useScroll, useTransform, useReducedMotion, type MotionValue } from 'framer-motion'
+import { motion, useReducedMotion } from 'framer-motion'
+import { Layers, Zap, Sparkles } from 'lucide-react'
 import { Container } from '@/components/site/ui/Container'
 import type { ProfileView } from '@/lib/data/portfolio'
 
@@ -10,34 +9,29 @@ interface ScrollStorySectionProps {
   profile: ProfileView
 }
 
-const STATEMENT =
-  'I design and engineer web products end to end — from the database schema to the last pixel — with the speed of a startup and the finish of a studio.'
-
 const PRINCIPLES = [
   {
-    title: 'Design with intent',
-    detail: 'High-contrast interfaces, typography that carries hierarchy, and motion that clarifies instead of decorating.',
+    icon: Layers,
+    num: '01',
+    title: 'Intentional Design',
+    desc: 'High contrast, purposeful hierarchy, and spatial balance. No superfluous clutter.',
   },
   {
-    title: 'Engineer for scale',
-    detail: 'Type-safe APIs, resilient data layers, and architectures that stay simple as the product grows.',
+    icon: Zap,
+    num: '02',
+    title: 'Scalable Systems',
+    desc: 'Type-safe APIs, cached database queries, and sub-second edge responses.',
   },
   {
-    title: 'Ship fast, polish hard',
-    detail: 'Sub-second loads, honest Core Web Vitals, and the discipline to sweat the last five percent.',
+    icon: Sparkles,
+    num: '03',
+    title: 'Studio Polish',
+    desc: 'Fluid spring physics, GPU-accelerated canvas, and extreme care for micro-details.',
   },
 ]
 
 export function ScrollStorySection({ profile }: ScrollStorySectionProps) {
   const reduce = useReducedMotion()
-  const statementRef = useRef<HTMLParagraphElement>(null)
-
-  const { scrollYProgress } = useScroll({
-    target: statementRef,
-    offset: ['start 0.85', 'start 0.3'],
-  })
-
-  const statementWords = STATEMENT.split(' ')
 
   return (
     <section
@@ -46,109 +40,127 @@ export function ScrollStorySection({ profile }: ScrollStorySectionProps) {
         position: 'relative',
         background: 'var(--section-ground, #0b0b0c)',
         color: '#ececea',
-        borderTop: '1px solid rgba(255, 255, 255, 0.09)',
-        paddingBlock: 'clamp(6rem, 4rem + 8vh, 11rem)',
+        borderTop: '1px solid rgba(255, 255, 255, 0.08)',
+        paddingBlock: 'clamp(5rem, 4rem + 6vh, 8rem)',
       }}
     >
       <Container>
-        {/* Statement: reveals word by word as it enters the viewport */}
-        <div style={{ marginBottom: 'clamp(4.5rem, 3rem + 7vh, 8rem)' }}>
-          <span className="hp-meta" style={{ display: 'block', marginBottom: '2rem' }}>
-            the craft
-          </span>
-          <p
-            ref={statementRef}
+        {/* Section Header */}
+        <div style={{ maxWidth: '42rem', marginBottom: 'clamp(3rem, 2.5rem + 3vh, 4.5rem)' }}>
+          <div
+            className="hp-meta"
             style={{
-              fontFamily: 'var(--font-display)',
-              fontSize: 'clamp(1.7rem, 1rem + 3.2vw, 3.4rem)',
-              fontWeight: 500,
-              lineHeight: 1.25,
-              letterSpacing: '-0.02em',
-              maxWidth: '58rem',
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: 8,
+              color: '#f5b04c',
+              marginBottom: '1rem',
             }}
           >
-            {statementWords.map((word, i) => (
-              <Word
-                key={i}
-                progress={scrollYProgress}
-                range={[i / statementWords.length, (i + 1) / statementWords.length]}
-                reduce={reduce}
-              >
-                {word}
-              </Word>
-            ))}
-          </p>
+            <span>{'//'}</span>
+            <span>STUDIO STANDARD</span>
+          </div>
+          <h2
+            style={{
+              fontSize: 'clamp(2rem, 1.2rem + 3vw, 3.8rem)',
+              fontWeight: 600,
+              lineHeight: 1.1,
+              letterSpacing: '-0.035em',
+            }}
+          >
+            Engineered with precision. <br />
+            <span style={{ color: 'rgba(255, 255, 255, 0.45)' }}>Polished to the pixel.</span>
+          </h2>
         </div>
 
-        {/* One contained image + principles, side by side */}
-        <div className="craft-grid">
-          <div className="hp-plate craft-plate">
-            <Image
-              src={profile.storyImage || '/images/hero-3.jpg'}
-              alt={profile.name}
-              fill
-              sizes="(max-width: 900px) 92vw, 38vw"
-              style={{ objectFit: 'cover', objectPosition: 'center 20%' }}
-            />
-          </div>
-
-          <div>
-            {PRINCIPLES.map((p) => (
+        {/* 3-Card Apple Pro Studio Showcase */}
+        <div
+          style={{
+            display: 'grid',
+            gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))',
+            gap: '1.5rem',
+          }}
+        >
+          {PRINCIPLES.map((p, i) => {
+            const Icon = p.icon
+            return (
               <motion.div
-                key={p.title}
+                key={p.num}
                 initial={reduce ? {} : { opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true, margin: '-15%' }}
-                transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
+                viewport={{ once: true, margin: '-10%' }}
+                transition={{ duration: 0.5, delay: i * 0.1, ease: [0.16, 1, 0.3, 1] }}
                 style={{
-                  paddingBlock: '1.75rem',
-                  borderTop: '1px solid rgba(255, 255, 255, 0.09)',
+                  padding: '2rem',
+                  borderRadius: 20,
+                  background: 'rgba(255, 255, 255, 0.025)',
+                  border: '1px solid rgba(255, 255, 255, 0.08)',
+                  backdropFilter: 'blur(12px)',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  justifyContent: 'space-between',
+                  minHeight: 240,
+                  position: 'relative',
+                  overflow: 'hidden',
+                  transition: 'border-color 200ms ease, background 200ms ease',
                 }}
+                className="studio-card"
               >
-                <h3
-                  style={{
-                    fontSize: 'clamp(1.25rem, 1.1rem + 0.7vw, 1.6rem)',
-                    fontWeight: 600,
-                    letterSpacing: '-0.01em',
-                    marginBottom: '0.6rem',
-                    color: '#ececea',
-                  }}
-                >
-                  {p.title}
-                </h3>
-                <p style={{ color: 'rgba(255, 255, 255, 0.55)', lineHeight: 1.7, fontSize: '0.98rem', maxWidth: '30rem' }}>
-                  {p.detail}
-                </p>
+                {/* Top Row: Icon + Number */}
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '2.5rem' }}>
+                  <div
+                    style={{
+                      width: 44,
+                      height: 44,
+                      borderRadius: 12,
+                      background: 'rgba(255, 255, 255, 0.06)',
+                      border: '1px solid rgba(255, 255, 255, 0.12)',
+                      display: 'grid',
+                      placeItems: 'center',
+                      color: '#f5b04c',
+                    }}
+                  >
+                    <Icon size={20} />
+                  </div>
+                  <span
+                    style={{
+                      fontFamily: 'var(--font-mono)',
+                      fontSize: '0.8rem',
+                      color: 'rgba(255, 255, 255, 0.3)',
+                    }}
+                  >
+                    {p.num}
+                  </span>
+                </div>
+
+                {/* Bottom Row: Title + Micro-description */}
+                <div>
+                  <h3
+                    style={{
+                      fontSize: '1.25rem',
+                      fontWeight: 600,
+                      letterSpacing: '-0.02em',
+                      marginBottom: '0.5rem',
+                      color: '#ececea',
+                    }}
+                  >
+                    {p.title}
+                  </h3>
+                  <p
+                    style={{
+                      fontSize: '0.92rem',
+                      lineHeight: 1.5,
+                      color: 'rgba(255, 255, 255, 0.55)',
+                    }}
+                  >
+                    {p.desc}
+                  </p>
+                </div>
               </motion.div>
-            ))}
-          </div>
+            )
+          })}
         </div>
       </Container>
     </section>
-  )
-}
-
-function Word({
-  children,
-  progress,
-  range,
-  reduce,
-}: {
-  children: string
-  progress: MotionValue<number>
-  range: [number, number]
-  reduce: boolean | null
-}) {
-  const opacity = useTransform(progress, range, [0.16, 1])
-  return (
-    <motion.span
-      style={{
-        opacity: reduce ? 1 : opacity,
-        display: 'inline-block',
-        marginRight: '0.28em',
-      }}
-    >
-      {children}
-    </motion.span>
   )
 }
