@@ -393,3 +393,26 @@ model SavingsAccount {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
+
+model CareerStep {
+  id             String    @id @default(auto()) @map("_id") @db.ObjectId
+  stage          String    // e.g. "Stage 1: Core Foundation & Advanced TypeScript"
+  stageNumber    Int       // 1 to 6
+  stepNumber     Int       // 1 to 30+
+  title          String    // e.g. "Advanced TypeScript & Type Systems"
+  category       String    // "frontend" | "backend" | "database" | "devops" | "system-design" | "monetization"
+  description    String
+  keyConcepts    String[]  // ["Generics", "Discriminated Unions", "Utility Types"]
+  testQuestions  String[]  // Practical challenges / assessment questions
+  deliverable    String    // Project or code to build
+  deliverableUrl String?   // GitHub or live demo URL
+  status         String    @default("todo") // "todo" | "in_progress" | "completed"
+  notes          String?
+  completedAt    DateTime?
+  order          Int       @default(0)
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+
+  @@index([stageNumber])
+  @@index([status])
+}

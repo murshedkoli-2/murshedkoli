@@ -7,6 +7,7 @@ import { ThemeToggle } from '@/components/site/ThemeToggle'
 
 export type AdminNavKey =
   | 'overview'
+  | 'career'
   | 'projects'
   | 'services'
   | 'skills'
@@ -24,11 +25,15 @@ interface NavItem {
   label: string
   icon: string
   href: string
-  badgeKey?: 'projects' | 'skills' | 'certificates' | 'messages'
+  badgeKey?: 'projects' | 'skills' | 'certificates' | 'messages' | 'career'
 }
 
 const HOME: NavItem[] = [
   { key: 'overview', label: 'Overview', icon: '◎', href: '/admin/dashboard' },
+]
+
+const CAREER: NavItem[] = [
+  { key: 'career', label: 'Career Roadmap', icon: '⚡', href: '/admin/career', badgeKey: 'career' },
 ]
 
 const CONTENT: NavItem[] = [
@@ -55,6 +60,7 @@ const SYSTEM: NavItem[] = [
 ]
 
 export interface AdminBadges {
+  career?: number
   projects?: number
   skills?: number
   certificates?: number
@@ -106,6 +112,9 @@ export function AdminShell({ active, title, subtitle, actions, badges = {}, chil
         </Link>
 
         {HOME.map(renderItem)}
+
+        <div className="adm-nav-group">Career & Growth</div>
+        {CAREER.map(renderItem)}
 
         <div className="adm-nav-group">Content</div>
         {CONTENT.map(renderItem)}
