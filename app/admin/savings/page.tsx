@@ -872,7 +872,12 @@ export default function SavingsManager() {
                       <button className="c-btn c-btn-icon" onClick={() => setEditing(a)} title="Edit details">
                         ✎
                       </button>
-                      <button className="c-btn c-btn-icon danger" onClick={() => remove(a)} title="Delete account">
+                      <button
+                        className="c-btn c-btn-icon"
+                        disabled
+                        style={{ opacity: 0.35, cursor: 'not-allowed' }}
+                        title="Delete is disabled"
+                      >
                         🗑️
                       </button>
                     </div>
