@@ -26,9 +26,18 @@ function TimelineColumn({
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
       <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: '0.5rem' }}>
-        <Icon size={16} style={{ color: '#f5b04c' }} />
-        <span className="hp-meta" style={{ color: 'rgba(255, 255, 255, 0.5)' }}>
-          {label.toUpperCase()}
+        <Icon size={16} style={{ color: '#d97706' }} />
+        <span
+          style={{
+            fontFamily: 'var(--font-mono)',
+            fontSize: '0.75rem',
+            color: '#86868b',
+            textTransform: 'uppercase',
+            letterSpacing: '0.05em',
+            fontWeight: 600,
+          }}
+        >
+          {label}
         </span>
       </div>
 
@@ -42,39 +51,41 @@ function TimelineColumn({
             transition={{ duration: 0.5, delay: Math.min(idx * 0.05, 0.2), ease: [0.16, 1, 0.3, 1] }}
             style={{
               padding: '1.25rem 1.5rem',
-              borderRadius: 16,
-              background: 'rgba(255, 255, 255, 0.025)',
-              border: '1px solid rgba(255, 255, 255, 0.08)',
+              borderRadius: 18,
+              background: '#ffffff',
+              border: '1px solid rgba(0, 0, 0, 0.07)',
+              boxShadow: '0 2px 10px rgba(0, 0, 0, 0.03)',
               display: 'flex',
               flexDirection: 'column',
               gap: 6,
             }}
           >
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 8 }}>
-              <div style={{ fontFamily: 'var(--font-display)', fontSize: '1.05rem', fontWeight: 600, color: '#ececea' }}>
+              <div style={{ fontFamily: 'var(--font-display)', fontSize: '1.05rem', fontWeight: 600, color: '#1d1d1f' }}>
                 {e.title}
               </div>
               <div
                 style={{
                   fontFamily: 'var(--font-mono)',
                   fontSize: '0.72rem',
-                  color: e.current ? '#34d399' : 'rgba(255, 255, 255, 0.45)',
+                  color: e.current ? '#059669' : '#86868b',
                   display: 'flex',
                   alignItems: 'center',
                   gap: 6,
+                  fontWeight: 600,
                 }}
               >
-                {e.current && <span style={{ width: 6, height: 6, borderRadius: 999, background: '#34d399' }} />}
+                {e.current && <span style={{ width: 6, height: 6, borderRadius: 999, background: '#10b981' }} />}
                 <span>{e.period}</span>
               </div>
             </div>
 
-            <div style={{ color: 'rgba(255, 255, 255, 0.6)', fontSize: '0.88rem' }}>{e.subtitle}</div>
+            <div style={{ color: '#6e6e73', fontSize: '0.88rem' }}>{e.subtitle}</div>
 
             {e.detail && (
               <div
                 style={{
-                  color: 'rgba(255, 255, 255, 0.45)',
+                  color: '#86868b',
                   fontSize: '0.82rem',
                   lineHeight: 1.45,
                   marginTop: 4,
@@ -102,11 +113,11 @@ export function TimelineSection({ experience, education }: TimelineSectionProps)
     <section
       id="experience"
       style={{
-        background: 'var(--section-ground, #0b0b0c)',
-        color: '#ececea',
+        background: '#ffffff',
+        color: '#1d1d1f',
         paddingBlock: 'var(--space-section)',
         scrollMarginTop: '5rem',
-        borderTop: '1px solid rgba(255, 255, 255, 0.08)',
+        borderTop: '1px solid rgba(0, 0, 0, 0.06)',
       }}
     >
       <Container>

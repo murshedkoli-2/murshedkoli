@@ -32,10 +32,10 @@ export function CertificatesSection({ certificates }: CertificatesSectionProps) 
   return (
     <section
       style={{
-        background: 'var(--section-ground, #0b0b0c)',
-        color: '#ececea',
+        background: '#f5f5f7',
+        color: '#1d1d1f',
         paddingBlock: 'var(--space-section)',
-        borderTop: '1px solid rgba(255, 255, 255, 0.09)',
+        borderTop: '1px solid rgba(0, 0, 0, 0.06)',
       }}
     >
       <Container>
@@ -45,75 +45,100 @@ export function CertificatesSection({ certificates }: CertificatesSectionProps) 
           meta={`${String(certificates.length).padStart(2, '0')} verified`}
         />
 
-        <div>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '1.25rem' }}>
           {certificates.map((c, idx) => {
             const isImage = Boolean(c.fileUrl && c.fileType === 'image')
             const isPdf = Boolean(c.fileUrl && c.fileType === 'pdf')
             return (
               <motion.div
                 key={c.id}
-                className="svc-row"
                 initial={reduce ? {} : { opacity: 0, y: 16 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true, margin: '-10%' }}
                 transition={{ duration: 0.5, delay: Math.min(idx * 0.05, 0.25), ease: [0.16, 1, 0.3, 1] }}
+                style={{
+                  padding: '1.5rem',
+                  borderRadius: 18,
+                  background: '#ffffff',
+                  border: '1px solid rgba(0, 0, 0, 0.06)',
+                  boxShadow: '0 2px 10px rgba(0, 0, 0, 0.03)',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  justifyContent: 'space-between',
+                  gap: 12,
+                }}
               >
                 <div>
-                  <div style={{ fontFamily: 'var(--font-display)', fontSize: '1.15rem', fontWeight: 600, color: '#ececea', lineHeight: 1.35 }}>
+                  <div
+                    style={{
+                      fontFamily: 'var(--font-mono)',
+                      fontSize: '0.72rem',
+                      color: '#86868b',
+                      marginBottom: 6,
+                    }}
+                  >
+                    {c.date} · {c.issuer}
+                  </div>
+                  <div style={{ fontSize: '1.05rem', fontWeight: 600, color: '#1d1d1f', letterSpacing: '-0.01em' }}>
                     {c.title}
                   </div>
-                  <div className="hp-meta" style={{ marginTop: 8 }}>
-                    {c.issuer}
-                    {c.date ? ` · ${c.date}` : ''}
-                  </div>
                 </div>
-                <div style={{ display: 'flex', gap: 20, flexWrap: 'wrap', alignItems: 'center' }}>
-                  {c.description && (
-                    <p style={{ color: 'rgba(255, 255, 255, 0.55)', fontSize: '0.92rem', lineHeight: 1.6, flex: '1 1 16rem', minWidth: '12rem' }}>
-                      {c.description}
-                    </p>
+
+                <div style={{ display: 'flex', gap: 10, alignItems: 'center' }}>
+                  {isImage && (
+                    <button
+                      type="button"
+                      onClick={() => openCert(c)}
+                      style={{
+                        fontFamily: 'var(--font-mono)',
+                        fontSize: '0.75rem',
+                        color: '#d97706',
+                        background: 'transparent',
+                        border: 'none',
+                        padding: 0,
+                        cursor: 'pointer',
+                        fontWeight: 600,
+                      }}
+                    >
+                      VIEW CERTIFICATE →
+                    </button>
                   )}
-                  <div style={{ display: 'flex', gap: 18, flexShrink: 0 }}>
-                    {isImage && (
-                      <button type="button" onClick={() => openCert(c)} style={linkBtn}>
-                        <FileText size={14} /> view
-                      </button>
-                    )}
-                    {isPdf && (
-                      <a href={c.fileUrl as string} target="_blank" rel="noopener noreferrer" style={linkBtn}>
-                        <FileText size={14} /> pdf
-                      </a>
-                    )}
-                    {c.verifyUrl && (
-                      <a href={c.verifyUrl} target="_blank" rel="noopener noreferrer" style={linkBtn}>
-                        <ExternalLink size={14} /> verify
-                      </a>
-                    )}
-                  </div>
+                  {isPdf && (
+                    <a
+                      href={c.fileUrl as string}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      style={{
+                        display: 'inline-flex',
+                        alignItems: 'center',
+                        gap: 5,
+                        fontFamily: 'var(--font-mono)',
+                        fontSize: '0.75rem',
+                        color: '#d97706',
+                        textDecoration: 'none',
+                        fontWeight: 600,
+                      }}
+                    >
+                      <FileText size={13} />
+                      <span>PDF DOCUMENT</span>
+                      <ExternalLink size={12} />
+                    </a>
+                  )}
                 </div>
               </motion.div>
             )
           })}
         </div>
-      </Container>
 
-      <Lightbox images={lightboxImages} index={index} onClose={() => setIndex(null)} onNavigate={setIndex} />
+        {lightboxImages.length > 0 && index !== null && (
+          <Lightbox
+            images={lightboxImages}
+            index={index}
+            onClose={() => setIndex(null)}
+            onNavigate={(next) => setIndex(next)}
+          />
+        )}
+      </Container>
     </section>
   )
-}
-
-const linkBtn: React.CSSProperties = {
-  display: 'inline-flex',
-  alignItems: 'center',
-  gap: 6,
-  fontFamily: 'var(--font-mono)',
-  fontSize: '0.78rem',
-  fontWeight: 500,
-  letterSpacing: '0.06em',
-  textTransform: 'uppercase',
-  color: '#f5b04c',
-  background: 'none',
-  border: 'none',
-  padding: 0,
-  cursor: 'pointer',
 }

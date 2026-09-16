@@ -20,11 +20,11 @@ export function ServicesSection({ services }: ServicesSectionProps) {
     <section
       id="services"
       style={{
-        background: 'var(--section-ground, #0b0b0c)',
-        color: '#ececea',
+        background: '#ffffff',
+        color: '#1d1d1f',
         paddingBlock: 'var(--space-section)',
         scrollMarginTop: '5rem',
-        borderTop: '1px solid rgba(255, 255, 255, 0.08)',
+        borderTop: '1px solid rgba(0, 0, 0, 0.06)',
       }}
     >
       <Container>
@@ -51,16 +51,15 @@ export function ServicesSection({ services }: ServicesSectionProps) {
                 style={{
                   padding: '2rem',
                   borderRadius: 20,
-                  background: 'rgba(255, 255, 255, 0.025)',
-                  border: '1px solid rgba(255, 255, 255, 0.08)',
-                  backdropFilter: 'blur(10px)',
+                  background: '#f5f5f7',
+                  border: '1px solid rgba(0, 0, 0, 0.04)',
                   display: 'flex',
                   flexDirection: 'column',
                   justifyContent: 'space-between',
                   minHeight: 180,
                   transition: 'all 200ms ease',
                 }}
-                className="bento-service-card"
+                className="apple-bento-card"
               >
                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '1.5rem' }}>
                   <div
@@ -68,11 +67,12 @@ export function ServicesSection({ services }: ServicesSectionProps) {
                       width: 42,
                       height: 42,
                       borderRadius: 12,
-                      background: 'rgba(245, 176, 76, 0.08)',
-                      border: '1px solid rgba(245, 176, 76, 0.2)',
+                      background: '#ffffff',
+                      border: '1px solid rgba(0, 0, 0, 0.08)',
+                      boxShadow: '0 2px 6px rgba(0, 0, 0, 0.04)',
                       display: 'grid',
                       placeItems: 'center',
-                      color: '#f5b04c',
+                      color: '#d97706',
                     }}
                   >
                     <Icon size={20} />
@@ -81,7 +81,8 @@ export function ServicesSection({ services }: ServicesSectionProps) {
                     style={{
                       fontFamily: 'var(--font-mono)',
                       fontSize: '0.74rem',
-                      color: 'rgba(255, 255, 255, 0.35)',
+                      color: '#86868b',
+                      fontWeight: 600,
                     }}
                   >
                     0{i + 1}
@@ -94,7 +95,7 @@ export function ServicesSection({ services }: ServicesSectionProps) {
                       fontSize: '1.25rem',
                       fontWeight: 600,
                       letterSpacing: '-0.02em',
-                      color: '#ececea',
+                      color: '#1d1d1f',
                       marginBottom: '0.5rem',
                     }}
                   >
@@ -102,7 +103,7 @@ export function ServicesSection({ services }: ServicesSectionProps) {
                   </h3>
                   <p
                     style={{
-                      color: 'rgba(255, 255, 255, 0.55)',
+                      color: '#6e6e73',
                       lineHeight: 1.5,
                       fontSize: '0.9rem',
                       margin: 0,

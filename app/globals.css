@@ -501,3 +501,39 @@ a { color: inherit; text-decoration: none; }
   }
 }
 
+/* ── Apple Light Studio Styles ── */
+.apple-light-main {
+  background: var(--canvas, #ffffff);
+  color: var(--ink, #1d1d1f);
+  position: relative;
+  z-index: 1;
+}
+
+.apple-studio-card:hover {
+  transform: translateY(-3px) !important;
+  box-shadow: 0 12px 30px -4px rgba(0, 0, 0, 0.08), 0 2px 6px rgba(0, 0, 0, 0.04) !important;
+  border-color: rgba(0, 0, 0, 0.12) !important;
+}
+
+.apple-project-card:hover {
+  transform: translateY(-4px) !important;
+  box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.1), 0 1px 3px rgba(0, 0, 0, 0.04) !important;
+  border-color: rgba(0, 0, 0, 0.12) !important;
+}
+
+.apple-project-card:hover .project-img-zoom {
+  transform: scale(1.035) !important;
+}
+
+.apple-bento-card:hover {
+  transform: translateY(-3px) !important;
+  background: #ffffff !important;
+  box-shadow: 0 10px 25px -4px rgba(0, 0, 0, 0.06) !important;
+  border-color: rgba(0, 0, 0, 0.09) !important;
+}
+
+.apple-secondary-btn:hover {
+  background: #eaeaea !important;
+  transform: translateY(-2px);
+  color: #1d1d1f !important;
+}

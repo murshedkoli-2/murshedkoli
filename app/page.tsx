@@ -1,6 +1,5 @@
 import { Nav } from '@/components/site/Nav'
 import { Footer } from '@/components/site/Footer'
-import { ScrollSequenceBackground } from '@/components/site/ScrollSequenceBackground'
 import { Hero } from '@/components/site/home/Hero'
 import { ScrollStorySection } from '@/components/site/home/ScrollStorySection'
 import { ServicesSection } from '@/components/site/home/ServicesSection'
@@ -25,7 +24,7 @@ const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://murshedkoli.com'
 /** ISR: served static (instant navigation), regenerated in the background every 10 min. */
 export const revalidate = 600
 
-/** High-aesthetic animated homepage with scroll-driven image narrative. */
+/** Lean, minimal, clean Apple-like portfolio homepage. */
 export default async function Home() {
   const [profile, stats, featured, skills, experience, education, certificates, services] = await Promise.all([
     getProfile(),
@@ -54,19 +53,18 @@ export default async function Home() {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(personJsonLd) }}
       />
-      <ScrollSequenceBackground />
-      <Nav name={profile.name} resumeUrl={profile.resume} dark />
-      <main className="seq-host">
+      <Nav name={profile.name} resumeUrl={profile.resume} />
+      <main className="apple-light-main">
         <Hero profile={profile} stats={stats} />
         <ScrollStorySection profile={profile} />
-        <ServicesSection services={services} />
         <FeaturedProjects projects={featured} />
+        <ServicesSection services={services} />
         <SkillsSection columns={skills} />
         <TimelineSection experience={experience} education={education} />
         <CertificatesSection certificates={certificates} />
         <ContactSection profile={profile} />
       </main>
-      <Footer name={profile.name} email={profile.email} socialLinks={profile.socialLinks} dark />
+      <Footer name={profile.name} email={profile.email} socialLinks={profile.socialLinks} />
     </>
   )
 }

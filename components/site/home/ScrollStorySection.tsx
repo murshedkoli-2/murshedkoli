@@ -14,19 +14,19 @@ const PRINCIPLES = [
     icon: Layers,
     num: '01',
     title: 'Intentional Design',
-    desc: 'High contrast, purposeful hierarchy, and spatial balance. No superfluous clutter.',
+    desc: 'High contrast, purposeful hierarchy, and spatial balance. Zero visual noise.',
   },
   {
     icon: Zap,
     num: '02',
     title: 'Scalable Systems',
-    desc: 'Type-safe APIs, cached database queries, and sub-second edge responses.',
+    desc: 'Type-safe APIs, cached database queries, and sub-second edge response times.',
   },
   {
     icon: Sparkles,
     num: '03',
     title: 'Studio Polish',
-    desc: 'Fluid spring physics, GPU-accelerated canvas, and extreme care for micro-details.',
+    desc: 'Fluid spring physics, pristine responsiveness, and obsessive attention to detail.',
   },
 ]
 
@@ -38,10 +38,11 @@ export function ScrollStorySection({ profile }: ScrollStorySectionProps) {
       id="philosophy"
       style={{
         position: 'relative',
-        background: 'var(--section-ground, #0b0b0c)',
-        color: '#ececea',
-        borderTop: '1px solid rgba(255, 255, 255, 0.08)',
-        paddingBlock: 'clamp(5rem, 4rem + 6vh, 8rem)',
+        background: '#f5f5f7',
+        color: '#1d1d1f',
+        borderTop: '1px solid rgba(0, 0, 0, 0.06)',
+        borderBottom: '1px solid rgba(0, 0, 0, 0.06)',
+        paddingBlock: 'clamp(5rem, 4.5rem + 5vh, 7.5rem)',
       }}
     >
       <Container>
@@ -53,23 +54,25 @@ export function ScrollStorySection({ profile }: ScrollStorySectionProps) {
               display: 'inline-flex',
               alignItems: 'center',
               gap: 8,
-              color: '#f5b04c',
+              color: '#d97706',
               marginBottom: '1rem',
+              fontWeight: 600,
             }}
           >
             <span>{'//'}</span>
-            <span>STUDIO STANDARD</span>
+            <span>STUDIO STANDARDS</span>
           </div>
           <h2
             style={{
-              fontSize: 'clamp(2rem, 1.2rem + 3vw, 3.8rem)',
+              fontSize: 'clamp(2rem, 1.2rem + 3vw, 3.6rem)',
               fontWeight: 600,
               lineHeight: 1.1,
               letterSpacing: '-0.035em',
+              color: '#1d1d1f',
             }}
           >
             Engineered with precision. <br />
-            <span style={{ color: 'rgba(255, 255, 255, 0.45)' }}>Polished to the pixel.</span>
+            <span style={{ color: '#86868b' }}>Polished to the pixel.</span>
           </h2>
         </div>
 
@@ -93,18 +96,18 @@ export function ScrollStorySection({ profile }: ScrollStorySectionProps) {
                 style={{
                   padding: '2rem',
                   borderRadius: 20,
-                  background: 'rgba(255, 255, 255, 0.025)',
-                  border: '1px solid rgba(255, 255, 255, 0.08)',
-                  backdropFilter: 'blur(12px)',
+                  background: '#ffffff',
+                  border: '1px solid rgba(0, 0, 0, 0.06)',
+                  boxShadow: '0 4px 18px -2px rgba(0, 0, 0, 0.04), 0 1px 2px rgba(0, 0, 0, 0.02)',
                   display: 'flex',
                   flexDirection: 'column',
                   justifyContent: 'space-between',
-                  minHeight: 240,
+                  minHeight: 220,
                   position: 'relative',
                   overflow: 'hidden',
-                  transition: 'border-color 200ms ease, background 200ms ease',
+                  transition: 'transform 200ms ease, box-shadow 200ms ease',
                 }}
-                className="studio-card"
+                className="apple-studio-card"
               >
                 {/* Top Row: Icon + Number */}
                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '2.5rem' }}>
@@ -113,11 +116,11 @@ export function ScrollStorySection({ profile }: ScrollStorySectionProps) {
                       width: 44,
                       height: 44,
                       borderRadius: 12,
-                      background: 'rgba(255, 255, 255, 0.06)',
-                      border: '1px solid rgba(255, 255, 255, 0.12)',
+                      background: 'rgba(217, 119, 6, 0.08)',
+                      border: '1px solid rgba(217, 119, 6, 0.18)',
                       display: 'grid',
                       placeItems: 'center',
-                      color: '#f5b04c',
+                      color: '#d97706',
                     }}
                   >
                     <Icon size={20} />
@@ -126,7 +129,8 @@ export function ScrollStorySection({ profile }: ScrollStorySectionProps) {
                     style={{
                       fontFamily: 'var(--font-mono)',
                       fontSize: '0.8rem',
-                      color: 'rgba(255, 255, 255, 0.3)',
+                      color: '#86868b',
+                      fontWeight: 600,
                     }}
                   >
                     {p.num}
@@ -141,7 +145,7 @@ export function ScrollStorySection({ profile }: ScrollStorySectionProps) {
                       fontWeight: 600,
                       letterSpacing: '-0.02em',
                       marginBottom: '0.5rem',
-                      color: '#ececea',
+                      color: '#1d1d1f',
                     }}
                   >
                     {p.title}
@@ -150,7 +154,8 @@ export function ScrollStorySection({ profile }: ScrollStorySectionProps) {
                     style={{
                       fontSize: '0.92rem',
                       lineHeight: 1.5,
-                      color: 'rgba(255, 255, 255, 0.55)',
+                      color: '#6e6e73',
+                      margin: 0,
                     }}
                   >
                     {p.desc}

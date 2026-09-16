@@ -36,10 +36,10 @@ export function SkillsSection({ columns }: SkillsSectionProps) {
     <section
       id="stack"
       style={{
-        background: 'var(--section-ground, #0b0b0c)',
-        color: '#ececea',
+        background: '#f5f5f7',
+        color: '#1d1d1f',
         paddingBlock: 'var(--space-section)',
-        borderTop: '1px solid rgba(255, 255, 255, 0.08)',
+        borderTop: '1px solid rgba(0, 0, 0, 0.06)',
       }}
     >
       <Container>
@@ -50,8 +50,9 @@ export function SkillsSection({ columns }: SkillsSectionProps) {
           style={{
             padding: '1.75rem',
             borderRadius: 20,
-            background: 'rgba(255, 255, 255, 0.025)',
-            border: '1px solid rgba(255, 255, 255, 0.09)',
+            background: '#ffffff',
+            border: '1px solid rgba(0, 0, 0, 0.06)',
+            boxShadow: '0 4px 18px -2px rgba(0, 0, 0, 0.04)',
             marginBottom: '2rem',
             display: 'flex',
             alignItems: 'center',
@@ -61,10 +62,10 @@ export function SkillsSection({ columns }: SkillsSectionProps) {
           }}
         >
           <div>
-            <div style={{ fontFamily: 'var(--font-mono)', fontSize: '0.75rem', color: '#f5b04c', marginBottom: 4 }}>
+            <div style={{ fontFamily: 'var(--font-mono)', fontSize: '0.75rem', color: '#d97706', marginBottom: 4, fontWeight: 600 }}>
               CORE ARSENAL
             </div>
-            <div style={{ fontSize: '1.1rem', fontWeight: 600, color: '#ececea' }}>
+            <div style={{ fontSize: '1.1rem', fontWeight: 600, color: '#1d1d1f' }}>
               Daily production tools & modern runtimes
             </div>
           </div>
@@ -78,10 +79,10 @@ export function SkillsSection({ columns }: SkillsSectionProps) {
                   fontSize: '0.8rem',
                   padding: '6px 14px',
                   borderRadius: 999,
-                  background: tech.highlight ? 'rgba(245, 176, 76, 0.1)' : 'rgba(255, 255, 255, 0.05)',
-                  border: `1px solid ${tech.highlight ? 'rgba(245, 176, 76, 0.3)' : 'rgba(255, 255, 255, 0.1)'}`,
-                  color: tech.highlight ? '#f5b04c' : '#ececea',
-                  fontWeight: tech.highlight ? 600 : 400,
+                  background: tech.highlight ? 'rgba(217, 119, 6, 0.08)' : '#f5f5f7',
+                  border: `1px solid ${tech.highlight ? 'rgba(217, 119, 6, 0.25)' : 'rgba(0, 0, 0, 0.06)'}`,
+                  color: tech.highlight ? '#b45309' : '#1d1d1f',
+                  fontWeight: tech.highlight ? 600 : 500,
                 }}
               >
                 {tech.name}
@@ -110,14 +111,15 @@ export function SkillsSection({ columns }: SkillsSectionProps) {
                 style={{
                   padding: '1.5rem',
                   borderRadius: 18,
-                  background: 'rgba(255, 255, 255, 0.018)',
-                  border: '1px solid rgba(255, 255, 255, 0.07)',
+                  background: '#ffffff',
+                  border: '1px solid rgba(0, 0, 0, 0.06)',
+                  boxShadow: '0 2px 10px rgba(0, 0, 0, 0.02)',
                   height: '100%',
                 }}
               >
                 <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: '1.25rem' }}>
-                  <Icon size={16} style={{ color: '#f5b04c' }} />
-                  <span style={{ fontSize: '0.92rem', fontWeight: 600, color: '#ececea', letterSpacing: '-0.01em' }}>
+                  <Icon size={16} style={{ color: '#d97706' }} />
+                  <span style={{ fontSize: '0.92rem', fontWeight: 600, color: '#1d1d1f', letterSpacing: '-0.01em' }}>
                     {col.label}
                   </span>
                 </div>
@@ -129,11 +131,12 @@ export function SkillsSection({ columns }: SkillsSectionProps) {
                       style={{
                         fontFamily: 'var(--font-mono)',
                         fontSize: '0.74rem',
-                        color: 'rgba(255, 255, 255, 0.7)',
+                        color: '#424245',
                         padding: '4px 10px',
-                        background: 'rgba(255, 255, 255, 0.03)',
-                        border: '1px solid rgba(255, 255, 255, 0.08)',
+                        background: '#f5f5f7',
+                        border: '1px solid rgba(0, 0, 0, 0.05)',
                         borderRadius: 6,
+                        fontWeight: 500,
                       }}
                     >
                       {s.name}

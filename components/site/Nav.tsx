@@ -2,10 +2,9 @@
 
 import Link from 'next/link'
 import { useEffect, useState } from 'react'
-import { AnimatePresence, motion, useReducedMotion } from 'framer-motion'
+import { AnimatePresence, motion } from 'framer-motion'
 import { Menu, X, FileText } from 'lucide-react'
 import { ThemeToggle } from '@/components/site/ThemeToggle'
-import { DARK_THEME_SCOPE } from '@/lib/dark-theme'
 
 interface NavLink {
   label: string
@@ -23,14 +22,12 @@ const LINKS: NavLink[] = [
 interface NavProps {
   name: string
   resumeUrl?: string | null
-  /** Force the dark palette regardless of theme (used on the dark homepage). */
   dark?: boolean
 }
 
-export function Nav({ name, resumeUrl, dark }: NavProps) {
+export function Nav({ name, resumeUrl }: NavProps) {
   const [scrolled, setScrolled] = useState(false)
   const [open, setOpen] = useState(false)
-  const reduce = useReducedMotion()
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 20)
@@ -46,12 +43,11 @@ export function Nav({ name, resumeUrl, dark }: NavProps) {
     }
   }, [open])
 
-  const [first, ...rest] = name.split(' ')
+  const [first] = name.split(' ')
 
   return (
     <header
       style={{
-        ...(dark ? DARK_THEME_SCOPE : undefined),
         position: 'fixed',
         top: 'clamp(0.75rem, 1.5vh, 1.25rem)',
         left: 0,
@@ -73,12 +69,14 @@ export function Nav({ name, resumeUrl, dark }: NavProps) {
           padding: '7px 12px 7px 18px',
           borderRadius: 9999,
           background: scrolled
-            ? 'rgba(12, 12, 14, 0.82)'
-            : 'rgba(15, 15, 18, 0.65)',
-          backdropFilter: 'blur(20px) saturate(190%)',
-          WebkitBackdropFilter: 'blur(20px) saturate(190%)',
-          border: '1px solid rgba(255, 255, 255, 0.12)',
-          boxShadow: '0 20px 40px -15px rgba(0, 0, 0, 0.7), 0 0 0 1px rgba(255, 255, 255, 0.05)',
+            ? 'rgba(255, 255, 255, 0.88)'
+            : 'rgba(255, 255, 255, 0.72)',
+          backdropFilter: 'blur(24px) saturate(180%)',
+          WebkitBackdropFilter: 'blur(24px) saturate(180%)',
+          border: '1px solid rgba(0, 0, 0, 0.08)',
+          boxShadow: scrolled
+            ? '0 12px 32px -4px rgba(0, 0, 0, 0.08), 0 1px 2px rgba(0, 0, 0, 0.04)'
+            : '0 8px 24px -4px rgba(0, 0, 0, 0.04), 0 1px 2px rgba(0, 0, 0, 0.03)',
           transition: 'all 300ms cubic-bezier(0.16, 1, 0.3, 1)',
         }}
       >
@@ -93,7 +91,7 @@ export function Nav({ name, resumeUrl, dark }: NavProps) {
             fontSize: '0.95rem',
             fontWeight: 700,
             letterSpacing: '-0.02em',
-            color: '#ececea',
+            color: '#1d1d1f',
             textDecoration: 'none',
           }}
         >
@@ -102,12 +100,12 @@ export function Nav({ name, resumeUrl, dark }: NavProps) {
               width: 8,
               height: 8,
               borderRadius: 999,
-              background: '#34d399',
-              boxShadow: '0 0 10px #34d399',
+              background: '#10b981',
+              boxShadow: '0 0 8px rgba(16, 185, 129, 0.6)',
             }}
           />
           <span>{first}</span>
-          <span style={{ color: '#f5b04c' }}>.</span>
+          <span style={{ color: '#d97706' }}>.</span>
         </Link>
 
         {/* Desktop links */}
@@ -118,7 +116,7 @@ export function Nav({ name, resumeUrl, dark }: NavProps) {
             alignItems: 'center',
             gap: 4,
             paddingLeft: 12,
-            borderLeft: '1px solid rgba(255, 255, 255, 0.1)',
+            borderLeft: '1px solid rgba(0, 0, 0, 0.08)',
           }}
         >
           {LINKS.map((l) => (
@@ -128,7 +126,7 @@ export function Nav({ name, resumeUrl, dark }: NavProps) {
               style={{
                 fontFamily: 'var(--font-mono)',
                 fontSize: '0.78rem',
-                color: 'rgba(255, 255, 255, 0.65)',
+                color: '#6e6e73',
                 fontWeight: 500,
                 padding: '6px 12px',
                 borderRadius: 999,
@@ -156,11 +154,11 @@ export function Nav({ name, resumeUrl, dark }: NavProps) {
                 display: 'inline-flex',
                 alignItems: 'center',
                 gap: 6,
-                padding: '6px 13px',
+                padding: '6px 14px',
                 borderRadius: 999,
-                background: 'rgba(255, 255, 255, 0.08)',
-                border: '1px solid rgba(255, 255, 255, 0.12)',
-                color: '#ececea',
+                background: 'rgba(0, 0, 0, 0.05)',
+                border: '1px solid rgba(0, 0, 0, 0.08)',
+                color: '#1d1d1f',
                 fontFamily: 'var(--font-mono)',
                 fontSize: '0.76rem',
                 fontWeight: 500,
@@ -183,7 +181,7 @@ export function Nav({ name, resumeUrl, dark }: NavProps) {
               padding: 6,
               background: 'transparent',
               border: 'none',
-              color: '#ececea',
+              color: '#1d1d1f',
               cursor: 'pointer',
               display: 'none',
             }}
@@ -209,11 +207,11 @@ export function Nav({ name, resumeUrl, dark }: NavProps) {
               maxWidth: 420,
               marginInline: 'auto',
               borderRadius: 24,
-              background: 'rgba(16, 16, 20, 0.95)',
+              background: 'rgba(255, 255, 255, 0.95)',
               backdropFilter: 'blur(24px)',
-              border: '1px solid rgba(255, 255, 255, 0.15)',
+              border: '1px solid rgba(0, 0, 0, 0.08)',
               padding: '1.5rem',
-              boxShadow: '0 30px 60px rgba(0, 0, 0, 0.8)',
+              boxShadow: '0 30px 60px rgba(0, 0, 0, 0.12)',
               pointerEvents: 'auto',
               zIndex: 60,
             }}
@@ -226,9 +224,9 @@ export function Nav({ name, resumeUrl, dark }: NavProps) {
                   onClick={() => setOpen(false)}
                   style={{
                     fontFamily: 'var(--font-display)',
-                    fontSize: '1.25rem',
+                    fontSize: '1.2rem',
                     fontWeight: 600,
-                    color: '#ececea',
+                    color: '#1d1d1f',
                     padding: '10px 14px',
                     borderRadius: 12,
                     textDecoration: 'none',
@@ -238,7 +236,7 @@ export function Nav({ name, resumeUrl, dark }: NavProps) {
                   }}
                 >
                   <span>{l.label}</span>
-                  <span style={{ fontSize: '0.8rem', color: '#f5b04c', fontFamily: 'var(--font-mono)' }}>→</span>
+                  <span style={{ fontSize: '0.8rem', color: '#d97706', fontFamily: 'var(--font-mono)' }}>→</span>
                 </Link>
               ))}
 
@@ -256,8 +254,8 @@ export function Nav({ name, resumeUrl, dark }: NavProps) {
                     gap: 8,
                     padding: '12px',
                     borderRadius: 12,
-                    background: '#ececea',
-                    color: '#0b0b0c',
+                    background: '#1d1d1f',
+                    color: '#ffffff',
                     fontFamily: 'var(--font-mono)',
                     fontSize: '0.88rem',
                     fontWeight: 600,
