@@ -1,6 +1,7 @@
 import Image from 'next/image'
 import Link from 'next/link'
-import { ArrowLeft, Github, ExternalLink, Globe, Smartphone } from 'lucide-react'
+import { ArrowLeft, ExternalLink, Globe, Smartphone } from 'lucide-react'
+import { Github } from '@/components/ui/BrandIcons'
 import { Container } from '@/components/site/ui/Container'
 import { TechTag } from '@/components/site/ui/TechTag'
 import { ProjectGallery } from '@/components/site/projects/ProjectGallery'

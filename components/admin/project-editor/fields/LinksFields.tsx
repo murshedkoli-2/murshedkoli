@@ -1,13 +1,14 @@
 'use client'
 
-import { Github, ExternalLink, Globe, Link as LinkIcon, Smartphone } from 'lucide-react'
+import { ExternalLink, Globe, Link as LinkIcon, Smartphone } from 'lucide-react'
+import { Github } from '@/components/ui/BrandIcons'
 import type { FieldGroupProps, LinksValue } from './types'
 
 interface LinkField {
   key: keyof LinksValue
   enabledKey: keyof LinksValue
   label: string
-  icon: typeof Github
+  icon: React.ComponentType<{ size?: number | string; className?: string; strokeWidth?: number | string; style?: React.CSSProperties }>
   placeholder: string
 }
 

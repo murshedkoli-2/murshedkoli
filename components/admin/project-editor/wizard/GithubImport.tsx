@@ -2,7 +2,8 @@
 
 import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { Github, Download, Check } from 'lucide-react'
+import { Download, Check } from 'lucide-react'
+import { Github } from '@/components/ui/BrandIcons'
 import { toast } from 'sonner'
 import { adminFetch } from '@/lib/admin/adminFetch'
 import { generateId } from '@/lib/utils/project-helpers'

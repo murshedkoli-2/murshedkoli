@@ -1,5 +1,6 @@
 import Link from 'next/link'
-import { Github, Linkedin, Twitter, Facebook, Youtube, Globe, Mail } from 'lucide-react'
+import { Globe, Mail } from 'lucide-react'
+import { Github, Linkedin, Twitter, Facebook, Youtube } from '@/components/ui/BrandIcons'
 import type { SocialLinks } from '@/lib/site-data'
 import { Container } from '@/components/site/ui/Container'
 import { DARK_THEME_SCOPE } from '@/lib/dark-theme'
@@ -13,7 +14,7 @@ interface FooterProps {
 }
 
 
-const SOCIAL_ICONS: Record<keyof SocialLinks, typeof Github> = {
+const SOCIAL_ICONS: Record<keyof SocialLinks, React.ComponentType<{ size?: number | string; className?: string; strokeWidth?: number | string }>> = {
   github: Github,
   linkedin: Linkedin,
   twitter: Twitter,
