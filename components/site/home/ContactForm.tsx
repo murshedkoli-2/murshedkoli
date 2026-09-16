@@ -70,20 +70,20 @@ export function ContactForm() {
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }} className="contact-form-row">
         <div>
           <label style={labelStyle} htmlFor="cf-name">name *</label>
-          <input id="cf-name" name="name" type="text" required style={inputStyle} autoComplete="name" />
+          <input id="cf-name" name="name" type="text" required style={inputStyle} autoComplete="name" suppressHydrationWarning />
         </div>
         <div>
           <label style={labelStyle} htmlFor="cf-email">email *</label>
-          <input id="cf-email" name="email" type="email" required style={inputStyle} autoComplete="email" />
+          <input id="cf-email" name="email" type="email" required style={inputStyle} autoComplete="email" suppressHydrationWarning />
         </div>
       </div>
       <div>
         <label style={labelStyle} htmlFor="cf-subject">subject</label>
-        <input id="cf-subject" name="subject" type="text" style={inputStyle} />
+        <input id="cf-subject" name="subject" type="text" style={inputStyle} suppressHydrationWarning />
       </div>
       <div>
         <label style={labelStyle} htmlFor="cf-message">message *</label>
-        <textarea id="cf-message" name="message" required rows={5} style={{ ...inputStyle, resize: 'vertical' }} />
+        <textarea id="cf-message" name="message" required rows={5} style={{ ...inputStyle, resize: 'vertical' }} suppressHydrationWarning />
       </div>
       <button
         type="submit"

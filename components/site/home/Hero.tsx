@@ -312,13 +312,14 @@ export function Hero({ profile, stats }: HeroProps) {
               }}
             >
               <Image
-                src={profile.heroPortrait || profile.avatar || '/developer.jpg'}
+                src={profile.heroPortrait || profile.avatar || '/murshed.jpg'}
                 alt={profile.name}
                 fill
                 priority
                 sizes="(max-width: 900px) 90vw, 440px"
                 style={{
                   objectFit: 'cover',
+                  objectPosition: 'center 15%',
                 }}
               />
               {/* Subtle glass tag at bottom */}

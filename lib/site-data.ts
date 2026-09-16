@@ -35,6 +35,8 @@ export const DEFAULT_PROFILE: PublicProfile = {
   email: 'murshed@example.com',
   phone: '+1 (555) 123-4567',
   location: 'Remote',
+  avatar: '/murshed.jpg',
+  heroPortrait: '/murshed.jpg',
   socialLinks: {
     github: 'https://github.com/murshedkoli',
     linkedin: 'https://linkedin.com/in/murshedkoli',
