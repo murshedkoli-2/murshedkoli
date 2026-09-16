@@ -1,6 +1,7 @@
 'use client'
 
 import { useCallback, useEffect, useMemo, useState } from 'react'
+import Link from 'next/link'
 import { toast } from 'sonner'
 import { AdminShell } from '@/components/admin/AdminShell'
 import { confirmDialog } from '@/components/ui/ConfirmDialog'
@@ -22,6 +23,55 @@ interface TourLocation {
   notes?: string | null
   visited: boolean
   order: number
+}
+
+interface SavingsAccount {
+  id?: string
+  name: string
+  currency: string
+  amount: number
+}
+
+/**
+ * Calculates the estimated minimum budget in BDT for a destination.
+ * Parses strings like "BDT 80,000 - 150,000" or "$1,200".
+ */
+export function getEstimatedMinCostBDT(
+  c?: CountryData | string | null,
+  region = 'international',
+  notes?: string | null
+): number {
+  const str = typeof c === 'string' ? c : c?.estimatedCost?.totalEstimate
+  if (str) {
+    const bdtMatch = str.match(/BDT\s*([\d,]+)/i)
+    if (bdtMatch) {
+      const val = parseInt(bdtMatch[1].replace(/,/g, ''), 10)
+      if (!isNaN(val) && val > 0) return val
+    }
+    const usdMatch = str.match(/(?:USD|\$)\s*([\d,]+)/i)
+    if (usdMatch) {
+      const val = parseInt(usdMatch[1].replace(/,/g, ''), 10)
+      if (!isNaN(val) && val > 0) return val * 122
+    }
+    const numMatch = str.match(/([\d]{1,3}(?:,\d{3})+|\d{4,})/)
+    if (numMatch) {
+      const val = parseInt(numMatch[1].replace(/,/g, ''), 10)
+      if (!isNaN(val) && val > 0) return val
+    }
+  }
+
+  if (region === 'bangladesh') {
+    if (notes) {
+      const match = notes.match(/(\d[\d,]{3,})/)
+      if (match) {
+        const val = parseInt(match[1].replace(/,/g, ''), 10)
+        if (!isNaN(val) && val > 0) return val
+      }
+    }
+    return 10000 // Standard domestic budget estimate in BDT
+  }
+
+  return 90000
 }
 
 type ActiveTab = 'bangladesh' | 'international' | 'completed'
@@ -46,6 +96,7 @@ function emptyLocation(region: 'bangladesh' | 'international' | 'completed', ord
 export default function TourManager() {
   const ready = useAdminGuard()
   const [locations, setLocations] = useState<TourLocation[]>([])
+  const [savingsAccounts, setSavingsAccounts] = useState<SavingsAccount[]>([])
   const [editing, setEditing] = useState<TourLocation | null>(null)
   const [saving, setSaving] = useState(false)
 
@@ -60,12 +111,18 @@ export default function TourManager() {
   const [visaFilter, setVisaFilter] = useState<VisaFilter>('all')
   const [continentFilter, setContinentFilter] = useState<ContinentFilter>('all')
   const [searchQuery, setSearchQuery] = useState('')
+  const [showAffordableOnly, setShowAffordableOnly] = useState(false)
 
   const load = useCallback(async () => {
     try {
-      const res = await adminFetch('/api/tours')
-      if (res.ok) setLocations(await res.json())
+      const [toursRes, savingsRes] = await Promise.all([
+        adminFetch('/api/tours'),
+        adminFetch('/api/savings'),
+      ])
+      if (toursRes.ok) setLocations(await toursRes.json())
       else toast.error('Could not load tour locations.')
+
+      if (savingsRes.ok) setSavingsAccounts(await savingsRes.json())
     } catch (error) {
       console.error('Tour load failed:', error)
       toast.error('Could not load tour locations.')
@@ -75,6 +132,36 @@ export default function TourManager() {
   useEffect(() => {
     if (ready) load()
   }, [ready, load])
+
+  // Savings & Currency Aggregation
+  const totalSavingsBDT = useMemo(() => {
+    return savingsAccounts.reduce((acc, a) => {
+      const curr = (a.currency || 'BDT').toUpperCase()
+      const amt = Number(a.amount) || 0
+      if (curr === 'USD') return acc + amt * 122
+      if (curr === 'EUR') return acc + amt * 132
+      if (curr === 'GBP') return acc + amt * 155
+      return acc + amt
+    }, 0)
+  }, [savingsAccounts])
+
+  // Affordable Destination Counts
+  const affordableIntlCount = useMemo(() => {
+    if (totalSavingsBDT <= 0) return 0
+    return WORLD_COUNTRIES.filter((c) => {
+      const cost = getEstimatedMinCostBDT(c)
+      return totalSavingsBDT >= cost
+    }).length
+  }, [totalSavingsBDT])
+
+  const affordableBDCount = useMemo(() => {
+    if (totalSavingsBDT <= 0) return 0
+    return locations.filter((l) => {
+      if (l.region !== 'bangladesh' || l.visited) return false
+      const cost = getEstimatedMinCostBDT(null, 'bangladesh', l.notes)
+      return totalSavingsBDT >= cost
+    }).length
+  }, [locations, totalSavingsBDT])
 
   // Counts
   const plannedBDCount = useMemo(() => locations.filter((l) => l.region === 'bangladesh' && !l.visited).length, [locations])
@@ -113,6 +200,12 @@ export default function TourManager() {
       // Continent Filter
       if (continentFilter !== 'all' && country.continent !== continentFilter) return false
 
+      // Affordable with Savings Filter
+      if (showAffordableOnly) {
+        const cost = getEstimatedMinCostBDT(country)
+        if (totalSavingsBDT <= 0 || totalSavingsBDT < cost) return false
+      }
+
       // Search Query
       if (searchQuery.trim()) {
         const q = searchQuery.toLowerCase().trim()
@@ -134,18 +227,32 @@ export default function TourManager() {
     }
 
     return filtered.sort((a, b) => {
+      // If affordable filter is active, sort by lower cost first
+      if (showAffordableOnly) {
+        const costA = getEstimatedMinCostBDT(a.country)
+        const costB = getEstimatedMinCostBDT(b.country)
+        if (costA !== costB) return costA - costB
+      }
+
       const pA = priorityMap[a.country.visaCategory] || 99
       const pB = priorityMap[b.country.visaCategory] || 99
       if (pA !== pB) return pA - pB
       return a.country.name.localeCompare(b.country.name)
     })
-  }, [dbIntlMap, visaFilter, continentFilter, searchQuery])
+  }, [dbIntlMap, visaFilter, continentFilter, searchQuery, showAffordableOnly, totalSavingsBDT])
 
   // Uncompleted Bangladesh Spots (Excludes Completed Tours!)
   const visibleBDLocations = useMemo(() => {
     return locations.filter((l) => {
       if (l.region !== 'bangladesh') return false
       if (l.visited) return false // Exclude completed tours!
+
+      // Affordable with Savings Filter
+      if (showAffordableOnly) {
+        const cost = getEstimatedMinCostBDT(null, 'bangladesh', l.notes)
+        if (totalSavingsBDT <= 0 || totalSavingsBDT < cost) return false
+      }
+
       if (searchQuery.trim()) {
         const q = searchQuery.toLowerCase().trim()
         const matchName = l.name.toLowerCase().includes(q)
@@ -154,7 +261,7 @@ export default function TourManager() {
       }
       return true
     })
-  }, [locations, searchQuery])
+  }, [locations, searchQuery, showAffordableOnly, totalSavingsBDT])
 
   // Completed Tours (Displayed ONLY on Completed Page)
   const completedTours = useMemo(() => {
@@ -352,6 +459,100 @@ export default function TourManager() {
         </button>
       }
     >
+      {/* ── SAVINGS & TOUR READINESS BANNER ─────────────────────────────── */}
+      <div
+        style={{
+          background: 'var(--card-bg)',
+          border: '1px solid var(--card-border)',
+          borderRadius: 14,
+          padding: '14px 18px',
+          marginBottom: 16,
+          boxShadow: 'var(--card-shadow)',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          gap: 16,
+          flexWrap: 'wrap',
+        }}
+      >
+        <div style={{ display: 'flex', alignItems: 'center', gap: 14, flexWrap: 'wrap' }}>
+          <div
+            style={{
+              width: 38,
+              height: 38,
+              borderRadius: 10,
+              background: 'rgba(16, 185, 129, 0.12)',
+              border: '1px solid rgba(16, 185, 129, 0.3)',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              fontSize: 18,
+              color: '#10b981',
+              fontWeight: 700,
+            }}
+          >
+            ৳
+          </div>
+          <div>
+            <div style={{ fontSize: 11, fontFamily: 'var(--font-mono)', color: 'var(--ink-muted)', textTransform: 'uppercase' }}>
+              // SAVINGS & TRAVEL READINESS
+            </div>
+            <div style={{ fontSize: 15, fontWeight: 700, color: 'var(--ink)', display: 'flex', alignItems: 'center', gap: 8 }}>
+              <span>৳ {totalSavingsBDT.toLocaleString()} BDT Total Savings</span>
+              <span
+                style={{
+                  fontSize: 11.5,
+                  fontWeight: 600,
+                  color: '#10b981',
+                  background: 'rgba(16, 185, 129, 0.1)',
+                  padding: '2px 8px',
+                  borderRadius: 999,
+                  border: '1px solid rgba(16, 185, 129, 0.25)',
+                }}
+              >
+                🟢 {affordableIntlCount + affordableBDCount} destinations affordable right now
+              </span>
+            </div>
+          </div>
+        </div>
+
+        <div style={{ display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap' }}>
+          <button
+            className={`adm-btn ${showAffordableOnly ? 'active' : ''}`}
+            onClick={() => setShowAffordableOnly(!showAffordableOnly)}
+            style={{
+              fontSize: 12,
+              fontWeight: 600,
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: 6,
+              background: showAffordableOnly ? 'rgba(16, 185, 129, 0.12)' : 'transparent',
+              borderColor: showAffordableOnly ? '#10b981' : 'var(--line)',
+              color: showAffordableOnly ? '#10b981' : 'var(--ink)',
+            }}
+          >
+            <span
+              style={{
+                width: 7,
+                height: 7,
+                borderRadius: 999,
+                background: '#10b981',
+                boxShadow: showAffordableOnly ? '0 0 6px #10b981' : 'none',
+              }}
+            />
+            <span>{showAffordableOnly ? 'Showing Affordable Only' : 'Filter by Current Savings'}</span>
+          </button>
+
+          <Link
+            href="/admin/savings"
+            className="adm-btn"
+            style={{ fontSize: 12, textDecoration: 'none', padding: '6px 12px' }}
+          >
+            Manage Savings ↗
+          </Link>
+        </div>
+      </div>
+
       <div className="adm-panel">
         {/* Top Main Navigation Tabs */}
         <div className="adm-editor-tabs" style={{ padding: '0 18px', background: 'var(--panel)', borderBottom: '1px solid var(--border)' }}>
@@ -568,43 +769,70 @@ export default function TourManager() {
               {visibleBDLocations.length === 0 ? (
                 <div className="adm-empty">No unvisited Bangladesh spots found. Add a new spot above!</div>
               ) : (
-                visibleBDLocations.map((l) => (
-                  <div className="adm-list-row" key={l.id}>
-                    <span className="adm-cat" style={{ fontSize: 13, padding: '3px 8px' }}>
-                      🇧🇩 BD
-                    </span>
+                visibleBDLocations.map((l) => {
+                  const costBDT = getEstimatedMinCostBDT(null, 'bangladesh', l.notes)
+                  const isAffordable = totalSavingsBDT > 0 && totalSavingsBDT >= costBDT
 
-                    <div className="grow">
-                      <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                        <b style={{ fontSize: 14 }}>{l.name}</b>
-                        <span className="adm-pill draft" style={{ fontSize: 10, padding: '1px 6px' }}>
-                          Planned
-                        </span>
+                  return (
+                    <div className="adm-list-row" key={l.id}>
+                      <span className="adm-cat" style={{ fontSize: 13, padding: '3px 8px' }}>
+                        🇧🇩 BD
+                      </span>
+
+                      <div className="grow">
+                        <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
+                          <b style={{ fontSize: 14 }}>{l.name}</b>
+                          
+                          {isAffordable ? (
+                            <span
+                              className="adm-pill live"
+                              style={{
+                                fontSize: 10.5,
+                                padding: '2px 8px',
+                                background: 'rgba(16, 185, 129, 0.12)',
+                                color: '#10b981',
+                                border: '1px solid rgba(16, 185, 129, 0.35)',
+                                display: 'inline-flex',
+                                alignItems: 'center',
+                                gap: 5,
+                                fontWeight: 600,
+                              }}
+                              title={`Affordable with current savings of ৳${totalSavingsBDT.toLocaleString()} BDT! Estimated: ~৳${costBDT.toLocaleString()} BDT`}
+                            >
+                              <span style={{ width: 6, height: 6, borderRadius: 999, background: '#10b981', boxShadow: '0 0 6px #10b981' }} />
+                              <span>🟢 Affordable with Savings</span>
+                            </span>
+                          ) : (
+                            <span className="adm-pill draft" style={{ fontSize: 10, padding: '1px 6px' }}>
+                              Planned
+                            </span>
+                          )}
+                        </div>
+
+                        {l.notes ? (
+                          <div className="sub" style={{ fontSize: 12, color: 'var(--ink-muted)', marginTop: 3 }}>
+                            {l.notes}
+                          </div>
+                        ) : null}
                       </div>
 
-                      {l.notes ? (
-                        <div className="sub" style={{ fontSize: 12, color: 'var(--ink-muted)', marginTop: 3 }}>
-                          {l.notes}
-                        </div>
-                      ) : null}
-                    </div>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                        <button
+                          className="adm-btn amber"
+                          style={{ padding: '5px 11px', fontSize: 11 }}
+                          onClick={() => markBDCompleted(l)}
+                          title="Mark Visited (Moves directly to Completed Page)"
+                        >
+                          ✓ Mark Completed
+                        </button>
 
-                    <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                      <button
-                        className="adm-btn amber"
-                        style={{ padding: '5px 11px', fontSize: 11 }}
-                        onClick={() => markBDCompleted(l)}
-                        title="Mark Visited (Moves directly to Completed Page)"
-                      >
-                        ✓ Mark Completed
-                      </button>
-
-                      <button className="adm-icon-btn" onClick={() => setEditing(l)} title="Edit Spot">
-                        ✎
-                      </button>
+                        <button className="adm-icon-btn" onClick={() => setEditing(l)} title="Edit Spot">
+                          ✎
+                        </button>
+                      </div>
                     </div>
-                  </div>
-                ))
+                  )
+                })
               )}
             </>
           )}
@@ -617,6 +845,8 @@ export default function TourManager() {
               ) : (
                 visibleCountries.map(({ country: c, dbItem, isPlanned }) => {
                   const visaMeta = VISA_CATEGORY_META[c.visaCategory]
+                  const costBDT = getEstimatedMinCostBDT(c.estimatedCost.totalEstimate)
+                  const isAffordable = totalSavingsBDT > 0 && totalSavingsBDT >= costBDT
 
                   return (
                     <div className="adm-list-row" key={c.code}>
@@ -640,10 +870,39 @@ export default function TourManager() {
                               📌 Planned
                             </span>
                           ) : null}
+
+                          {isAffordable ? (
+                            <span
+                              className="adm-pill live"
+                              style={{
+                                fontSize: 10.5,
+                                padding: '2px 8px',
+                                background: 'rgba(16, 185, 129, 0.12)',
+                                color: '#10b981',
+                                border: '1px solid rgba(16, 185, 129, 0.35)',
+                                display: 'inline-flex',
+                                alignItems: 'center',
+                                gap: 5,
+                                fontWeight: 600,
+                              }}
+                              title={`Affordable with current savings of ৳${totalSavingsBDT.toLocaleString()} BDT! Estimated: ~৳${costBDT.toLocaleString()} BDT`}
+                            >
+                              <span style={{ width: 6, height: 6, borderRadius: 999, background: '#10b981', boxShadow: '0 0 6px #10b981' }} />
+                              <span>🟢 Affordable (~৳{costBDT.toLocaleString()})</span>
+                            </span>
+                          ) : (
+                            <span
+                              className="adm-pill draft"
+                              style={{ fontSize: 10, padding: '1px 6px' }}
+                              title={`Requires ~৳${costBDT.toLocaleString()} BDT`}
+                            >
+                              ~৳{costBDT.toLocaleString()}
+                            </span>
+                          )}
                         </div>
 
                         <div className="sub" style={{ fontSize: 12, color: 'var(--ink-muted)', marginTop: 3 }}>
-                          Cap: {c.capital} · Best: {c.bestTime} · Visa: {c.visaNotes}
+                          Cap: {c.capital} · Best: {c.bestTime} · Visa: {c.visaNotes} · Est: {c.estimatedCost.totalEstimate}
                         </div>
                       </div>
 
@@ -930,6 +1189,53 @@ export default function TourManager() {
               {/* TAB 3: ESTIMATED COSTS & FLIGHTS */}
               {detailsTab === 'cost' && (
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
+                  {/* Real-time Savings vs Trip Budget Comparison */}
+                  {(() => {
+                    const costBDT = getEstimatedMinCostBDT(selectedCountry.estimatedCost.totalEstimate)
+                    const isFunded = totalSavingsBDT > 0 && totalSavingsBDT >= costBDT
+                    const diff = totalSavingsBDT - costBDT
+
+                    return (
+                      <div
+                        style={{
+                          gridColumn: '1 / -1',
+                          background: isFunded ? 'rgba(16, 185, 129, 0.08)' : 'rgba(239, 68, 68, 0.06)',
+                          border: `1px solid ${isFunded ? 'rgba(16, 185, 129, 0.35)' : 'rgba(239, 68, 68, 0.25)'}`,
+                          borderRadius: 10,
+                          padding: '14px 16px',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'space-between',
+                          flexWrap: 'wrap',
+                          gap: 12,
+                        }}
+                      >
+                        <div>
+                          <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                            <span style={{ fontSize: 18 }}>{isFunded ? '🟢' : '🟡'}</span>
+                            <b style={{ fontSize: 14, color: isFunded ? '#10b981' : '#f59e0b' }}>
+                              {isFunded ? 'Fully Affordable with Your Current Savings!' : 'Additional Savings Needed for This Trip'}
+                            </b>
+                          </div>
+                          <div style={{ fontSize: 12.5, color: 'var(--ink-muted)', marginTop: 4 }}>
+                            {isFunded
+                              ? `Your available savings of ৳${totalSavingsBDT.toLocaleString()} BDT cover the estimated minimum budget of ৳${costBDT.toLocaleString()} BDT with a surplus of +৳${diff.toLocaleString()} BDT!`
+                              : `Trip minimum estimate is ~৳${costBDT.toLocaleString()} BDT. Current savings: ৳${totalSavingsBDT.toLocaleString()} BDT (Shortfall: -৳${Math.abs(diff).toLocaleString()} BDT).`}
+                          </div>
+                        </div>
+
+                        <div style={{ textAlign: 'right' }}>
+                          <div style={{ fontSize: 11, textTransform: 'uppercase', color: 'var(--muted)', fontWeight: 600 }}>
+                            Savings Match Status
+                          </div>
+                          <div style={{ fontSize: 14, fontWeight: 700, color: isFunded ? '#10b981' : '#ef4444', marginTop: 2 }}>
+                            {isFunded ? '✓ 100% Ready to Travel' : `${Math.round(totalSavingsBDT > 0 ? (totalSavingsBDT / costBDT) * 100 : 0)}% Funded`}
+                          </div>
+                        </div>
+                      </div>
+                    )
+                  })()}
+
                   <div style={{ background: 'var(--surface-2)', border: '1px solid var(--border)', borderRadius: 10, padding: 14 }}>
                     <div style={{ fontSize: 11, textTransform: 'uppercase', color: 'var(--muted)', fontWeight: 600 }}>
                       ✈️ Airfare from Dhaka (DAC)
