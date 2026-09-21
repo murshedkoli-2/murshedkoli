@@ -1,3 +1,5 @@
+import { publicProjectSelect, toPublicProject } from '@/lib/projects/public'
+import { PUBLIC_SETTING_KEYS } from '@/lib/settings'
 import { cached } from '@/lib/cache'
 import { prisma } from '@/lib/prisma'
 
@@ -46,7 +48,7 @@ export const DEFAULT_PROFILE: PublicProfile = {
 
 export const getSettingsMap = cached('settings', async (): Promise<PublicSettings> => {
   try {
-    const settings = await prisma.settings.findMany()
+    const settings = await prisma.settings.findMany({ where: { key: { in: [...PUBLIC_SETTING_KEYS] } } })
     return settings.reduce<Record<string, unknown>>((acc, item) => {
       acc[item.key] = item.value
       return acc
@@ -116,6 +118,7 @@ export const getHomePageData = cached('homepage-data', async () => {
       }),
       prisma.project.findMany({
         where: { publishStatus: 'published' },
+        select: publicProjectSelect,
         orderBy: [{ featured: 'desc' }, { order: 'asc' }, { createdAt: 'desc' }],
       }),
     ])
@@ -127,7 +130,7 @@ export const getHomePageData = cached('homepage-data', async () => {
       experiences,
       education,
       certifications,
-      projects,
+      projects: projects.map(toPublicProject),
     }
   } catch (error) {
     console.error('Error fetching homepage data:', error)

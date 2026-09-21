@@ -8,11 +8,11 @@ const PROJECT_TYPES = [
   { value: 'android', label: 'Android', icon: Smartphone, desc: 'Installed on a phone' },
   { value: 'desktop', label: 'Desktop', icon: Laptop, desc: 'Native desktop app' },
   { value: 'api', label: 'Backend', icon: Server, desc: 'Service or API, no UI' },
-]
+] as const
 
 interface TypeStepProps {
   value: string
-  onChange: (value: string) => void
+  onChange: (value: 'webapp' | 'android' | 'desktop' | 'api') => void
 }
 
 export function TypeStep({ value, onChange }: TypeStepProps) {

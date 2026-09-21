@@ -146,7 +146,7 @@ export const CreateProjectSchema = z.object({
   longDescription: optionalString,
   outcome: optionalString,
   role: optionalString,
-  projectType: z.string().default('webapp'),
+  projectType: z.enum(['webapp', 'android', 'desktop', 'api']).default('webapp'),
   lifecycleStatus: ProjectLifecycleStatus.default('idea'),
   publishStatus: z.enum(['draft', 'published', 'archived']).default('draft'),
   coverImage: optionalString,
@@ -161,13 +161,13 @@ export const CreateProjectSchema = z.object({
   apiStructure: z.array(ApiEndpointSchema).default([]),
   databaseDesign: z.array(DatabaseCollectionSchema).default([]),
   deployment: DeploymentInfoSchema.optional(),
-  githubUrl: z.string().url().optional().or(z.literal('')),
-  demoUrl: z.string().url().optional().or(z.literal('')),
-  clientProjectUrl: z.string().url().optional().or(z.literal('')),
-  adminProjectUrl: z.string().url().optional().or(z.literal('')),
-  clientLiveUrl: z.string().url().optional().or(z.literal('')),
-  adminLiveUrl: z.string().url().optional().or(z.literal('')),
-  androidDownloadUrl: z.string().url().optional().or(z.literal('')),
+  githubUrl: z.union([z.url({ protocol: /^https?$/ }), z.literal('')]).nullish(),
+  demoUrl: z.union([z.url({ protocol: /^https?$/ }), z.literal('')]).nullish(),
+  clientProjectUrl: z.union([z.url({ protocol: /^https?$/ }), z.literal('')]).nullish(),
+  adminProjectUrl: z.union([z.url({ protocol: /^https?$/ }), z.literal('')]).nullish(),
+  clientLiveUrl: z.union([z.url({ protocol: /^https?$/ }), z.literal('')]).nullish(),
+  adminLiveUrl: z.union([z.url({ protocol: /^https?$/ }), z.literal('')]).nullish(),
+  androidDownloadUrl: z.union([z.url({ protocol: /^https?$/ }), z.literal('')]).nullish(),
   githubUrlEnabled: z.boolean().default(true),
   demoUrlEnabled: z.boolean().default(true),
   clientProjectUrlEnabled: z.boolean().default(false),
@@ -181,7 +181,7 @@ export const CreateProjectSchema = z.object({
 
 // Update Project Schema
 export const UpdateProjectSchema = CreateProjectSchema.partial().extend({
-  id: z.string()
+  id: z.string().regex(/^[a-f0-9]{24}$/i, 'Invalid project ID')
 })
 
 // Update Features Schema

@@ -24,34 +24,7 @@ export function ImageUpload({ value, onChange, label, previewSize = 'medium', fo
         large: 'w-full h-48'
     }
 
-    const handleDragOver = useCallback((e: React.DragEvent) => {
-        e.preventDefault()
-        setIsDragging(true)
-    }, [])
-
-    const handleDragLeave = useCallback((e: React.DragEvent) => {
-        e.preventDefault()
-        setIsDragging(false)
-    }, [])
-
-    const handleDrop = useCallback((e: React.DragEvent) => {
-        e.preventDefault()
-        setIsDragging(false)
-
-        const files = e.dataTransfer.files
-        if (files.length > 0) {
-            uploadFile(files[0])
-        }
-    }, [])
-
-    const handleFileSelect = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
-        const files = e.target.files
-        if (files && files.length > 0) {
-            uploadFile(files[0])
-        }
-    }, [])
-
-    const uploadFile = async (file: File) => {
+    const uploadFile = useCallback(async (file: File) => {
         if (!file.type.startsWith('image/')) {
             toast.error('Please upload an image file')
             return
@@ -90,7 +63,35 @@ export function ImageUpload({ value, onChange, label, previewSize = 'medium', fo
                 fileInputRef.current.value = ''
             }
         }
-    }
+    }, [onChange])
+
+    const handleDragOver = useCallback((e: React.DragEvent) => {
+        e.preventDefault()
+        setIsDragging(true)
+    }, [])
+
+    const handleDragLeave = useCallback((e: React.DragEvent) => {
+        e.preventDefault()
+        setIsDragging(false)
+    }, [])
+
+    const handleDrop = useCallback((e: React.DragEvent) => {
+        e.preventDefault()
+        setIsDragging(false)
+
+        const files = e.dataTransfer.files
+        if (files.length > 0) {
+            uploadFile(files[0])
+        }
+    }, [uploadFile])
+
+    const handleFileSelect = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+        const files = e.target.files
+        if (files && files.length > 0) {
+            uploadFile(files[0])
+        }
+    }, [uploadFile])
+
 
     const handleRemove = () => {
         onChange('')

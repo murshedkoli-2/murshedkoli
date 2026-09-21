@@ -1,3 +1,4 @@
+import { readJson, apiError } from '@/lib/http'
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { requireAdmin } from '@/lib/auth/require-admin'
@@ -13,10 +14,7 @@ export async function GET() {
       orderBy: [{ region: 'asc' }, { order: 'asc' }, { createdAt: 'asc' }],
     })
     return NextResponse.json(tours)
-  } catch (error) {
-    console.error('Error fetching tour locations:', error)
-    return NextResponse.json({ error: 'Failed to fetch tour locations' }, { status: 500 })
-  }
+  } catch (error) { return apiError(error) }
 }
 
 export async function POST(request: NextRequest) {
@@ -24,7 +22,7 @@ export async function POST(request: NextRequest) {
   if (auth instanceof NextResponse) return auth
 
   try {
-    const body = await request.json()
+    const body = await readJson(request)
     const parsed = tourCreateSchema.safeParse(body)
     if (!parsed.success) {
       return NextResponse.json({ error: 'Invalid input', details: parsed.error.flatten() }, { status: 400 })
@@ -32,8 +30,5 @@ export async function POST(request: NextRequest) {
 
     const tour = await prisma.tourLocation.create({ data: parsed.data })
     return NextResponse.json(tour, { status: 201 })
-  } catch (error) {
-    console.error('Error creating tour location:', error)
-    return NextResponse.json({ error: 'Failed to create tour location' }, { status: 500 })
-  }
+  } catch (error) { return apiError(error) }
 }

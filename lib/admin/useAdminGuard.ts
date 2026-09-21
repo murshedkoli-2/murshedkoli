@@ -3,23 +3,18 @@
 import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 
-/**
- * Client-side admin guard shared by every manager page.
- * Redirects to /admin/login when the local session flag is absent.
- * Returns `ready` — render nothing until it is true to avoid a flash.
- */
+/** UI readiness follows the server session; localStorage is never authorization. */
 export function useAdminGuard(): boolean {
   const router = useRouter()
   const [ready, setReady] = useState(false)
-
   useEffect(() => {
-    if (typeof window === 'undefined') return
-    if (localStorage.getItem('adminLoggedIn') !== 'true') {
-      router.push('/admin/login')
-      return
-    }
-    setReady(true)
+    const controller = new AbortController()
+    fetch('/api/auth/session', { cache: 'no-store', signal: controller.signal })
+      .then((res) => {
+        if (res.ok) setReady(true)
+        else if (res.status === 401) router.replace('/admin/login')
+      }).catch(() => {})
+    return () => controller.abort()
   }, [router])
-
   return ready
 }

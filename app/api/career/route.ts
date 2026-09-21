@@ -1,9 +1,14 @@
+import { careerSchema, careerSeedSchema } from '@/lib/validations/career'
+import { readJson, apiError } from '@/lib/http'
+import { z } from 'zod'
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { requireAdmin } from '@/lib/auth/require-admin'
 import { INITIAL_CAREER_ROADMAP, generateDefaultTasksForStep } from '@/lib/data/career-roadmap'
 
 export async function GET() {
+  const auth = await requireAdmin()
+  if (auth instanceof NextResponse) return auth
   try {
     const steps = await prisma.careerStep.findMany({
       orderBy: [{ stageNumber: 'asc' }, { order: 'asc' }, { stepNumber: 'asc' }],
@@ -26,10 +31,7 @@ export async function GET() {
         readinessScore,
       },
     })
-  } catch (error) {
-    console.error('Failed to fetch career steps:', error)
-    return NextResponse.json({ error: 'Failed to fetch career steps' }, { status: 500 })
-  }
+  } catch (error) { return apiError(error) }
 }
 
 export async function POST(req: NextRequest) {
@@ -37,10 +39,11 @@ export async function POST(req: NextRequest) {
   if (auth instanceof NextResponse) return auth
 
   try {
-    const body = await req.json()
+    const raw = z.record(z.string(), z.unknown()).parse(await readJson(req))
 
     // Bulk Seed / Reset Action
-    if (body.action === 'seed') {
+    if (raw.action === 'seed') {
+      const body = careerSeedSchema.parse(raw)
       const existingCount = await prisma.careerStep.count()
       if (existingCount > 0 && !body.force) {
         return NextResponse.json(
@@ -75,6 +78,8 @@ export async function POST(req: NextRequest) {
         count: INITIAL_CAREER_ROADMAP.length,
       })
     }
+
+    const body = careerSchema.parse(raw)
 
     // Single Custom Milestone Creation
     const {
@@ -130,8 +135,5 @@ export async function POST(req: NextRequest) {
     })
 
     return NextResponse.json(step, { status: 201 })
-  } catch (error) {
-    console.error('Failed to create career step:', error)
-    return NextResponse.json({ error: 'Failed to create career step' }, { status: 500 })
-  }
+  } catch (error) { return apiError(error) }
 }

@@ -1,3 +1,4 @@
+import { requireAdmin } from '@/lib/auth/require-admin'
 import { NextRequest, NextResponse } from 'next/server'
 import { S3Client, PutObjectCommand } from '@aws-sdk/client-s3'
 import { randomUUID } from 'crypto'
@@ -53,6 +54,8 @@ async function uploadToR2(buffer: Buffer, mimeType: string, fileName: string): P
 }
 
 export async function POST(request: NextRequest) {
+  const auth = await requireAdmin()
+  if (auth instanceof NextResponse) return auth
   try {
     const formData = await request.formData()
     const file = formData.get('file') as File | null

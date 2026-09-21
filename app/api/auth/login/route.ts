@@ -1,22 +1,8 @@
+import { rateLimit, clientIp } from '@/lib/rate-limit'
+import { readJson, apiError } from '@/lib/http'
+import { z } from 'zod'
 import { NextRequest, NextResponse } from 'next/server'
 import { createSessionToken, SESSION_COOKIE, SESSION_MAX_AGE_SECONDS } from '@/lib/auth/session'
-
-// Basic in-memory rate limit (per-instance). Enough to blunt password
-// guessing; a distributed limiter can replace it later.
-const attempts = new Map<string, { count: number; first: number }>()
-const WINDOW_MS = 10 * 60 * 1000
-const MAX_ATTEMPTS = 8
-
-function rateLimited(ip: string): boolean {
-  const now = Date.now()
-  const rec = attempts.get(ip)
-  if (!rec || now - rec.first > WINDOW_MS) {
-    attempts.set(ip, { count: 1, first: now })
-    return false
-  }
-  rec.count += 1
-  return rec.count > MAX_ATTEMPTS
-}
 
 /** Constant-time compare so timing can't reveal how much of the value matched. */
 function safeEqual(a: string, b: string): boolean {
@@ -27,25 +13,21 @@ function safeEqual(a: string, b: string): boolean {
 }
 
 export async function POST(request: NextRequest) {
-  const ip =
-    request.headers.get('x-forwarded-for')?.split(',')[0].trim() ||
-    request.headers.get('x-real-ip') ||
-    'unknown'
-
-  if (rateLimited(ip)) {
-    return NextResponse.json({ error: 'Too many attempts. Try again later.' }, { status: 429 })
-  }
+  try {
+    const limit = await rateLimit('login:' + clientIp(request.headers), 8, 10 * 60 * 1000)
+    if (!limit.ok) return NextResponse.json({ error: 'Too many attempts. Try again later.' }, { status: 429 })
+  } catch (error) { return apiError(error) }
 
   const expectedUser = process.env.ADMIN_USERNAME
   const expectedPass = process.env.ADMIN_PASSWORD
-  if (!expectedUser || !expectedPass) {
-    return NextResponse.json({ error: 'Admin credentials are not configured.' }, { status: 500 })
+  if (!expectedUser || !expectedPass || !process.env.NEXTAUTH_SECRET || process.env.NEXTAUTH_SECRET.length < 32) {
+    return NextResponse.json({ error: 'Admin credentials or session secret are not configured.' }, { status: 500 })
   }
 
   let username = ''
   let password = ''
   try {
-    const body = await request.json()
+    const body = z.object({ username: z.string().min(1).max(200), password: z.string().min(1).max(1000) }).parse(await readJson(request, 4096))
     username = String(body.username ?? '')
     password = String(body.password ?? '')
   } catch {

@@ -1,3 +1,4 @@
+import { serializeJsonLd } from '@/lib/json-ld'
 import { Space_Grotesk, Inter, JetBrains_Mono, Instrument_Serif } from 'next/font/google'
 import './globals.css'
 import { Metadata, Viewport } from 'next'
@@ -203,7 +204,7 @@ export default async function RootLayout({
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
         <script
           type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+          dangerouslySetInnerHTML={{ __html: serializeJsonLd(jsonLd) }}
         />
       </head>
       <body className="overflow-x-hidden" suppressHydrationWarning>

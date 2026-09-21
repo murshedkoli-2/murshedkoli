@@ -12,7 +12,7 @@ export async function adminFetch(input: RequestInfo | URL, init?: RequestInit): 
   if (res.status === 401 && typeof window !== 'undefined') {
     localStorage.removeItem('adminLoggedIn')
     localStorage.removeItem('adminUser')
-    window.location.href = '/admin/login'
+    window.location.href = new URL('/admin/login', window.location.origin).href
   }
   return res
 }

@@ -1,8 +1,13 @@
+import { chatSchema, readAIRequest } from '@/lib/ai/request'
+import { apiError } from '@/lib/http'
+import { requireAdmin } from '@/lib/auth/require-admin'
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { generateUnifiedAICompletion, UnifiedAIMessage, getResolvedAIKeys } from '@/lib/ai/nvidia-nim'
 
 export async function GET() {
+  const auth = await requireAdmin()
+  if (auth instanceof NextResponse) return auth
   try {
     const { nvidiaModel, nvidiaKey } = await getResolvedAIKeys()
     return NextResponse.json({
@@ -18,8 +23,10 @@ export async function GET() {
 }
 
 export async function POST(req: NextRequest) {
+  const auth = await requireAdmin()
+  if (auth instanceof NextResponse) return auth
   try {
-    const { messages, userQuery, model } = await req.json()
+    const { messages, userQuery, model } = chatSchema.parse(await readAIRequest(req, auth.sub))
 
     if (!userQuery && (!messages || messages.length === 0)) {
       return NextResponse.json({ error: 'Message content is required.' }, { status: 400 })
@@ -68,14 +75,12 @@ export async function POST(req: NextRequest) {
     const devTitle = profile?.title || 'Full Stack Software Engineer'
     const devLocation = profile?.location || 'Dhaka, Bangladesh (Available Worldwide Remotely)'
 
-    const systemPrompt = `You are the official AI Assistant and Portfolio Copilot for ${devName}, a senior ${devTitle} based in ${devLocation}.
-Your role is to represent ${devName} to recruiters, engineering managers, prospective clients, and fellow engineers who visit this portfolio.
+    const systemPrompt = `You are the private admin assistant for ${devName}. Help the authenticated owner edit portfolio copy and understand their existing projects and skills. Do not invent achievements, availability, seniority, or client results. You cannot publish changes or inspect repository contents.
 
 Key Knowledge Base:
 - Developer Name: ${devName}
 - Title/Role: ${devTitle}
-- Location & Availability: ${devLocation} — actively open to high-paying international remote roles, B2B SaaS contracts, and high-ticket freelance software projects.
-- Core Tech Stack: TypeScript, Next.js 16 (App Router, Server Components & Actions), React 19, Node.js, Express, MongoDB Atlas, PostgreSQL, Prisma ORM, Redis (caching & queues), Docker, WebSockets, Tailwind CSS, System Design, and Cloudflare/AWS.
+- Location: ${devLocation}
 
 Featured Projects:
 ${projects.map((p) => `- ${p.title}: ${p.description || ''} (Tech: ${Array.isArray(p.technologies) ? p.technologies.join(', ') : p.technologies}) [View: /projects/${p.slug}]`).join('\n')}
@@ -98,9 +103,9 @@ ${services.map((s) => `- ${s.title}: ${s.description || ''}`).join('\n')}
 
 Guidelines:
 1. Tone: Warm, highly articulate, tech-savvy, professional, and confident.
-2. If asked about contact or hiring: Direct the visitor to the Contact section on the page (/about or #contact) or encourage them to leave a message.
+2. Help the owner draft accurate content. Ask for missing facts rather than making claims.
 3. Be concise and crisp (2-4 paragraphs max). Use markdown formatting, bullet points, and code formatting where relevant.
-4. Always answer from the perspective of Murshed's personal AI Assistant.`
+4. Address the portfolio owner, not prospective clients.`
 
     // Format conversation history
     const conversationMessages: UnifiedAIMessage[] = []
@@ -133,15 +138,5 @@ Guidelines:
       provider: aiResponse.provider,
       model: aiResponse.model,
     })
-  } catch (error: any) {
-    console.error('AI Chat Error:', error)
-    return NextResponse.json(
-      {
-        reply: "Hi there! I'm Murshed's AI Assistant. I'm currently running in low-latency standby mode. Feel free to explore his featured projects or reach out directly through the contact section!",
-        provider: 'local-heuristic',
-        model: 'fallback-greeting',
-      },
-      { status: 200 }
-    )
-  }
+  } catch (error) { return apiError(error) }
 }

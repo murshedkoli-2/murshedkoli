@@ -1,3 +1,6 @@
+import { z } from 'zod'
+import { readAIRequest } from '@/lib/ai/request'
+import { apiError } from '@/lib/http'
 import { NextRequest, NextResponse } from 'next/server'
 import { requireAdmin } from '@/lib/auth/require-admin'
 import { generateUnifiedAICompletion } from '@/lib/ai/nvidia-nim'
@@ -7,7 +10,7 @@ export async function POST(req: NextRequest) {
   if (auth instanceof NextResponse) return auth
 
   try {
-    const { mode, payload } = await req.json()
+    const { mode, payload } = z.object({ mode: z.enum(['tour-budget-advisor', 'savings-forecast', 'career-coach']), payload: z.record(z.string(), z.union([z.string().max(8000), z.number().finite(), z.array(z.string().max(2000)).max(30)])).optional() }).parse(await readAIRequest(req, auth.sub))
 
     if (!mode) {
       return NextResponse.json({ error: 'Advisor mode is required' }, { status: 400 })
@@ -77,8 +80,5 @@ Provide an intense, high-value Technical Cheat-Sheet formatted in clean Markdown
       provider: result.provider,
       model: result.model,
     })
-  } catch (error: any) {
-    console.error('Advisor Error:', error)
-    return NextResponse.json({ error: error.message || 'Advisor generation failed' }, { status: 500 })
-  }
+  } catch (error) { return apiError(error) }
 }

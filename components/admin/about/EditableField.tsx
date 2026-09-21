@@ -46,10 +46,6 @@ export function EditableField({
   const [saving, setSaving] = useState(false)
   const inputRef = useRef<HTMLInputElement | HTMLTextAreaElement>(null)
 
-  // A save elsewhere (or a reload) can change the stored value under us.
-  useEffect(() => {
-    if (!editing) setDraft(value)
-  }, [value, editing])
 
   useEffect(() => {
     if (editing) inputRef.current?.focus()
@@ -87,7 +83,7 @@ export function EditableField({
         <button
           type="button"
           className="adm-icon-btn ef-edit"
-          onClick={() => setEditing(true)}
+          onClick={() => { setDraft(value); setEditing(true) }}
           title={`Edit ${label}`}
           aria-label={`Edit ${label}`}
         >

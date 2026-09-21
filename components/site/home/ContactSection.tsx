@@ -64,7 +64,7 @@ export function ContactSection({ profile }: ContactSectionProps) {
                 letterSpacing: '0.05em',
               }}
             >
-              // INITIATE CONTACT
+              {'// INITIATE CONTACT'}
             </span>
             <h2
               style={{

@@ -1,47 +1,6 @@
-import { NextRequest, NextResponse } from 'next/server'
-import { prisma } from '@/lib/prisma'
-
-export async function GET(request: NextRequest) {
-  try {
-    const { searchParams } = new URL(request.url)
-    const includeDisabled = searchParams.get('includeDisabled') === 'true'
-    
-    const skills = await prisma.skill.findMany({
-      where: includeDisabled ? {} : { isEnabled: true },
-      orderBy: [{ category: 'asc' }, { order: 'asc' }, { name: 'asc' }]
-    })
-    
-    return NextResponse.json(skills)
-  } catch (error) {
-    console.error('Error fetching skills:', error)
-    return NextResponse.json(
-      { error: 'Failed to fetch skills' },
-      { status: 500 }
-    )
-  }
-}
-
-export async function POST(request: NextRequest) {
-  try {
-    const data = await request.json()
-    
-    const skill = await prisma.skill.create({
-      data: {
-        name: data.name,
-        category: data.category,
-        proficiency: data.proficiency || 50,
-        icon: data.icon,
-        order: data.order || 0,
-        isEnabled: data.isEnabled !== undefined ? data.isEnabled : true
-      }
-    })
-    
-    return NextResponse.json(skill, { status: 201 })
-  } catch (error) {
-    console.error('Error creating skill:', error)
-    return NextResponse.json(
-      { error: 'Failed to create skill' },
-      { status: 500 }
-    )
-  }
-}
+import { NextRequest } from 'next/server'
+import { handlers } from '@/lib/content/skills'
+export const GET = handlers.GET
+export const POST = handlers.POST
+export async function PUT(request: NextRequest) { return handlers.PUT(request) }
+export async function DELETE(request: NextRequest) { return handlers.DELETE(request) }

@@ -1,6 +1,6 @@
 'use client'
 
-import { useCallback, useEffect, useRef, useState, type ReactNode } from 'react'
+import { useCallback, useEffect, useRef, useState, useSyncExternalStore, type ReactNode } from 'react'
 import { createPortal } from 'react-dom'
 import { AnimatePresence, motion, useReducedMotion } from 'framer-motion'
 import { AlertTriangle, HelpCircle } from 'lucide-react'
@@ -13,6 +13,8 @@ export interface ConfirmOptions {
   /** `danger` styles the action red and focuses Cancel first. */
   tone?: 'default' | 'danger'
 }
+
+const subscribeMounted = () => () => {}
 
 interface PendingRequest extends ConfirmOptions {
   resolve: (value: boolean) => void
@@ -52,12 +54,12 @@ const FOCUSABLE =
  */
 export function ConfirmDialogHost() {
   const [request, setRequest] = useState<PendingRequest | null>(null)
-  const [mounted, setMounted] = useState(false)
+  const mounted = useSyncExternalStore(subscribeMounted, () => true, () => false)
   const panelRef = useRef<HTMLDivElement>(null)
   const restoreFocusRef = useRef<HTMLElement | null>(null)
   const reduce = useReducedMotion()
 
-  useEffect(() => setMounted(true), [])
+
 
   useEffect(() => {
     openRequest = (next) => {

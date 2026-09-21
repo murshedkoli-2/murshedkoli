@@ -1,3 +1,4 @@
+import { publicProjectSelect, toPublicProject } from '@/lib/projects/public'
 import { cached } from '@/lib/cache'
 import { prisma } from '@/lib/prisma'
 import { getPublicProfile, getSettingsMap } from '@/lib/site-data'
@@ -172,10 +173,11 @@ export const getFeaturedProjects = cached('featured-projects', async (max = 4): 
   try {
     const projects = await prisma.project.findMany({
       where: { publishStatus: 'published', featured: true },
+      select: publicProjectSelect,
       orderBy: publishedOrder,
       take: max,
     })
-    return projects.map(mapProjectToSpecSheet)
+    return projects.map(toPublicProject).map(mapProjectToSpecSheet)
   } catch (error) {
     console.error('getFeaturedProjects failed:', error)
     return []
@@ -186,9 +188,10 @@ export const getAllPublishedProjects = cached('all-projects', async (): Promise<
   try {
     const projects = await prisma.project.findMany({
       where: { publishStatus: 'published' },
+      select: publicProjectSelect,
       orderBy: publishedOrder,
     })
-    return projects.map(mapProjectToSpecSheet)
+    return projects.map(toPublicProject).map(mapProjectToSpecSheet)
   } catch (error) {
     console.error('getAllPublishedProjects failed:', error)
     return []
@@ -199,8 +202,9 @@ export const getProjectBySlug = cached('project-by-slug', async (slug: string) =
   try {
     const project = await prisma.project.findFirst({
       where: { slug, publishStatus: 'published' },
+      select: publicProjectSelect,
     })
-    return project
+    return project ? toPublicProject(project) : null
   } catch (error) {
     console.error('getProjectBySlug failed:', error)
     return null

@@ -1,52 +1,5 @@
-import { NextRequest, NextResponse } from 'next/server'
-import { prisma } from '@/lib/prisma'
-
-export async function PUT(
-  request: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
-) {
-  try {
-    const { id } = await params
-    const data = await request.json()
-    
-    const skill = await prisma.skill.update({
-      where: { id },
-      data: {
-        name: data.name,
-        category: data.category,
-        proficiency: data.proficiency || 50,
-        icon: data.icon,
-        order: data.order || 0,
-        isEnabled: data.isEnabled !== undefined ? data.isEnabled : true
-      }
-    })
-    
-    return NextResponse.json(skill)
-  } catch (error) {
-    console.error('Error updating skill:', error)
-    return NextResponse.json(
-      { error: 'Failed to update skill' },
-      { status: 500 }
-    )
-  }
-}
-
-export async function DELETE(
-  request: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
-) {
-  try {
-    const { id } = await params
-    await prisma.skill.delete({
-      where: { id }
-    })
-    
-    return NextResponse.json({ message: 'Skill deleted successfully' })
-  } catch (error) {
-    console.error('Error deleting skill:', error)
-    return NextResponse.json(
-      { error: 'Failed to delete skill' },
-      { status: 500 }
-    )
-  }
-}
+import { NextRequest } from 'next/server'
+import { handlers } from '@/lib/content/skills'
+type Context = { params: Promise<{ id: string }> }
+export async function PUT(request: NextRequest, context: Context) { return handlers.PUT(request, context) }
+export async function DELETE(request: NextRequest, context: Context) { return handlers.DELETE(request, context) }

@@ -23,6 +23,7 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
   const [theme, setThemeState] = useState<Theme>('light')
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- Synchronize with the pre-paint theme attribute after hydration.
     setThemeState(readInitialTheme())
   }, [])
 

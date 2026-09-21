@@ -3,6 +3,7 @@
 import { useState, type ReactNode } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
+import { toast } from 'sonner'
 import { ThemeToggle } from '@/components/site/ThemeToggle'
 
 export type AdminNavKey =
@@ -80,10 +81,14 @@ export function AdminShell({ active, title, subtitle, actions, badges = {}, chil
   const [menuOpen, setMenuOpen] = useState(false)
   const router = useRouter()
 
-  const handleLogout = () => {
-    localStorage.removeItem('adminLoggedIn')
-    localStorage.removeItem('adminUser')
-    router.push('/admin/login')
+  const handleLogout = async () => {
+    try {
+      const response = await fetch('/api/auth/logout', { method: 'POST' })
+      if (!response.ok) throw new Error('Logout failed')
+      localStorage.removeItem('adminLoggedIn')
+      localStorage.removeItem('adminUser')
+      window.location.assign(new URL('/admin/login', window.location.origin).href)
+    } catch { toast.error('Could not sign out. Please retry.') }
   }
 
   const renderItem = (item: NavItem) => {

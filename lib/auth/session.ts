@@ -19,8 +19,8 @@ interface SessionPayload {
 
 function getSecret(): string {
   const secret = process.env.NEXTAUTH_SECRET
-  if (!secret) {
-    throw new Error('NEXTAUTH_SECRET is not configured — cannot sign admin sessions')
+  if (!secret || secret.length < 32) {
+    throw new Error('NEXTAUTH_SECRET must contain at least 32 characters — cannot sign admin sessions')
   }
   return secret
 }
@@ -75,7 +75,7 @@ export async function createSessionToken(username: string): Promise<string> {
 }
 
 export async function verifySessionToken(token: string | undefined | null): Promise<SessionPayload | null> {
-  if (!token) return null
+  if (!token || token.length > 4096 || !process.env.NEXTAUTH_SECRET || process.env.NEXTAUTH_SECRET.length < 32) return null
   const dot = token.lastIndexOf('.')
   if (dot < 1) return null
 
@@ -87,7 +87,7 @@ export async function verifySessionToken(token: string | undefined | null): Prom
 
   try {
     const payload = JSON.parse(new TextDecoder().decode(base64UrlToBytes(encoded))) as SessionPayload
-    if (!payload.exp || payload.exp < Math.floor(Date.now() / 1000)) return null
+    if (!Number.isInteger(payload.exp) || payload.exp <= Math.floor(Date.now() / 1000) || typeof payload.sub !== 'string' || !payload.sub) return null
     return payload
   } catch {
     return null

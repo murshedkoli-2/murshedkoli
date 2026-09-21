@@ -1,3 +1,6 @@
+import { careerSchema } from '@/lib/validations/career'
+import { objectId } from '@/lib/validations/content'
+import { readJson, apiError } from '@/lib/http'
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { requireAdmin } from '@/lib/auth/require-admin'
@@ -11,8 +14,8 @@ export async function PUT(req: NextRequest, { params }: RouteParams) {
   if (auth instanceof NextResponse) return auth
 
   try {
-    const { id } = await params
-    const body = await req.json()
+    const id = objectId.parse((await params).id)
+    const body = careerSchema.partial().parse(await readJson(req))
 
     const existing = await prisma.careerStep.findUnique({ where: { id } })
     if (!existing) {
@@ -47,10 +50,7 @@ export async function PUT(req: NextRequest, { params }: RouteParams) {
     })
 
     return NextResponse.json(updated)
-  } catch (error) {
-    console.error('Failed to update career step:', error)
-    return NextResponse.json({ error: 'Failed to update career step' }, { status: 500 })
-  }
+  } catch (error) { return apiError(error) }
 }
 
 export async function DELETE(req: NextRequest, { params }: RouteParams) {
@@ -58,11 +58,8 @@ export async function DELETE(req: NextRequest, { params }: RouteParams) {
   if (auth instanceof NextResponse) return auth
 
   try {
-    const { id } = await params
+    const id = objectId.parse((await params).id)
     await prisma.careerStep.delete({ where: { id } })
     return NextResponse.json({ ok: true })
-  } catch (error) {
-    console.error('Failed to delete career step:', error)
-    return NextResponse.json({ error: 'Failed to delete career step' }, { status: 500 })
-  }
+  } catch (error) { return apiError(error) }
 }

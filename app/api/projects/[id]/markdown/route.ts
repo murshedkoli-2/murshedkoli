@@ -1,3 +1,4 @@
+import { requireAdmin } from '@/lib/auth/require-admin'
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 
@@ -317,6 +318,8 @@ function generateProjectMarkdown(project: any): string {
 }
 
 export async function GET(request: NextRequest, { params }: RouteParams) {
+  const auth = await requireAdmin()
+  if (auth instanceof NextResponse) return auth
   try {
     const { id } = await params
     

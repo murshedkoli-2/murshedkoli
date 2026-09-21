@@ -65,6 +65,7 @@ export function CertificateForm({ certificateId }: CertificateFormProps) {
   }, [certificateId])
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- Starts an asynchronous API read; results arrive after I/O.
     if (ready) load()
   }, [ready, load])
 

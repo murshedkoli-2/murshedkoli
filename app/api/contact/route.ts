@@ -1,3 +1,4 @@
+import { readJson, apiError } from '@/lib/http'
 import { NextRequest, NextResponse } from 'next/server'
 import { z } from 'zod'
 import { prisma } from '@/lib/prisma'
@@ -27,14 +28,14 @@ const contactSchema = z.object({
 
 // Public endpoint (contact form). Rate-limited + validated.
 export async function POST(request: NextRequest) {
+  try {
   const ip = clientIp(request.headers)
-  const { ok } = rateLimit(`contact:${ip}`, 5, 60_000)
+  const { ok } = await rateLimit(`contact:${ip}`, 5, 60_000)
   if (!ok) {
     return NextResponse.json({ error: 'Too many messages. Please try again shortly.' }, { status: 429 })
   }
 
-  try {
-    const body = await request.json()
+    const body = await readJson(request, 16384)
     const parsed = contactSchema.safeParse(body)
     if (!parsed.success) {
       return NextResponse.json({ error: 'Invalid input', details: parsed.error.flatten() }, { status: 400 })
@@ -52,7 +53,6 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json({ success: true, id: contact.id }, { status: 201 })
   } catch (error) {
-    console.error('Error creating contact:', error)
-    return NextResponse.json({ error: 'Failed to create contact' }, { status: 500 })
+    return apiError(error)
   }
 }

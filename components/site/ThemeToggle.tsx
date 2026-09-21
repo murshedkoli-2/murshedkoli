@@ -2,8 +2,10 @@
 
 import { Moon, Sun } from 'lucide-react'
 import { AnimatePresence, motion, useReducedMotion } from 'framer-motion'
-import { useEffect, useState } from 'react'
+import { useSyncExternalStore } from 'react'
 import { useTheme } from '@/components/site/ThemeProvider'
+
+const subscribeMounted = () => () => {}
 
 interface ThemeToggleProps {
   className?: string
@@ -12,11 +14,11 @@ interface ThemeToggleProps {
 export function ThemeToggle({ className }: ThemeToggleProps) {
   const { theme, toggle } = useTheme()
   const reduce = useReducedMotion()
-  const [mounted, setMounted] = useState(false)
+  const mounted = useSyncExternalStore(subscribeMounted, () => true, () => false)
 
   // Avoid rendering the theme-specific icon until mounted so SSR markup
   // (which can't know the client theme) matches the first client paint.
-  useEffect(() => setMounted(true), [])
+
 
   const isDark = theme === 'dark'
   const label = isDark ? 'Switch to light theme' : 'Switch to dark theme'

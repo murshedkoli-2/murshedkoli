@@ -1,3 +1,4 @@
+import { serializeJsonLd } from '@/lib/json-ld'
 import { Nav } from '@/components/site/Nav'
 import { Footer } from '@/components/site/Footer'
 import { Hero } from '@/components/site/home/Hero'
@@ -51,7 +52,7 @@ export default async function Home() {
     <>
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(personJsonLd) }}
+        dangerouslySetInnerHTML={{ __html: serializeJsonLd(personJsonLd) }}
       />
       <Nav name={profile.name} resumeUrl={profile.resume} />
       <main className="apple-light-main">

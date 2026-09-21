@@ -6,9 +6,12 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint",
+    "lint": "eslint .",
     "frames": "node scripts/build-scroll-frames.mjs",
-    "postinstall": "prisma generate && node scripts/sync-pdf-worker.mjs"
+    "postinstall": "prisma generate && node scripts/sync-pdf-worker.mjs",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "check": "npm run lint && npm run typecheck && npm test"
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.1133.0",
@@ -37,6 +40,10 @@
     "eslint": "^9.20.0",
     "eslint-config-next": "^16.3.5",
     "prisma": "6.19.3",
-    "typescript": "^5.7.3"
+    "typescript": "^5.7.3",
+    "vitest": "^5.0.1"
+  },
+  "engines": {
+    "node": ">=22.0.0"
   }
 }

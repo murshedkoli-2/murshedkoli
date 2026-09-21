@@ -9,7 +9,7 @@ import {
 /**
  * Calculate progress based on completed tasks within a module
  */
-export function calculateModuleProgress(module: ModuleItemType): number {
+export function calculateModuleProgress(module: { status: string; tasks: { status: string }[] }): number {
   if (!module.tasks || module.tasks.length === 0) {
     // If no tasks, use module status
     switch (module.status) {
@@ -29,7 +29,7 @@ export function calculateModuleProgress(module: ModuleItemType): number {
 /**
  * Calculate progress based on completed features
  */
-export function calculateFeaturesProgress(features: FeatureItemType[]): number {
+export function calculateFeaturesProgress(features: { done: boolean }[]): number {
   if (!features || features.length === 0) return 0
   const done = features.filter(f => f.done).length
   return Math.round((done / features.length) * 100)
@@ -39,9 +39,9 @@ export function calculateFeaturesProgress(features: FeatureItemType[]): number {
  * Calculate overall project progress
  */
 export function calculateOverallProgress(project: {
-  modules?: ModuleItemType[]
-  features?: FeatureItemType[]
-  roadmap?: RoadmapPhaseType[]
+  modules?: { status: string; tasks: { status: string }[] }[]
+  features?: { done: boolean }[]
+  roadmap?: { progress: number }[]
 }): number {
   const weights = {
     modules: 0.5,

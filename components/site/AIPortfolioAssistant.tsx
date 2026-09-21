@@ -187,6 +187,7 @@ export function AIPortfolioAssistant() {
       const history = messages
         .filter((m) => m.id !== 'welcome' && !m.id.startsWith('switch-'))
         .concat(userMessage)
+        .slice(-20)
         .map((m) => ({ role: m.role, content: m.content }))
 
       const res = await fetch('/api/ai/chat', {
@@ -199,7 +200,10 @@ export function AIPortfolioAssistant() {
         }),
       })
 
-      if (!res.ok) throw new Error('AI Assistant network error')
+      if (!res.ok) {
+        const error = await res.json().catch(() => ({}))
+        throw new Error(error.error || 'AI service unavailable. Please retry.')
+      }
 
       const data = await res.json()
       const assistantMessage: Message = {
@@ -218,8 +222,7 @@ export function AIPortfolioAssistant() {
         {
           id: `err-${Date.now()}`,
           role: 'assistant',
-          content:
-            "I'm currently operating in low-latency standby mode. Please feel free to browse Murshed's projects or drop a direct message through the Contact section!",
+          content: err instanceof Error ? err.message : 'AI service unavailable. Please retry.',
           timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
           model: selectedModel,
         },

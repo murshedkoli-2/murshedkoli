@@ -1,9 +1,15 @@
+import { z } from 'zod'
+import { readAIRequest } from '@/lib/ai/request'
+import { apiError } from '@/lib/http'
+import { requireAdmin } from '@/lib/auth/require-admin'
 import { NextResponse } from 'next/server'
 import { generateUnifiedAICompletion } from '@/lib/ai/nvidia-nim'
 
 export async function POST(req: Request) {
+  const auth = await requireAdmin()
+  if (auth instanceof NextResponse) return auth
   try {
-    const { field, contextData } = await req.json()
+    const { field, contextData } = z.object({ field: z.string().min(1).max(100), contextData: z.record(z.string(), z.union([z.string().max(16000), z.number(), z.boolean(), z.array(z.string().max(1000)).max(100)])).default({}) }).parse(await readAIRequest(req, auth.sub))
 
     if (!field) {
       return NextResponse.json({ error: 'Field is required' }, { status: 400 })
@@ -82,8 +88,5 @@ export async function POST(req: Request) {
       provider: result.provider,
       model: result.model,
     })
-  } catch (error: any) {
-    console.error('API Generate Error:', error)
-    return NextResponse.json({ error: error.message || 'AI Generation failed' }, { status: 500 })
-  }
+  } catch (error) { return apiError(error) }
 }

@@ -1,3 +1,4 @@
+import { HttpError } from '@/lib/http'
 import { GoogleGenAI } from '@google/genai'
 import { prisma } from '@/lib/prisma'
 
@@ -18,7 +19,7 @@ export interface UnifiedAIOptions {
 
 export interface UnifiedAIResult {
   text: string
-  provider: 'nvidia-nim' | 'google-gemini' | 'openrouter' | 'local-heuristic'
+  provider: 'nvidia-nim' | 'google-gemini' | 'openrouter'
   model: string
   usage?: {
     promptTokens?: number
@@ -86,6 +87,7 @@ export async function fetchLiveNvidiaModels(apiKey?: string): Promise<NvidiaMode
     }
 
     const res = await fetch('https://integrate.api.nvidia.com/v1/models', {
+      signal: AbortSignal.timeout(6000),
       method: 'GET',
       headers,
       next: { revalidate: 3600 },
@@ -158,6 +160,7 @@ async function callNvidiaNim(
   const activeModel = model || 'meta/llama-3.2-11b-vision-instruct'
 
   const res = await fetch(endpoint, {
+    signal: AbortSignal.timeout(6000),
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -185,13 +188,13 @@ async function callNvidiaNim(
           : 'meta/llama-3.2-11b-vision-instruct'
 
       console.warn(
-        `Model "${activeModel}" returned HTTP ${res.status} (${errorText}). Self-healing with verified active model "${fallbackTarget}"...`
+        `Model "${activeModel}" returned HTTP ${res.status} . Retrying with fallback model "${fallbackTarget}"...`
       )
 
       return await callNvidiaNim(messages, apiKey, fallbackTarget, temperature, maxTokens, true)
     }
 
-    throw new Error(`NVIDIA NIM API error [${res.status}]: ${errorText}`)
+    throw new Error('NVIDIA NIM request failed: HTTP ' + res.status)
   }
 
   const data = await res.json()
@@ -218,13 +221,15 @@ async function callNvidiaNim(
 async function callGoogleGemini(
   prompt: string,
   systemInstruction?: string,
-  apiKey?: string
+  apiKey?: string,
+  maxTokens = 1500
 ): Promise<UnifiedAIResult> {
   if (!apiKey) throw new Error('Missing Google AI API key')
 
-  const ai = new GoogleGenAI({ apiKey })
+  const ai = new GoogleGenAI({ apiKey, httpOptions: { timeout: 6000, retryOptions: { attempts: 1 } } })
   const response = await ai.models.generateContent({
     model: 'gemini-2.5-flash',
+    config: { maxOutputTokens: maxTokens, abortSignal: AbortSignal.timeout(6000) },
     contents: systemInstruction ? `${systemInstruction}\n\n${prompt}` : prompt,
   })
 
@@ -244,11 +249,13 @@ async function callGoogleGemini(
  */
 async function callOpenRouter(
   messages: UnifiedAIMessage[],
-  apiKey?: string
+  apiKey?: string,
+  maxTokens = 1500
 ): Promise<UnifiedAIResult> {
   if (!apiKey) throw new Error('Missing OpenRouter API key')
 
   const res = await fetch('https://openrouter.ai/api/v1/chat/completions', {
+    signal: AbortSignal.timeout(6000),
     method: 'POST',
     headers: {
       'Authorization': `Bearer ${apiKey}`,
@@ -260,12 +267,13 @@ async function callOpenRouter(
       model: 'openai/gpt-4o-mini',
       messages,
       temperature: 0.3,
+      max_tokens: maxTokens,
     }),
   })
 
   if (!res.ok) {
-    const errorText = await res.text()
-    throw new Error(`OpenRouter API error [${res.status}]: ${errorText}`)
+    await res.body?.cancel()
+    throw new Error('OpenRouter request failed: HTTP ' + res.status)
   }
 
   const data = await res.json()
@@ -280,47 +288,8 @@ async function callOpenRouter(
 }
 
 /**
- * Fallback 3: Deterministic Algorithmic Generator
- * Ensures the application remains functional and produces formatted content
- * even if no third-party keys are configured or during offline testing.
- */
-function generateLocalHeuristicResponse(options: UnifiedAIOptions): UnifiedAIResult {
-  const prompt = options.prompt || options.messages?.[options.messages.length - 1]?.content || ''
-  const isJson = options.responseFormat === 'json' || prompt.toLowerCase().includes('json')
-
-  if (isJson && prompt.includes('score')) {
-    return {
-      text: JSON.stringify({
-        score: 88,
-        passed: true,
-        summary: 'Solid implementation adhering to standard architecture patterns and defensive handling.',
-        strengths: [
-          'Clear separation of domain logic from transport layer',
-          'Good adherence to type safety constraints',
-          'Clean modular implementation',
-        ],
-        improvements: [
-          'Consider caching hot query paths using Redis with short TTL',
-          'Add distributed tracing instrumentation for P99 latency tracking',
-        ],
-        seniorTips: 'In production systems, wrap boundary operations in circuit breakers and verify idempotency on concurrent requests.',
-      }, null, 2),
-      provider: 'local-heuristic',
-      model: 'deterministic-heuristic-engine',
-    }
-  }
-
-  // General text generation heuristic
-  return {
-    text: `Engineered high-performance solution delivering resilient architecture, deterministic execution, and seamless user experience tailored for modern production standards.`,
-    provider: 'local-heuristic',
-    model: 'deterministic-heuristic-engine',
-  }
-}
-
-/**
  * Master Unified AI Completion Function
- * Cascades gracefully: NVIDIA NIM -> Google Gemini -> OpenRouter -> Local Heuristic
+ * Cascades gracefully: NVIDIA NIM -> Google Gemini -> OpenRouter; failures remain explicit
  */
 export async function generateUnifiedAICompletion(options: UnifiedAIOptions): Promise<UnifiedAIResult> {
   const { nvidiaKey, nvidiaModel, googleKey, openRouterKey } = await getResolvedAIKeys()
@@ -339,6 +308,8 @@ export async function generateUnifiedAICompletion(options: UnifiedAIOptions): Pr
 
   const promptText = options.prompt || messages.map((m) => `${m.role.toUpperCase()}: ${m.content}`).join('\n\n')
 
+  if (promptText.length > 60000) throw new HttpError(413, 'AI input too large')
+
   // 1. Tier 1: NVIDIA NIM (Primary Enterprise Engine)
   if (nvidiaKey) {
     try {
@@ -350,30 +321,30 @@ export async function generateUnifiedAICompletion(options: UnifiedAIOptions): Pr
         options.maxTokens
       )
     } catch (nvidiaErr) {
-      console.warn('NVIDIA NIM execution failed, falling back to Google Gemini:', nvidiaErr)
+      console.warn('NVIDIA NIM unavailable; trying next provider')
     }
   }
 
   // 2. Tier 2: Google Gemini (2.5 Flash)
   if (googleKey) {
     try {
-      return await callGoogleGemini(promptText, options.systemPrompt, googleKey)
+      return await callGoogleGemini(promptText, options.systemPrompt, googleKey, options.maxTokens)
     } catch (googleErr) {
-      console.warn('Google Gemini execution failed, falling back to OpenRouter:', googleErr)
+      console.warn('Gemini unavailable; trying next provider')
     }
   }
 
   // 3. Tier 3: OpenRouter
   if (openRouterKey) {
     try {
-      return await callOpenRouter(messages, openRouterKey)
+      return await callOpenRouter(messages, openRouterKey, options.maxTokens)
     } catch (openRouterErr) {
-      console.warn('OpenRouter execution failed, falling back to Local Heuristic:', openRouterErr)
+      console.warn('OpenRouter unavailable')
     }
   }
 
-  // 4. Tier 4: Deterministic Local Heuristic Engine
-  return generateLocalHeuristicResponse(options)
+  // Do not fabricate content or scores when providers are unavailable.
+  throw new HttpError(503, 'AI service unavailable. Configure a provider or retry later.')
 }
 
 /**

@@ -56,6 +56,7 @@ export function ProjectWizard() {
       if (!raw) return
       const saved = JSON.parse(raw) as WizardData
       if (saved && typeof saved === 'object') {
+        // eslint-disable-next-line react-hooks/set-state-in-effect -- Hydrate the persisted draft after SSR to avoid mismatched initial markup.
         setData({ ...INITIAL_DATA, ...saved })
         setRestored(true)
       }
@@ -182,7 +183,7 @@ export function ProjectWizard() {
               transition={{ duration: 0.25, ease: EASE }}
             >
               {step.id === 'type' && (
-                <TypeStep value={data.projectType ?? 'webapp'} onChange={(v) => patch({ projectType: v })} />
+                <TypeStep value={data.projectType ?? 'webapp'} onChange={(v) => patch({ projectType: v as 'webapp' | 'android' | 'desktop' | 'api' })} />
               )}
 
               {step.id === 'identity' && (
