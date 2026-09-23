@@ -87,7 +87,7 @@ export async function fetchLiveNvidiaModels(apiKey?: string): Promise<NvidiaMode
     }
 
     const res = await fetch('https://integrate.api.nvidia.com/v1/models', {
-      signal: AbortSignal.timeout(6000),
+      signal: AbortSignal.timeout(15000),
       method: 'GET',
       headers,
       next: { revalidate: 3600 },
@@ -131,15 +131,12 @@ export async function fetchLiveNvidiaModels(apiKey?: string): Promise<NvidiaMode
   } catch (error) {
     console.warn('Live NVIDIA models fetch error, returning curated fallback list:', error)
     return [
-      { id: 'meta/llama-3.2-11b-vision-instruct', name: 'meta/llama-3.2-11b-vision-instruct (Verified Working · Fast Vision & Chat)', owner: 'meta', isChat: true },
-      { id: 'nvidia/nemotron-3.5-lightning-30b-a3b', name: 'nvidia/nemotron-3.5-lightning-30b-a3b (Verified Working · NVIDIA 30B Reasoning)', owner: 'nvidia', isChat: true },
-      { id: 'mistralai/mistral-nemotron', name: 'mistralai/mistral-nemotron (Verified Working · Mistral + Nemotron)', owner: 'mistralai', isChat: true },
-      { id: 'poolside/laguna-xs-2.1', name: 'poolside/laguna-xs-2.1 (Verified Working · Laguna)', owner: 'poolside', isChat: true },
-      { id: 'nvidia/llama-3.1-nemotron-70b-instruct', name: 'nvidia/llama-3.1-nemotron-70b-instruct (Flagship 70B)', owner: 'nvidia', isChat: true },
-      { id: 'mistralai/mistral-large-2-instruct', name: 'mistralai/mistral-large-2-instruct (128k High-Context)', owner: 'mistralai', isChat: true },
-      { id: 'nvidia/nemotron-4-340b-instruct', name: 'nvidia/nemotron-4-340b-instruct (Ultra Scale 340B)', owner: 'nvidia', isChat: true },
-      { id: 'meta/llama-3.2-90b-vision-instruct', name: 'meta/llama-3.2-90b-vision-instruct (Multimodal 90B)', owner: 'meta', isChat: true },
-      { id: 'ibm/granite-3.0-8b-instruct', name: 'ibm/granite-3.0-8b-instruct (Enterprise 8B)', owner: 'ibm', isChat: true },
+      { id: 'meta/llama-3.2-11b-vision-instruct', name: 'meta/llama-3.2-11b-vision-instruct (Verified Active · Fast Chat & Vision)', owner: 'meta', isChat: true },
+      { id: 'nvidia/nemotron-3.5-lightning-30b-a3b', name: 'nvidia/nemotron-3.5-lightning-30b-a3b (Verified Active · NVIDIA 30B Reasoning)', owner: 'nvidia', isChat: true },
+      { id: 'mistralai/mistral-large-2-instruct', name: 'mistralai/mistral-large-2-instruct (Verified Active · 128k Context)', owner: 'mistralai', isChat: true },
+      { id: 'mistralai/mistral-nemotron', name: 'mistralai/mistral-nemotron (Verified Active · Mistral + Nemotron)', owner: 'mistralai', isChat: true },
+      { id: 'ibm/granite-3.0-8b-instruct', name: 'ibm/granite-3.0-8b-instruct (Verified Active · Enterprise 8B)', owner: 'ibm', isChat: true },
+      { id: 'poolside/laguna-xs-2.1', name: 'poolside/laguna-xs-2.1 (Verified Active · Laguna)', owner: 'poolside', isChat: true },
     ]
   }
 }
@@ -160,7 +157,7 @@ async function callNvidiaNim(
   const activeModel = model || 'meta/llama-3.2-11b-vision-instruct'
 
   const res = await fetch(endpoint, {
-    signal: AbortSignal.timeout(6000),
+    signal: AbortSignal.timeout(30000),
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -188,13 +185,13 @@ async function callNvidiaNim(
           : 'meta/llama-3.2-11b-vision-instruct'
 
       console.warn(
-        `Model "${activeModel}" returned HTTP ${res.status} . Retrying with fallback model "${fallbackTarget}"...`
+        `Model "${activeModel}" returned HTTP ${res.status}. Retrying with fallback model "${fallbackTarget}"...`
       )
 
       return await callNvidiaNim(messages, apiKey, fallbackTarget, temperature, maxTokens, true)
     }
 
-    throw new Error('NVIDIA NIM request failed: HTTP ' + res.status)
+    throw new Error('NVIDIA NIM request failed: HTTP ' + res.status + ' - ' + errorText)
   }
 
   const data = await res.json()
@@ -226,10 +223,10 @@ async function callGoogleGemini(
 ): Promise<UnifiedAIResult> {
   if (!apiKey) throw new Error('Missing Google AI API key')
 
-  const ai = new GoogleGenAI({ apiKey, httpOptions: { timeout: 6000, retryOptions: { attempts: 1 } } })
+  const ai = new GoogleGenAI({ apiKey, httpOptions: { timeout: 30000, retryOptions: { attempts: 1 } } })
   const response = await ai.models.generateContent({
     model: 'gemini-2.5-flash',
-    config: { maxOutputTokens: maxTokens, abortSignal: AbortSignal.timeout(6000) },
+    config: { maxOutputTokens: maxTokens, abortSignal: AbortSignal.timeout(30000) },
     contents: systemInstruction ? `${systemInstruction}\n\n${prompt}` : prompt,
   })
 
@@ -255,7 +252,7 @@ async function callOpenRouter(
   if (!apiKey) throw new Error('Missing OpenRouter API key')
 
   const res = await fetch('https://openrouter.ai/api/v1/chat/completions', {
-    signal: AbortSignal.timeout(6000),
+    signal: AbortSignal.timeout(30000),
     method: 'POST',
     headers: {
       'Authorization': `Bearer ${apiKey}`,
@@ -321,7 +318,7 @@ export async function generateUnifiedAICompletion(options: UnifiedAIOptions): Pr
         options.maxTokens
       )
     } catch (nvidiaErr) {
-      console.warn('NVIDIA NIM unavailable; trying next provider')
+      console.warn('NVIDIA NIM unavailable; trying next provider. Error:', nvidiaErr)
     }
   }
 

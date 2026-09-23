@@ -11,12 +11,12 @@ export async function GET() {
   try {
     const { nvidiaModel, nvidiaKey } = await getResolvedAIKeys()
     return NextResponse.json({
-      activeModel: nvidiaModel || 'nvidia/llama-3.1-nemotron-70b-instruct',
+      activeModel: nvidiaModel || 'meta/llama-3.2-11b-vision-instruct',
       hasKey: !!nvidiaKey,
     })
   } catch (error) {
     return NextResponse.json({
-      activeModel: 'nvidia/llama-3.1-nemotron-70b-instruct',
+      activeModel: 'meta/llama-3.2-11b-vision-instruct',
       hasKey: false,
     })
   }
