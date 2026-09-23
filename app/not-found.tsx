@@ -72,7 +72,7 @@ export default function NotFound() {
       {/* Footer annotation */}
       <div className="absolute bottom-8 left-0 right-0 text-center pointer-events-none select-none">
         <span className="text-[9px] text-zinc-700 font-mono uppercase tracking-widest">
-          Murshed Koli © {new Date().getFullYear()}
+          murshedkoli © {new Date().getFullYear()}
         </span>
       </div>
     </div>

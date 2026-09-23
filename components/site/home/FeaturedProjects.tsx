@@ -25,11 +25,25 @@ export function FeaturedProjects({ projects }: FeaturedProjectsProps) {
       }}
     >
       <Container>
-        <HomeSectionHeader
-          title="Selected"
-          accent="work"
-          meta={`${String(projects.length).padStart(2, '0')} SHOWCASES`}
-        />
+        <div style={{ marginBottom: '2.5rem' }}>
+          <HomeSectionHeader
+            title="Selected"
+            accent="work"
+            meta={`${String(projects.length).padStart(2, '0')} SHOWCASES`}
+          />
+          <p
+            style={{
+              color: 'var(--ink-muted)',
+              fontSize: '1.05rem',
+              maxWidth: '36rem',
+              lineHeight: 1.5,
+              marginTop: '-1.5rem',
+              marginBottom: '2rem',
+            }}
+          >
+            Some products and systems I’ve recently designed and built.
+          </p>
+        </div>
 
         {/* 2-Column Visual Studio Grid */}
         <div
@@ -37,7 +51,6 @@ export function FeaturedProjects({ projects }: FeaturedProjectsProps) {
             display: 'grid',
             gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 480px), 1fr))',
             gap: '2rem',
-            marginTop: '2rem',
           }}
         >
           {projects.map((p, i) => (

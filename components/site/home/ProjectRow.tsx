@@ -220,26 +220,49 @@ export function ProjectRow({ project, index }: ProjectRowProps) {
             <ArrowRight size={14} style={{ color: 'var(--accent)' }} />
           </Link>
 
-          {project.links.live && (
-            <a
-              href={project.links.live}
-              target="_blank"
-              rel="noopener noreferrer"
-              style={{
-                display: 'inline-flex',
-                alignItems: 'center',
-                gap: 5,
-                fontSize: '0.8rem',
-                color: 'var(--ink-muted)',
-                textDecoration: 'none',
-                fontFamily: 'var(--font-mono)',
-                fontWeight: 500,
-              }}
-            >
-              <span>PREVIEW</span>
-              <ExternalLink size={13} />
-            </a>
-          )}
+          <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+            {project.links.github && (
+              <a
+                href={project.links.github}
+                target="_blank"
+                rel="noopener noreferrer"
+                style={{
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: 5,
+                  fontSize: '0.8rem',
+                  color: 'var(--ink-muted)',
+                  textDecoration: 'none',
+                  fontFamily: 'var(--font-mono)',
+                  fontWeight: 500,
+                }}
+              >
+                <span>CODE</span>
+                <ExternalLink size={12} />
+              </a>
+            )}
+
+            {project.links.live && (
+              <a
+                href={project.links.live}
+                target="_blank"
+                rel="noopener noreferrer"
+                style={{
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: 5,
+                  fontSize: '0.8rem',
+                  color: 'var(--accent)',
+                  textDecoration: 'none',
+                  fontFamily: 'var(--font-mono)',
+                  fontWeight: 600,
+                }}
+              >
+                <span>LIVE DEMO</span>
+                <ExternalLink size={13} />
+              </a>
+            )}
+          </div>
         </div>
       </div>
     </motion.div>

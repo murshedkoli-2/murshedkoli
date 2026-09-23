@@ -31,14 +31,14 @@ export type PublicProfile = {
 export type PublicSettings = Record<string, unknown>
 
 export const DEFAULT_PROFILE: PublicProfile = {
-  name: 'Murshed Koli',
+  name: 'murshedkoli',
   title: 'Full Stack Developer',
   description: 'Passionate web developer with expertise in modern technologies and AI-powered experiences.',
   email: 'murshed@example.com',
   phone: '+1 (555) 123-4567',
   location: 'Remote',
-  avatar: '/murshed.jpg',
-  heroPortrait: '/murshed.jpg',
+  avatar: '/images/hero-portrait.jpg',
+  heroPortrait: '/images/hero-portrait.jpg',
   socialLinks: {
     github: 'https://github.com/murshedkoli',
     linkedin: 'https://linkedin.com/in/murshedkoli',

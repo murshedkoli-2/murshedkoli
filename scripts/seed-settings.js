@@ -9,23 +9,23 @@ async function main() {
   const settings = [
     {
       key: 'siteName',
-      value: 'Murshed Koli',
+      value: 'murshedkoli',
       description: 'The main site name displayed in browser tab and headers'
     },
     {
       key: 'siteTitle',
-      value: 'Murshed Koli | Full Stack Web Developer & Software Engineer',
+      value: 'murshedkoli | Full Stack Web Developer & Software Engineer',
       description: 'Full page title for SEO'
     },
     {
       key: 'siteDescription',
-      value: 'Professional portfolio of Murshed Koli - Full Stack Developer specializing in React, Next.js, Node.js, and modern web technologies. Building scalable and user-friendly applications.',
+      value: 'Professional portfolio of murshedkoli - Full Stack Developer specializing in React, Next.js, Node.js, and modern web technologies. Building scalable and user-friendly applications.',
       description: 'Meta description for SEO'
     },
     {
       key: 'siteKeywords',
       value: [
-        'Murshed Koli',
+        'murshedkoli',
         'Full Stack Developer',
         'Web Developer',
         'React Developer',
@@ -99,7 +99,7 @@ async function main() {
 
   // Profile data
   const profileData = {
-    name: 'Murshed Koli',
+    name: 'murshedkoli',
     title: 'Full Stack Web Developer',
     description: 'Passionate and dedicated Full Stack Developer with expertise in building modern, scalable web applications. Specialized in React, Next.js, Node.js, and cloud technologies. I love creating elegant solutions to complex problems and delivering exceptional user experiences.',
     email: 'contact@murshedkoli.com',

@@ -13,9 +13,10 @@ interface NavLink {
 
 const LINKS: NavLink[] = [
   { label: 'Work', href: '/#projects' },
-  { label: 'Craft', href: '/#philosophy' },
-  { label: 'Capabilities', href: '/#services' },
+  { label: 'About', href: '/#about' },
+  { label: 'Capabilities', href: '/#expertise' },
   { label: 'Stack', href: '/#stack' },
+  { label: 'Process', href: '/#process' },
   { label: 'Contact', href: '/#contact' },
 ]
 
@@ -65,7 +66,7 @@ export function Nav({ name, resumeUrl }: NavProps) {
           pointerEvents: 'auto',
           display: 'flex',
           alignItems: 'center',
-          gap: 'clamp(0.5rem, 1.5vw, 1.5rem)',
+          gap: 'clamp(0.5rem, 1.2vw, 1.25rem)',
           padding: '7px 12px 7px 18px',
           borderRadius: 9999,
           background: 'var(--nav-bg)',
@@ -92,6 +93,7 @@ export function Nav({ name, resumeUrl }: NavProps) {
           }}
         >
           <span
+            className="live-pulse-dot"
             style={{
               width: 8,
               height: 8,
@@ -110,8 +112,8 @@ export function Nav({ name, resumeUrl }: NavProps) {
           style={{
             display: 'flex',
             alignItems: 'center',
-            gap: 4,
-            paddingLeft: 12,
+            gap: 2,
+            paddingLeft: 10,
             borderLeft: '1px solid var(--line)',
           }}
         >
@@ -124,7 +126,7 @@ export function Nav({ name, resumeUrl }: NavProps) {
                 fontSize: '0.78rem',
                 color: 'var(--ink-muted)',
                 fontWeight: 500,
-                padding: '6px 12px',
+                padding: '6px 11px',
                 borderRadius: 999,
                 transition: 'all 180ms ease',
                 textDecoration: 'none',
@@ -137,7 +139,7 @@ export function Nav({ name, resumeUrl }: NavProps) {
         </div>
 
         {/* Actions */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: 6, paddingLeft: 6 }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8, paddingLeft: 6 }}>
           <ThemeToggle />
 
           {resumeUrl && (
@@ -145,18 +147,18 @@ export function Nav({ name, resumeUrl }: NavProps) {
               href={resumeUrl}
               target="_blank"
               rel="noopener noreferrer"
-              className="site-nav-resume"
+              className="site-nav-resume hidden sm:inline-flex"
               style={{
                 display: 'inline-flex',
                 alignItems: 'center',
-                gap: 6,
-                padding: '6px 14px',
+                gap: 5,
+                padding: '6px 13px',
                 borderRadius: 999,
                 background: 'var(--btn-secondary-bg)',
                 border: '1px solid var(--btn-secondary-border)',
                 color: 'var(--btn-secondary-ink)',
                 fontFamily: 'var(--font-mono)',
-                fontSize: '0.76rem',
+                fontSize: '0.75rem',
                 fontWeight: 500,
                 textDecoration: 'none',
                 transition: 'all 200ms ease',
@@ -166,6 +168,29 @@ export function Nav({ name, resumeUrl }: NavProps) {
               <span>CV</span>
             </a>
           )}
+
+          <Link
+            href="/#contact"
+            className="hidden md:inline-flex"
+            style={{
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: 6,
+              padding: '6px 16px',
+              borderRadius: 999,
+              background: 'var(--btn-primary-bg)',
+              color: 'var(--btn-primary-ink)',
+              fontFamily: 'var(--font-mono)',
+              fontSize: '0.76rem',
+              fontWeight: 600,
+              textDecoration: 'none',
+              transition: 'all 200ms ease',
+              boxShadow: 'var(--shadow-sm)',
+            }}
+          >
+            <span>Let&apos;s Talk</span>
+            <span style={{ color: 'var(--accent)' }}>→</span>
+          </Link>
 
           <button
             type="button"
@@ -220,7 +245,7 @@ export function Nav({ name, resumeUrl }: NavProps) {
                   onClick={() => setOpen(false)}
                   style={{
                     fontFamily: 'var(--font-display)',
-                    fontSize: '1.2rem',
+                    fontSize: '1.15rem',
                     fontWeight: 600,
                     color: 'var(--ink)',
                     padding: '10px 14px',
@@ -236,14 +261,11 @@ export function Nav({ name, resumeUrl }: NavProps) {
                 </Link>
               ))}
 
-              {resumeUrl && (
-                <a
-                  href={resumeUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 10, marginTop: 10, paddingTop: 10, borderTop: '1px solid var(--line)' }}>
+                <Link
+                  href="/#contact"
                   onClick={() => setOpen(false)}
                   style={{
-                    marginTop: 10,
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center',
@@ -258,9 +280,36 @@ export function Nav({ name, resumeUrl }: NavProps) {
                     textDecoration: 'none',
                   }}
                 >
-                  <FileText size={16} /> View Résumé
-                </a>
-              )}
+                  <span>Start a Project</span>
+                  <span>→</span>
+                </Link>
+
+                {resumeUrl && (
+                  <a
+                    href={resumeUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    onClick={() => setOpen(false)}
+                    style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      gap: 8,
+                      padding: '12px',
+                      borderRadius: 12,
+                      background: 'var(--btn-secondary-bg)',
+                      border: '1px solid var(--btn-secondary-border)',
+                      color: 'var(--btn-secondary-ink)',
+                      fontFamily: 'var(--font-mono)',
+                      fontSize: '0.88rem',
+                      fontWeight: 500,
+                      textDecoration: 'none',
+                    }}
+                  >
+                    <FileText size={16} /> View Résumé
+                  </a>
+                )}
+              </div>
             </div>
           </motion.div>
         )}
@@ -268,3 +317,4 @@ export function Nav({ name, resumeUrl }: NavProps) {
     </header>
   )
 }
+

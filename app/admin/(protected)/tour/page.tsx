@@ -15,6 +15,7 @@ import {
   type VisaEaseCategory,
   type CountryData,
 } from '@/lib/data/world-countries'
+import { BANGLADESH_DESTINATIONS, type BangladeshDestination } from '@/lib/data/bangladesh-destinations'
 
 interface TourLocation {
   id?: string
@@ -78,6 +79,7 @@ export function getEstimatedMinCostBDT(
 type ActiveTab = 'bangladesh' | 'international' | 'completed'
 type VisaFilter = 'all' | VisaEaseCategory
 type ContinentFilter = 'all' | CountryData['continent']
+type BrowseSort = 'country' | 'destination'
 
 function emptyLocation(region: 'bangladesh' | 'international' | 'completed', order: number): TourLocation {
   if (region === 'international' || region === 'completed') {
@@ -113,6 +115,7 @@ export default function TourManager() {
   const [continentFilter, setContinentFilter] = useState<ContinentFilter>('all')
   const [searchQuery, setSearchQuery] = useState('')
   const [showAffordableOnly, setShowAffordableOnly] = useState(false)
+  const [browseSort, setBrowseSort] = useState<BrowseSort>('country')
 
   const load = useCallback(async () => {
     try {
@@ -215,55 +218,57 @@ export default function TourManager() {
         const matchCode = country.code.toLowerCase().includes(q)
         const matchVisa = country.visaLabel.toLowerCase().includes(q)
         const matchNotes = country.visaNotes.toLowerCase().includes(q)
-        if (!matchName && !matchCode && !matchVisa && !matchNotes) return false
+        const matchDestination = country.touristSpots.some((spot) => spot.toLowerCase().includes(q))
+        if (!matchName && !matchCode && !matchVisa && !matchNotes && !matchDestination) return false
       }
 
       return true
     })
 
-    // Priority Sort: Visa Free / VoA (1) -> e-Visa / Easy (2) -> Embassy Visa (3)
-    const priorityMap: Record<VisaEaseCategory, number> = {
-      visa_free: 1,
-      evisa_easy: 2,
-      embassy_visa: 3,
-    }
-
     return filtered.sort((a, b) => {
-      // If affordable filter is active, sort by lower cost first
-      if (showAffordableOnly) {
-        const costA = getEstimatedMinCostBDT(a.country)
-        const costB = getEstimatedMinCostBDT(b.country)
-        if (costA !== costB) return costA - costB
-      }
-
-      const pA = priorityMap[a.country.visaCategory] || 99
-      const pB = priorityMap[b.country.visaCategory] || 99
-      if (pA !== pB) return pA - pB
-      return a.country.name.localeCompare(b.country.name)
+      const destinationA = a.country.touristSpots[0] || a.country.name
+      const destinationB = b.country.touristSpots[0] || b.country.name
+      return browseSort === 'country'
+        ? a.country.name.localeCompare(b.country.name) || destinationA.localeCompare(destinationB)
+        : destinationA.localeCompare(destinationB) || a.country.name.localeCompare(b.country.name)
     })
-  }, [dbIntlMap, visaFilter, continentFilter, searchQuery, showAffordableOnly, totalSavingsBDT])
+  }, [dbIntlMap, visaFilter, continentFilter, searchQuery, showAffordableOnly, totalSavingsBDT, browseSort])
 
-  // Uncompleted Bangladesh Spots (Excludes Completed Tours!)
+  const dbDestinationMap = useMemo(() => new Map(
+    locations.map((location) => [`${location.region}:${(location.country || '')}:${location.name}`.toLowerCase(), location])
+  ), [locations])
+
+  // Bangladesh catalogue plus personal destinations, so the tab is useful from first use.
   const visibleBDLocations = useMemo(() => {
-    return locations.filter((l) => {
-      if (l.region !== 'bangladesh') return false
-      if (l.visited) return false // Exclude completed tours!
+    const catalogue = BANGLADESH_DESTINATIONS.map((destination) => {
+      const dbItem = dbDestinationMap.get(`bangladesh::${destination.name}`.toLowerCase())
+      return { destination, dbItem: dbItem || null, isVisited: Boolean(dbItem?.visited) }
+    })
+    const personal = locations
+      .filter((location) => location.region === 'bangladesh' && !BANGLADESH_DESTINATIONS.some((d) => d.name === location.name))
+      .map((location) => ({
+        destination: { name: location.name, division: 'Custom', description: location.notes || 'Personal destination', budget: getEstimatedMinCostBDT(null, 'bangladesh', location.notes) },
+        dbItem: location,
+        isVisited: location.visited,
+      }))
 
-      // Affordable with Savings Filter
+    return [...catalogue, ...personal].filter(({ destination, isVisited }) => {
+      if (isVisited) return false
+
       if (showAffordableOnly) {
-        const cost = getEstimatedMinCostBDT(null, 'bangladesh', l.notes)
+        const cost = destination.budget
         if (totalSavingsBDT <= 0 || totalSavingsBDT < cost) return false
       }
 
       if (searchQuery.trim()) {
         const q = searchQuery.toLowerCase().trim()
-        const matchName = l.name.toLowerCase().includes(q)
-        const matchNotes = (l.notes || '').toLowerCase().includes(q)
-        if (!matchName && !matchNotes) return false
+        if (![destination.name, destination.division, destination.description].some((value) => value.toLowerCase().includes(q))) return false
       }
       return true
-    })
-  }, [locations, searchQuery, showAffordableOnly, totalSavingsBDT])
+    }).sort((a, b) => browseSort === 'country'
+      ? a.destination.division.localeCompare(b.destination.division) || a.destination.name.localeCompare(b.destination.name)
+      : a.destination.name.localeCompare(b.destination.name) || a.destination.division.localeCompare(b.destination.division))
+  }, [dbDestinationMap, locations, searchQuery, showAffordableOnly, totalSavingsBDT, browseSort])
 
   // Completed Tours (Displayed ONLY on Completed Page)
   const completedTours = useMemo(() => {
@@ -369,6 +374,24 @@ export default function TourManager() {
     } catch (error) {
       console.error('Toggle failed:', error)
       toast.error('Could not update spot.')
+    }
+  }
+
+  const addBangladeshDestination = async (destination: BangladeshDestination, completed = false) => {
+    try {
+      const res = await adminFetch('/api/tours', {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name: destination.name, region: 'bangladesh', country: null,
+          notes: `${destination.division} · ${destination.description} · Est. ৳${destination.budget.toLocaleString()}`,
+          visited: completed, visitedAt: completed ? new Date().toISOString() : null, order: locations.length }),
+      })
+      if (!res.ok) throw new Error('Could not save destination')
+      const saved = await res.json()
+      setLocations((previous) => [...previous, saved])
+      toast.success(completed ? `"${destination.name}" moved to Completed.` : `Added "${destination.name}" to Planned.`)
+    } catch (error) {
+      console.error('Bangladesh destination save failed:', error)
+      toast.error('Could not save destination.')
     }
   }
 
@@ -719,13 +742,15 @@ export default function TourManager() {
                 {activeTab === 'completed'
                   ? `✅ Completed Page (${completedTours.length})`
                   : activeTab === 'international'
-                  ? `✈️ International Destinations (${visibleCountries.length})`
+                  ? `✈️ International Countries (${visibleCountries.length}) · ${WORLD_COUNTRIES.reduce((count, country) => count + country.touristSpots.length, 0)} destinations`
                   : `🇧🇩 Bangladesh Spots (${visibleBDLocations.length})`}
               </h2>
               <div style={{ fontSize: 12, color: 'var(--muted)', marginTop: 2 }}>
                 {activeTab === 'completed'
                   ? 'All completed tours and visited places'
-                  : 'Excludes completed tours. Click country to view visa process, costs & spots.'}
+                  : activeTab === 'bangladesh'
+                    ? 'Browse Bangladesh by division or destination. Add any place to your planned list.'
+                    : 'Browse countries or their leading destinations. Click a country for the full destination list.'}
               </div>
             </div>
 
@@ -771,6 +796,16 @@ export default function TourManager() {
               </select>
             </div>
           )}
+
+          {activeTab !== 'completed' && (
+            <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
+              <span className="adm-label" style={{ fontSize: 11, margin: 0 }}>Browse order:</span>
+              <select className="adm-input" style={{ padding: '5px 10px', fontSize: 12, width: 'auto' }} value={browseSort} onChange={(event) => setBrowseSort(event.target.value as BrowseSort)}>
+                <option value="country">Country / division first</option>
+                <option value="destination">Destination first</option>
+              </select>
+            </div>
+          )}
         </div>
 
         {/* Rows List */}
@@ -781,19 +816,20 @@ export default function TourManager() {
               {visibleBDLocations.length === 0 ? (
                 <div className="adm-empty">No unvisited Bangladesh spots found. Add a new spot above!</div>
               ) : (
-                visibleBDLocations.map((l) => {
-                  const costBDT = getEstimatedMinCostBDT(null, 'bangladesh', l.notes)
+                visibleBDLocations.map(({ destination, dbItem }) => {
+                  const costBDT = destination.budget
                   const isAffordable = totalSavingsBDT > 0 && totalSavingsBDT >= costBDT
 
                   return (
-                    <div className="adm-list-row" key={l.id}>
+                    <div className="adm-list-row" key={`bd-${destination.name}`}>
                       <span className="adm-cat" style={{ fontSize: 13, padding: '3px 8px' }}>
                         🇧🇩 BD
                       </span>
 
                       <div className="grow">
                         <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
-                          <b style={{ fontSize: 14 }}>{l.name}</b>
+                          <b style={{ fontSize: 14 }}>{destination.name}</b>
+                          <span className="adm-cat" style={{ fontSize: 10 }}>{destination.division}</span>
                           
                           {isAffordable ? (
                             <span
@@ -821,26 +857,23 @@ export default function TourManager() {
                           )}
                         </div>
 
-                        {l.notes ? (
-                          <div className="sub" style={{ fontSize: 12, color: 'var(--ink-muted)', marginTop: 3 }}>
-                            {l.notes}
-                          </div>
-                        ) : null}
+                        <div className="sub" style={{ fontSize: 12, color: 'var(--ink-muted)', marginTop: 3 }}>
+                          {destination.description} · Estimated from ৳{costBDT.toLocaleString()}
+                        </div>
                       </div>
 
                       <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                        <button
-                          className="adm-btn amber"
-                          style={{ padding: '5px 11px', fontSize: 11 }}
-                          onClick={() => markBDCompleted(l)}
-                          title="Mark Visited (Moves directly to Completed Page)"
-                        >
-                          ✓ Mark Completed
-                        </button>
-
-                        <button className="adm-icon-btn" onClick={() => setEditing(l)} title="Edit Spot">
-                          ✎
-                        </button>
+                        {dbItem ? (
+                          <>
+                            <button className="adm-btn amber" style={{ padding: '5px 11px', fontSize: 11 }} onClick={() => markBDCompleted(dbItem)}>✓ Mark Completed</button>
+                            <button className="adm-icon-btn" onClick={() => setEditing(dbItem)} title="Edit Spot">✎</button>
+                          </>
+                        ) : (
+                          <>
+                            <button className="adm-btn" style={{ padding: '5px 11px', fontSize: 11 }} onClick={() => addBangladeshDestination(destination)}>+ Wishlist</button>
+                            <button className="adm-btn amber" style={{ padding: '5px 11px', fontSize: 11 }} onClick={() => addBangladeshDestination(destination, true)}>✓ Completed</button>
+                          </>
+                        )}
                       </div>
                     </div>
                   )
@@ -914,6 +947,9 @@ export default function TourManager() {
                         </div>
 
                         <div className="sub" style={{ fontSize: 12, color: 'var(--ink-muted)', marginTop: 3 }}>
+                          Destinations: {c.touristSpots.slice(0, 3).join(' · ')}{c.touristSpots.length > 3 ? ' …' : ''}
+                        </div>
+                        <div className="sub" style={{ fontSize: 12, color: 'var(--ink-muted)', marginTop: 2 }}>
                           Cap: {c.capital} · Best: {c.bestTime} · Visa: {c.visaNotes} · Est: {c.estimatedCost.totalEstimate}
                         </div>
                       </div>
