@@ -5,7 +5,7 @@ vi.mock('mongodb', () => ({
     db() { return { collection: () => ({ createIndex: mocks.index, findOneAndUpdate: mocks.update }) } }
   },
 }))
-import { rateLimit, clientIp } from '@/lib/rate-limit'
+import { rateLimit, clientIp, loginRateKey } from '@/lib/rate-limit'
 beforeEach(() => {
   const state = globalThis as typeof globalThis & { rateLimitClient?: unknown; rateLimitIndex?: unknown }
   delete state.rateLimitClient
@@ -46,4 +46,11 @@ it('ignores caller-provided forwarding headers unless ingress is trusted', () =>
   expect(clientIp(headers)).toBe('unknown')
   vi.stubEnv('VERCEL', '1')
   expect(clientIp(headers)).toBe('192.0.2.2')
+})
+it('scopes login buckets to the attempted username so wrong-username floods cannot lock out the admin', () => {
+  const admin = loginRateKey('unknown', 'admin')
+  expect(loginRateKey('unknown', 'Admin ')).toBe(admin)
+  expect(loginRateKey('unknown', 'attacker')).not.toBe(admin)
+  expect(loginRateKey('192.0.2.1', 'admin')).not.toBe(admin)
+  expect(admin).not.toContain('admin')
 })

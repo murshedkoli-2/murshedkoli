@@ -28,7 +28,8 @@ export async function GET() {
 
     // Create PDF document
     const pdfDoc = await PDFDocument.create()
-    const page = pdfDoc.addPage([612, 792]) // Letter size
+    const PAGE_SIZE: [number, number] = [612, 792] // Letter size
+    let page = pdfDoc.addPage(PAGE_SIZE)
     const { width, height } = page.getSize()
 
     // Embed fonts
@@ -52,8 +53,16 @@ export async function GET() {
     const contentWidth = width - margin * 2
     let y = height - margin
 
+    // Start a new page when the next block would run into the bottom margin.
+    const ensureSpace = (needed: number) => {
+      if (y - needed >= margin) return
+      page = pdfDoc.addPage(PAGE_SIZE)
+      y = height - margin
+    }
+
     // Helper functions
     const drawText = (text: string, font: PDFFont, size: number, color: typeof colors.black, x = margin) => {
+      ensureSpace(size + 4)
       page.drawText(text, { x, y, size, font, color })
       y -= size + 4
     }
@@ -65,6 +74,8 @@ export async function GET() {
     }
 
     const drawSectionHeader = (title: string) => {
+      // Keep the header with at least a couple of lines of its section.
+      ensureSpace(60)
       y -= 8
       page.drawText(title.toUpperCase(), { x: margin, y, size: 11, font: helveticaBold, color: colors.primary })
       y -= 6
@@ -158,6 +169,8 @@ export async function GET() {
         const startDate = new Date(exp.startDate).toLocaleDateString('en-US', { month: 'short', year: 'numeric' })
         const endDate = exp.current ? 'Present' : exp.endDate ? new Date(exp.endDate).toLocaleDateString('en-US', { month: 'short', year: 'numeric' }) : ''
         const dateRange = `${startDate} - ${endDate}`
+        const expLines = wrapText(exp.description, helvetica, 9, contentWidth - 10).slice(0, 3)
+        ensureSpace(13 + 12 + expLines.length * 11 + 6)
 
         // Position
         page.drawText(exp.position, { x: margin, y, size: 11, font: helveticaBold, color: colors.black })
@@ -173,8 +186,7 @@ export async function GET() {
         y -= 12
 
         // Description
-        const expLines = wrapText(exp.description, helvetica, 9, contentWidth - 10)
-        for (const line of expLines.slice(0, 3)) {
+        for (const line of expLines) {
           page.drawText(line, { x: margin + 8, y, size: 9, font: helvetica, color: colors.secondary })
           y -= 11
         }
@@ -190,6 +202,8 @@ export async function GET() {
         const startYear = new Date(edu.startDate).getFullYear()
         const endYear = edu.endDate ? new Date(edu.endDate).getFullYear() : 'Present'
         const dateRange = `${startYear} - ${endYear}`
+
+        ensureSpace(27)
 
         // Degree
         const degree = `${edu.degree}${edu.field ? ` in ${edu.field}` : ''}`
@@ -222,6 +236,7 @@ export async function GET() {
       for (const [category, skillNames] of Object.entries(skillsByCategory)) {
         const categoryLabel = `${category.charAt(0).toUpperCase() + category.slice(1)}: `
         const skillsText = skillNames.join(', ')
+        ensureSpace(14)
 
         page.drawText(categoryLabel, { x: margin, y, size: 10, font: helveticaBold, color: colors.black })
         const labelWidth = helveticaBold.widthOfTextAtSize(categoryLabel, 10)
@@ -236,6 +251,7 @@ export async function GET() {
           page.drawText(skillLines[0] || '', { x: margin + labelWidth, y, size: 9, font: helvetica, color: colors.secondary })
           y -= 12
           for (const line of skillLines.slice(1)) {
+            ensureSpace(12)
             page.drawText(line, { x: margin + 15, y, size: 9, font: helvetica, color: colors.secondary })
             y -= 12
           }
@@ -250,6 +266,7 @@ export async function GET() {
 
       for (const cert of certifications) {
         const certDate = new Date(cert.date).toLocaleDateString('en-US', { month: 'short', year: 'numeric' })
+        ensureSpace(26)
 
         page.drawText(cert.name, { x: margin, y, size: 10, font: helveticaBold, color: colors.black })
         const dateWidth = helvetica.widthOfTextAtSize(certDate, 9)
@@ -262,11 +279,12 @@ export async function GET() {
     }
 
     // ===== PROJECTS =====
-    if (projects.length > 0 && y > 120) {
+    if (projects.length > 0) {
       drawSectionHeader('Featured Projects')
 
       for (const project of projects.slice(0, 3)) {
-        if (y < 60) break
+        const descLines = project.description ? wrapText(project.description, helvetica, 9, contentWidth - 10).slice(0, 2) : []
+        ensureSpace(12 + 11 + descLines.length * 11 + 6)
 
         page.drawText(project.title, { x: margin, y, size: 10, font: helveticaBold, color: colors.black })
         y -= 12
@@ -280,12 +298,9 @@ export async function GET() {
         }
 
         // Short description
-        if (project.description) {
-          const descLines = wrapText(project.description, helvetica, 9, contentWidth - 10)
-          for (const line of descLines.slice(0, 2)) {
-            page.drawText(line, { x: margin, y, size: 9, font: helvetica, color: colors.lightGray })
-            y -= 11
-          }
+        for (const line of descLines) {
+          page.drawText(line, { x: margin, y, size: 9, font: helvetica, color: colors.lightGray })
+          y -= 11
         }
         y -= 6
       }

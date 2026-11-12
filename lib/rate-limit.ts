@@ -52,9 +52,28 @@ export async function rateLimit(key: string, limit: number, windowMs: number): P
   }
 }
 
+/**
+ * Login bucket key scoped to client + attempted username.
+ *
+ * Without a trusted client IP every caller shares the "unknown" address, so an
+ * IP-only bucket lets anyone lock the admin out. Scoping to the (normalised,
+ * hashed) username means floods only hit the bucket of the username they try,
+ * and brute force against the real username is still capped.
+ */
+export function loginRateKey(ip: string, username: string): string {
+  const user = createHash('sha256').update(username.trim().toLowerCase()).digest('hex').slice(0, 32)
+  return `login:${ip}:${user}`
+}
+
+let warnedUntrustedIp = false
+
 /** Only accept forwarded client addresses from a configured trusted ingress. */
 export function clientIp(headers: Headers): string {
   if (process.env.VERCEL === '1') return headers.get('x-vercel-forwarded-for')?.split(',')[0]?.trim() || 'unknown'
   if (process.env.TRUST_PROXY === 'true') return headers.get('x-forwarded-for')?.split(',')[0]?.trim() || 'unknown'
+  if (process.env.NODE_ENV === 'production' && !warnedUntrustedIp) {
+    warnedUntrustedIp = true
+    console.warn('[rate-limit] No trusted client IP source (VERCEL / TRUST_PROXY); all visitors share one rate-limit bucket.')
+  }
   return 'unknown'
 }

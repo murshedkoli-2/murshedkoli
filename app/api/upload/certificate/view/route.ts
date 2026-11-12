@@ -40,24 +40,38 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({ error: 'R2 not configured' }, { status: 503 })
   }
 
-  if (request.nextUrl.searchParams.get('stream') === '1') {
-    const object = await client.send(new GetObjectCommand({ Bucket: bucket, Key: key }))
-    if (!object.Body) {
+  try {
+    if (request.nextUrl.searchParams.get('stream') === '1') {
+      const object = await client.send(new GetObjectCommand({ Bucket: bucket, Key: key }))
+      if (!object.Body) {
+        return NextResponse.json({ error: 'Not found' }, { status: 404 })
+      }
+      return new NextResponse(object.Body.transformToWebStream(), {
+        headers: {
+          'Content-Type': object.ContentType ?? 'application/octet-stream',
+          'Cache-Control': 'private, max-age=300',
+          'X-Content-Type-Options': 'nosniff',
+        },
+      })
+    }
+
+    const signed = await getSignedUrl(
+      client,
+      new GetObjectCommand({ Bucket: bucket, Key: key }),
+      { expiresIn: 3600 }, // 1 hour
+    )
+
+    return NextResponse.redirect(signed)
+  } catch (error) {
+    if (isMissingObject(error)) {
       return NextResponse.json({ error: 'Not found' }, { status: 404 })
     }
-    return new NextResponse(object.Body.transformToWebStream(), {
-      headers: {
-        'Content-Type': object.ContentType ?? 'application/octet-stream',
-        'Cache-Control': 'private, max-age=300',
-      },
-    })
+    console.error('Certificate view failed:', error instanceof Error ? error.name : 'Unknown error')
+    return NextResponse.json({ error: 'Could not load certificate file.' }, { status: 502 })
   }
+}
 
-  const signed = await getSignedUrl(
-    client,
-    new GetObjectCommand({ Bucket: bucket, Key: key }),
-    { expiresIn: 3600 }, // 1 hour
-  )
-
-  return NextResponse.redirect(signed)
+function isMissingObject(error: unknown): boolean {
+  const e = error as { name?: string; $metadata?: { httpStatusCode?: number } } | null
+  return e?.name === 'NoSuchKey' || e?.name === 'NotFound' || e?.$metadata?.httpStatusCode === 404
 }

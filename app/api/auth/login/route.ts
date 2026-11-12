@@ -1,4 +1,4 @@
-import { rateLimit, clientIp } from '@/lib/rate-limit'
+import { rateLimit, clientIp, loginRateKey } from '@/lib/rate-limit'
 import { readJson, apiError } from '@/lib/http'
 import { z } from 'zod'
 import { NextRequest, NextResponse } from 'next/server'
@@ -12,26 +12,34 @@ function safeEqual(a: string, b: string): boolean {
   return diff === 0
 }
 
+const LOGIN_WINDOW_MS = 10 * 60 * 1000
+const LOGIN_ATTEMPTS_PER_USER = 8
+const LOGIN_ATTEMPTS_PER_IP = 30
+const loginSchema = z.object({ username: z.string().min(1).max(200), password: z.string().min(1).max(1000) })
+
 export async function POST(request: NextRequest) {
+  let username = ''
+  let password = ''
   try {
-    const limit = await rateLimit('login:' + clientIp(request.headers), 8, 10 * 60 * 1000)
-    if (!limit.ok) return NextResponse.json({ error: 'Too many attempts. Try again later.' }, { status: 429 })
+    const body = loginSchema.parse(await readJson(request, 4096))
+    username = body.username
+    password = body.password
+  } catch {
+    return NextResponse.json({ error: 'Invalid request.' }, { status: 400 })
+  }
+
+  try {
+    const ip = clientIp(request.headers)
+    const perUser = await rateLimit(loginRateKey(ip, username), LOGIN_ATTEMPTS_PER_USER, LOGIN_WINDOW_MS)
+    // A per-IP cap only makes sense when the IP is real; "unknown" is shared by everyone.
+    const perIp = ip === 'unknown' ? { ok: true } : await rateLimit('login-ip:' + ip, LOGIN_ATTEMPTS_PER_IP, LOGIN_WINDOW_MS)
+    if (!perUser.ok || !perIp.ok) return NextResponse.json({ error: 'Too many attempts. Try again later.' }, { status: 429 })
   } catch (error) { return apiError(error) }
 
   const expectedUser = process.env.ADMIN_USERNAME
   const expectedPass = process.env.ADMIN_PASSWORD
   if (!expectedUser || !expectedPass || !process.env.NEXTAUTH_SECRET || process.env.NEXTAUTH_SECRET.length < 32) {
     return NextResponse.json({ error: 'Admin credentials or session secret are not configured.' }, { status: 500 })
-  }
-
-  let username = ''
-  let password = ''
-  try {
-    const body = z.object({ username: z.string().min(1).max(200), password: z.string().min(1).max(1000) }).parse(await readJson(request, 4096))
-    username = String(body.username ?? '')
-    password = String(body.password ?? '')
-  } catch {
-    return NextResponse.json({ error: 'Invalid request.' }, { status: 400 })
   }
 
   // Evaluate both comparisons regardless, to keep timing uniform.
