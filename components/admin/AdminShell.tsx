@@ -4,6 +4,10 @@ import { useState, type ReactNode } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { toast } from 'sonner'
+import {
+  Award, Briefcase, FolderKanban, GraduationCap, Hexagon, Layers, LayoutGrid, LogOut, Mail, Menu,
+  PiggyBank, Plane, Route, Settings, UserRound, type LucideIcon,
+} from 'lucide-react'
 import { ThemeToggle } from '@/components/site/ThemeToggle'
 
 export type AdminNavKey =
@@ -24,40 +28,40 @@ export type AdminNavKey =
 interface NavItem {
   key: AdminNavKey
   label: string
-  icon: string
+  icon: LucideIcon
   href: string
   badgeKey?: 'projects' | 'skills' | 'certificates' | 'messages' | 'career'
 }
 
 const HOME: NavItem[] = [
-  { key: 'overview', label: 'Overview', icon: '◎', href: '/admin/dashboard' },
+  { key: 'overview', label: 'Overview', icon: LayoutGrid, href: '/admin/dashboard' },
 ]
 
 const CAREER: NavItem[] = [
-  { key: 'career', label: 'Career Roadmap', icon: '⚡', href: '/admin/career', badgeKey: 'career' },
+  { key: 'career', label: 'Career Roadmap', icon: Route, href: '/admin/career', badgeKey: 'career' },
 ]
 
 const CONTENT: NavItem[] = [
-  { key: 'projects',      label: 'Projects',      icon: '▤', href: '/admin/projects',     badgeKey: 'projects' },
-  { key: 'services',      label: 'Services',       icon: '◈', href: '/admin/services' },
-  { key: 'skills',        label: 'Skills',         icon: '⬡', href: '/admin/skills',       badgeKey: 'skills' },
-  { key: 'certificates',  label: 'Certificates',   icon: '✦', href: '/admin/certificates', badgeKey: 'certificates' },
-  { key: 'experience',    label: 'Experience',     icon: '≡', href: '/admin/experience' },
-  { key: 'education',     label: 'Education',      icon: '⚑', href: '/admin/education' },
-  { key: 'about',         label: 'About & Hero',   icon: '✎', href: '/admin/about' },
+  { key: 'projects',      label: 'Projects',      icon: FolderKanban, href: '/admin/projects',     badgeKey: 'projects' },
+  { key: 'services',      label: 'Services',       icon: Layers, href: '/admin/services' },
+  { key: 'skills',        label: 'Skills',         icon: Hexagon, href: '/admin/skills',       badgeKey: 'skills' },
+  { key: 'certificates',  label: 'Certificates',   icon: Award, href: '/admin/certificates', badgeKey: 'certificates' },
+  { key: 'experience',    label: 'Experience',     icon: Briefcase, href: '/admin/experience' },
+  { key: 'education',     label: 'Education',      icon: GraduationCap, href: '/admin/education' },
+  { key: 'about',         label: 'About & Hero',   icon: UserRound, href: '/admin/about' },
 ]
 
 const INBOX: NavItem[] = [
-  { key: 'messages', label: 'Messages', icon: '✉', href: '/admin/messages', badgeKey: 'messages' },
+  { key: 'messages', label: 'Messages', icon: Mail, href: '/admin/messages', badgeKey: 'messages' },
 ]
 
 const PERSONAL: NavItem[] = [
-  { key: 'tour',    label: 'Tour',    icon: '✈', href: '/admin/tour' },
-  { key: 'savings', label: 'Savings', icon: '৳', href: '/admin/savings' },
+  { key: 'tour',    label: 'Tour',    icon: Plane, href: '/admin/tour' },
+  { key: 'savings', label: 'Savings', icon: PiggyBank, href: '/admin/savings' },
 ]
 
 const SYSTEM: NavItem[] = [
-  { key: 'settings', label: 'Settings', icon: '⚙', href: '/admin/settings' },
+  { key: 'settings', label: 'Settings', icon: Settings, href: '/admin/settings' },
 ]
 
 export interface AdminBadges {
@@ -85,22 +89,22 @@ export function AdminShell({ active, title, subtitle, actions, badges = {}, chil
     try {
       const response = await fetch('/api/auth/logout', { method: 'POST' })
       if (!response.ok) throw new Error('Logout failed')
-      localStorage.removeItem('adminLoggedIn')
-      localStorage.removeItem('adminUser')
       window.location.assign(new URL('/admin/login', window.location.origin).href)
     } catch { toast.error('Could not sign out. Please retry.') }
   }
 
   const renderItem = (item: NavItem) => {
     const badge = item.badgeKey ? badges[item.badgeKey] : undefined
+    const Icon = item.icon
     return (
       <Link
         key={item.key}
         href={item.href}
         className={`adm-link ${item.key === active ? 'active' : ''}`}
+        aria-current={item.key === active ? 'page' : undefined}
         onClick={() => setMenuOpen(false)}
       >
-        <span className="adm-ic" aria-hidden>{item.icon}</span>
+        <span className="adm-ic" aria-hidden="true"><Icon size={16} strokeWidth={1.75} /></span>
         <span>{item.label}</span>
         {badge ? <span className="adm-badge">{badge}</span> : null}
       </Link>
@@ -113,7 +117,7 @@ export function AdminShell({ active, title, subtitle, actions, badges = {}, chil
 
       <aside className="adm-aside">
         <Link href="/admin/dashboard" className="adm-brand">
-          MURSHED<span>.</span>ADMIN
+          murshed<span>.</span>admin
         </Link>
 
         {HOME.map(renderItem)}
@@ -147,7 +151,7 @@ export function AdminShell({ active, title, subtitle, actions, badges = {}, chil
             title="Sign out"
             aria-label="Sign out"
           >
-            ⏻
+            <LogOut size={16} strokeWidth={1.75} aria-hidden="true" />
           </button>
         </div>
       </aside>
@@ -161,7 +165,7 @@ export function AdminShell({ active, title, subtitle, actions, badges = {}, chil
               aria-label="Open menu"
               style={{ padding: '8px 12px' }}
             >
-              ☰
+              <Menu size={16} aria-hidden="true" />
             </button>
             <div style={{ minWidth: 0 }}>
               <h1 className="adm-h1">{title}</h1>

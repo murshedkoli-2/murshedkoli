@@ -1,198 +1,110 @@
 'use client'
 
-import { useState } from 'react'
-import { useRouter } from 'next/navigation'
-import { motion } from 'framer-motion'
-import { LogIn, ArrowLeft } from 'lucide-react'
+import { useEffect, useState, type FormEvent } from 'react'
+import Link from 'next/link'
+import { ArrowLeft } from 'lucide-react'
 
-const AdminLogin = () => {
-  const [credentials, setCredentials] = useState({ username: '', password: '' })
+const DASHBOARD_PATH = '/admin/dashboard'
+
+/** A full page load, so the server reads the new session cookie on every admin route. */
+function enterDashboard() {
+  window.location.assign(new URL(DASHBOARD_PATH, window.location.origin).href)
+}
+
+export default function AdminLogin() {
+  const [username, setUsername] = useState('')
+  const [password, setPassword] = useState('')
   const [error, setError] = useState('')
   const [isLoading, setIsLoading] = useState(false)
-  const router = useRouter()
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  // Already signed in? Skip the form.
+  useEffect(() => {
+    const controller = new AbortController()
+    fetch('/api/auth/session', { cache: 'no-store', signal: controller.signal })
+      .then((res) => { if (res.ok) enterDashboard() })
+      .catch(() => {})
+    return () => controller.abort()
+  }, [])
+
+  const handleSubmit = async (e: FormEvent) => {
     e.preventDefault()
     setIsLoading(true)
     setError('')
 
     try {
-      // Authenticate server-side — validates against env credentials and sets
-      // the httpOnly admin_session cookie. No credentials live in the client.
+      // The server checks the credentials and sets the httpOnly session cookie.
       const res = await fetch('/api/auth/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(credentials),
+        body: JSON.stringify({ username: username.trim(), password }),
       })
 
       if (res.ok) {
-        // localStorage flag drives the lightweight client-side route guard.
-        localStorage.setItem('adminLoggedIn', 'true')
-        localStorage.setItem('adminUser', credentials.username)
-        router.push('/admin/dashboard')
+        enterDashboard()
         return
       }
 
-      const data = await res.json().catch(() => ({}))
-      setError(data.error || 'Invalid username or password')
+      const data: { error?: string } = await res.json().catch(() => ({}))
+      setError(data.error || 'Invalid username or password.')
     } catch {
-      setError('Could not sign in. Please try again.')
-    } finally {
-      setIsLoading(false)
+      setError('Could not reach the server. Check your connection and try again.')
     }
-  }
-
-  const inputStyle: React.CSSProperties = {
-    width: '100%',
-    padding: '12px 14px',
-    borderRadius: 'var(--radius-sm)',
-    border: '1px solid var(--line)',
-    background: 'var(--canvas)',
-    color: 'var(--ink)',
-    fontSize: '0.95rem',
-  }
-  const labelStyle: React.CSSProperties = {
-    display: 'block',
-    fontSize: '0.72rem',
-    fontWeight: 600,
-    letterSpacing: '0.14em',
-    textTransform: 'uppercase',
-    color: 'var(--ink-muted)',
-    marginBottom: 7,
+    setIsLoading(false)
   }
 
   return (
-    <div
-      style={{
-        minHeight: '100vh',
-        display: 'grid',
-        placeItems: 'center',
-        padding: '1.5rem',
-        background: 'var(--canvas)',
-        color: 'var(--ink)',
-      }}
-    >
-      <motion.div
-        initial={{ opacity: 0, y: 15 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
-        style={{
-          width: '100%',
-          maxWidth: 400,
-          background: 'var(--surface)',
-          border: '1px solid var(--line)',
-          borderRadius: 'var(--radius)',
-          boxShadow: 'var(--shadow-md)',
-          padding: 'clamp(1.75rem, 1rem + 3vw, 2.5rem)',
-        }}
-      >
-        <div style={{ textAlign: 'center', marginBottom: '2rem' }}>
-          <span
-            style={{
-              display: 'inline-flex',
-              width: 48,
-              height: 48,
-              alignItems: 'center',
-              justifyContent: 'center',
-              borderRadius: 14,
-              background: 'color-mix(in oklch, var(--accent) 14%, transparent)',
-              color: 'var(--accent)',
-              marginBottom: '1rem',
-            }}
-          >
-            <LogIn size={22} />
-          </span>
-          <h1 style={{ fontFamily: 'var(--font-display)', fontSize: '1.5rem', marginBottom: 6 }}>Welcome back</h1>
-          <p style={{ color: 'var(--ink-muted)', fontSize: '0.9rem' }}>Sign in to your dashboard</p>
-        </div>
+    <div className="lgn">
+      <aside className="lgn-aside" aria-hidden="true">
+        <div className="lgn-aside-brand">murshed<span>.</span>admin</div>
+        <p className="lgn-aside-note">Everything on the site, in <em>one place</em>.</p>
+      </aside>
 
-        <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+      <main className="lgn-main">
+        <form className="lgn-form" onSubmit={handleSubmit}>
           <div>
-            <label htmlFor="username" style={labelStyle}>Username</label>
+            <h1 className="lgn-title">Sign in</h1>
+            <p className="lgn-sub">Use your admin username and password.</p>
+          </div>
+
+          <div className="lgn-field">
+            <label htmlFor="username">Username</label>
             <input
-              type="text"
               id="username"
-              value={credentials.username}
-              onChange={(e) => setCredentials({ ...credentials, username: e.target.value })}
-              style={inputStyle}
-              placeholder="Enter username"
+              className="lgn-input"
+              type="text"
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
               autoComplete="username"
+              autoCapitalize="none"
+              spellCheck={false}
               required
             />
           </div>
 
-          <div>
-            <label htmlFor="password" style={labelStyle}>Password</label>
+          <div className="lgn-field">
+            <label htmlFor="password">Password</label>
             <input
-              type="password"
               id="password"
-              value={credentials.password}
-              onChange={(e) => setCredentials({ ...credentials, password: e.target.value })}
-              style={inputStyle}
-              placeholder="Enter password"
+              className="lgn-input"
+              type="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
               autoComplete="current-password"
               required
             />
           </div>
 
-          {error && (
-            <motion.div
-              initial={{ opacity: 0, y: -5 }}
-              animate={{ opacity: 1, y: 0 }}
-              style={{
-                padding: '10px 12px',
-                borderRadius: 'var(--radius-sm)',
-                background: 'color-mix(in oklch, #d16a5a 12%, transparent)',
-                border: '1px solid color-mix(in oklch, #d16a5a 30%, var(--line))',
-                color: '#c0503f',
-                fontSize: '0.85rem',
-                textAlign: 'center',
-              }}
-            >
-              {error}
-            </motion.div>
-          )}
+          {error && <div className="lgn-error" role="alert">{error}</div>}
 
-          <button
-            type="submit"
-            disabled={isLoading}
-            style={{
-              width: '100%',
-              padding: '13px 18px',
-              borderRadius: 'var(--radius-sm)',
-              background: 'var(--accent)',
-              color: 'var(--accent-ink)',
-              fontWeight: 600,
-              border: 'none',
-              cursor: isLoading ? 'default' : 'pointer',
-              opacity: isLoading ? 0.7 : 1,
-              marginTop: 4,
-            }}
-          >
+          <button type="submit" className="lgn-submit" disabled={isLoading}>
             {isLoading ? 'Signing in…' : 'Sign in'}
           </button>
-        </form>
 
-        <div style={{ textAlign: 'center', marginTop: '1.75rem' }}>
-          <button
-            onClick={() => router.push('/')}
-            style={{
-              display: 'inline-flex',
-              alignItems: 'center',
-              gap: 6,
-              background: 'none',
-              border: 'none',
-              color: 'var(--ink-muted)',
-              fontSize: '0.85rem',
-              cursor: 'pointer',
-            }}
-          >
-            <ArrowLeft size={15} /> Back to portfolio
-          </button>
-        </div>
-      </motion.div>
+          <Link href="/" className="lgn-back">
+            <ArrowLeft size={15} aria-hidden="true" /> Back to portfolio
+          </Link>
+        </form>
+      </main>
     </div>
   )
 }
-
-export default AdminLogin

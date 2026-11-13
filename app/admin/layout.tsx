@@ -1,5 +1,6 @@
 import { Metadata } from 'next'
 import './admin.css'
+import './overview.css'
 
 export const metadata: Metadata = {
   title: 'Admin Dashboard | Portfolio',

@@ -1,17 +1,13 @@
 /**
  * Fetch wrapper for admin pages.
  *
- * The admin UI's logged-in state is a localStorage flag, but API auth is an
- * 8-hour signed cookie (see lib/auth/session.ts). When the cookie has expired
- * the flag goes stale: pages render as logged-in while every API call 401s.
- * This wrapper detects that case, clears the stale flag, and redirects to the
- * login page instead of leaving the page stuck on error toasts.
+ * API auth is an 8-hour signed cookie (see lib/auth/session.ts). When it
+ * expires mid-session every API call starts returning 401; this sends the
+ * user back to sign-in instead of leaving the page stuck on error toasts.
  */
 export async function adminFetch(input: RequestInfo | URL, init?: RequestInit): Promise<Response> {
   const res = await fetch(input, init)
   if (res.status === 401 && typeof window !== 'undefined') {
-    localStorage.removeItem('adminLoggedIn')
-    localStorage.removeItem('adminUser')
     window.location.href = new URL('/admin/login', window.location.origin).href
   }
   return res

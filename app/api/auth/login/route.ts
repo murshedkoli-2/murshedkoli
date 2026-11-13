@@ -36,20 +36,22 @@ export async function POST(request: NextRequest) {
     if (!perUser.ok || !perIp.ok) return NextResponse.json({ error: 'Too many attempts. Try again later.' }, { status: 429 })
   } catch (error) { return apiError(error) }
 
-  const expectedUser = process.env.ADMIN_USERNAME
-  const expectedPass = process.env.ADMIN_PASSWORD
+  // Values pasted into a hosting dashboard often carry a stray space or newline,
+  // which would make the correct credentials fail forever.
+  const expectedUser = process.env.ADMIN_USERNAME?.trim()
+  const expectedPass = process.env.ADMIN_PASSWORD?.trim()
   if (!expectedUser || !expectedPass || !process.env.NEXTAUTH_SECRET || process.env.NEXTAUTH_SECRET.length < 32) {
     return NextResponse.json({ error: 'Admin credentials or session secret are not configured.' }, { status: 500 })
   }
 
   // Evaluate both comparisons regardless, to keep timing uniform.
-  const okUser = safeEqual(username, expectedUser)
+  const okUser = safeEqual(username.trim(), expectedUser)
   const okPass = safeEqual(password, expectedPass)
   if (!okUser || !okPass) {
     return NextResponse.json({ error: 'Invalid username or password.' }, { status: 401 })
   }
 
-  const token = await createSessionToken(username)
+  const token = await createSessionToken(expectedUser)
   const res = NextResponse.json({ ok: true })
   res.cookies.set(SESSION_COOKIE, token, {
     httpOnly: true,

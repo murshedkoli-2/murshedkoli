@@ -2,16 +2,13 @@ import { serializeJsonLd } from '@/lib/json-ld'
 import { Nav } from '@/components/site/Nav'
 import { Footer } from '@/components/site/Footer'
 import { Hero } from '@/components/site/home/Hero'
-import { TechStrip } from '@/components/site/home/TechStrip'
-import { AboutPreview } from '@/components/site/home/AboutPreview'
-import { FeaturedProjects } from '@/components/site/home/FeaturedProjects'
-import { ExpertiseSection } from '@/components/site/home/ExpertiseSection'
-import { SkillsSection } from '@/components/site/home/SkillsSection'
-import { WorkProcess } from '@/components/site/home/WorkProcess'
+import { WorkSection } from '@/components/site/home/WorkSection'
+import { AboutSection } from '@/components/site/home/AboutSection'
+import { CapabilitiesSection } from '@/components/site/home/CapabilitiesSection'
 import { TimelineSection } from '@/components/site/home/TimelineSection'
 import { CertificatesSection } from '@/components/site/home/CertificatesSection'
-import { FinalCTA } from '@/components/site/home/FinalCTA'
 import { ContactSection } from '@/components/site/home/ContactSection'
+import '@/components/site/home/home.css'
 import {
   getProfile,
   getHeroStats,
@@ -28,10 +25,7 @@ const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://murshedkoli.com'
 /** ISR: served static (instant navigation), regenerated in the background every 10 min. */
 export const revalidate = 600
 
-/**
- * Production-ready Full-Stack MERN Developer landing page.
- * Strictly data-driven, conditional rendering, Core Web Vitals optimized.
- */
+/** Landing page: every section is data-driven and hides itself when it has nothing to show. */
 export default async function Home() {
   const [profile, stats, featured, skills, experience, education, certificates, services] =
     await Promise.all([
@@ -73,37 +67,21 @@ export default async function Home() {
       />
       <Nav name={profile.name} resumeUrl={profile.resume} />
       <main className="apple-light-main">
-        {/* 1. Hero: Two-column layout, positioning headline, availability, social proof */}
+        {/* Statement, actions and the interactive 3D point cloud */}
         <Hero profile={profile} stats={stats} />
 
-        {/* 2. Tech Strip: Slim continuous marquee of core production technologies */}
-        <TechStrip />
+        {/* Selected projects as 3D tilt cards (hidden when empty) */}
+        <WorkSection projects={featured} />
 
-        {/* 3. About Preview: 01 / ABOUT, core statement, bio, and architectural disciplines */}
-        <AboutPreview profile={profile} />
+        <AboutSection profile={profile} />
 
-        {/* 4. Featured Projects: Selected Work case study cards (hides if 0 items) */}
-        <FeaturedProjects projects={featured} />
+        {/* Services and tech stack (each hidden when empty) */}
+        <CapabilitiesSection services={services} skills={skills} />
 
-        {/* 5. Expertise: What I Build (Frontend, Backend, Database, Dashboards, SaaS, AI) */}
-        <ExpertiseSection services={services} />
-
-        {/* 6. Tech Stack: Categorized taxonomy from DB skills (hides if 0 items) */}
-        <SkillsSection columns={skills} />
-
-        {/* 7. Work Process: 5-Stage engineering lifecycle (Discover -> Ship) */}
-        <WorkProcess />
-
-        {/* 8. Track Record: Experience & Education timeline (hides if 0 items) */}
         <TimelineSection experience={experience} education={education} />
 
-        {/* 9. Verified Credentials: Image lightbox & PDF viewer (hides if 0 items) */}
         <CertificatesSection certificates={certificates} />
 
-        {/* 10. Final Call To Action: "Have an idea? Let's turn it into a real product" */}
-        <FinalCTA email={profile.email} available={profile.availability} />
-
-        {/* 11. Contact Section: Working contact form, email, and social links */}
         <ContactSection profile={profile} />
       </main>
       <Footer name={profile.name} email={profile.email} socialLinks={profile.socialLinks} />

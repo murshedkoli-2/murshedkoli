@@ -12,7 +12,7 @@
   --panel: var(--surface);
   --border: var(--line);
   --muted: var(--ink-muted);
-  --rail: var(--surface-2);            /* sidebar ground — follows the theme */
+  --rail: var(--canvas);               /* sidebar shares the page ground; a hairline separates it */
   --rail-ink: var(--ink-muted);        /* sidebar text — follows the theme */
   --rail-hover: color-mix(in oklch, var(--ink) 7%, transparent);
   --rail-active: color-mix(in oklch, var(--ink) 4%, transparent);
@@ -61,23 +61,24 @@
 }
 .adm-brand {
   font-family: var(--adm-display);
-  font-weight: 800;
+  font-weight: 600;
   color: var(--ink);
   font-size: 15px;
   padding: 6px 10px;
-  margin-bottom: 24px;
+  margin-bottom: 22px;
   text-decoration: none;
-  letter-spacing: 0.01em;
+  letter-spacing: -0.01em;
 }
 .adm-brand span {
   color: var(--amber);
 }
 .adm-nav-group {
-  font-size: 10.5px;
-  letter-spacing: 0.14em;
+  font-family: var(--adm-mono);
+  font-size: 10px;
+  letter-spacing: 0.1em;
   text-transform: uppercase;
-  color: var(--muted);
-  padding: 14px 10px 6px;
+  color: var(--comment);
+  padding: 18px 10px 6px;
 }
 .adm-link {
   display: flex;
@@ -106,18 +107,25 @@
   outline: 2px solid var(--amber);
   outline-offset: -2px;
 }
-.adm-link.active {
-  background: var(--amber);
-  color: var(--on-accent);
-  font-weight: 600;
+.adm-link:hover {
+  color: var(--ink);
 }
-.adm-link.active:hover {
-  background: color-mix(in oklch, var(--accent) 82%, black);
+/* The current page is marked by weight and a quiet ground, not a block of colour. */
+.adm-link.active {
+  background: var(--rail-hover);
+  color: var(--ink);
+  font-weight: 600;
 }
 .adm-link .adm-ic {
   width: 18px;
-  text-align: center;
+  display: grid;
+  place-items: center;
   flex: none;
+  opacity: 0.75;
+}
+.adm-link.active .adm-ic {
+  opacity: 1;
+  color: var(--amber);
 }
 .adm-badge {
   margin-left: auto;
@@ -126,8 +134,9 @@
   font-size: 11px;
   padding: 1px 8px;
 }
-.adm-link.active .adm-badge {
-  background: color-mix(in oklch, var(--accent-ink) 22%, transparent);
+.adm-badge {
+  font-family: var(--adm-mono);
+  font-variant-numeric: tabular-nums;
 }
 .adm-side-foot {
   margin-top: auto;
@@ -142,12 +151,12 @@
   width: 30px;
   height: 30px;
   border-radius: 50%;
-  background: var(--amber);
-  color: var(--on-accent);
+  background: var(--rail-hover);
+  color: var(--ink);
   display: grid;
   place-items: center;
-  font-weight: 700;
-  font-size: 12px;
+  font-weight: 600;
+  font-size: 11px;
   flex: none;
 }
 
@@ -161,14 +170,16 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 24px;
+  margin-bottom: 28px;
   gap: 16px;
   flex-wrap: wrap;
 }
 .adm-h1 {
   font-family: var(--adm-display);
-  font-weight: 700;
-  font-size: 22px;
+  font-weight: 600;
+  font-size: 26px;
+  letter-spacing: -0.03em;
+  line-height: 1.15;
 }
 .adm-sub {
   color: var(--muted);
@@ -197,22 +208,24 @@
 .adm-btn:hover {
   background: var(--surface-2);
 }
-.adm-btn.primary {
-  background: var(--accent);
-  border-color: var(--accent);
-  color: var(--accent-ink);
-}
-.adm-btn.primary:hover {
-  background: color-mix(in oklch, var(--accent) 82%, black);
-}
+/* One primary style across the panel: solid ink, matching the public site. */
+.adm-btn.primary,
 .adm-btn.amber {
-  background: var(--amber);
-  border-color: var(--amber);
-  color: var(--on-accent);
+  background: var(--btn-primary-bg);
+  border-color: var(--btn-primary-bg);
+  color: var(--btn-primary-ink);
   font-weight: 600;
 }
+.adm-btn.primary:hover,
 .adm-btn.amber:hover {
-  background: color-mix(in oklch, var(--accent) 82%, black);
+  background: color-mix(in oklch, var(--btn-primary-bg) 86%, var(--canvas));
+}
+.adm-btn:focus-visible {
+  outline: 2px solid var(--amber);
+  outline-offset: 2px;
+}
+.adm-btn:active:not(:disabled) {
+  transform: scale(0.98);
 }
 .adm-btn:disabled {
   opacity: 0.5;
