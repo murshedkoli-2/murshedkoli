@@ -373,12 +373,21 @@ model TourLocation {
   name      String
   region    String    @default("bangladesh") // "bangladesh" | "international"
   country   String?
+  district  String?   // lib/data/bd-districts id, for Bangladesh spots
+  catalogId String?   // Bangladesh spot id or ISO country code; null for custom trips
   notes     String?
   visited   Boolean   @default(false)
   visitedAt DateTime?
   order     Int       @default(0)
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
+}
+
+/// Districts ticked on the admin travel map (lib/data/bd-districts ids).
+model VisitedDistrict {
+  id         String   @id @default(auto()) @map("_id") @db.ObjectId
+  districtId String   @unique
+  createdAt  DateTime @default(now())
 }
 
 model SavingsAccount {

@@ -62,7 +62,8 @@ export async function POST(req: Request) {
         prompt = `Write an inspiring, vivid 2-3 sentence travel description for visiting "${contextData.destination || 'Destination'}" during "${contextData.season || 'the season'}". Highlight culture, scenery, and adventure.`
         break
       case 'tour-itinerary':
-        prompt = `Create a concise 3-day travel itinerary and budget estimate for "${contextData.destination || 'Destination'}" with an approximate budget of $${contextData.budget || '500'}. Keep it structured and practical.`
+        prompt = `Create a concise 3-day travel itinerary with a per-person cost breakdown for "${contextData.destination || 'Destination'}"${contextData.region === 'bangladesh' ? ' in Bangladesh' : ''}, for a traveller starting from Dhaka. ${typeof contextData.budgetBDT === 'number' && contextData.budgetBDT > 0 ? `Plan around a total budget of about BDT ${Math.round(contextData.budgetBDT).toLocaleString('en-US')} per person.` : 'Suggest a realistic total budget per person.'} Give every amount in Bangladeshi taka (BDT). Plain text only, no markdown, and stay under 1,800 characters.`
+        maxTokens = 700
         break
       case 'about-story':
         prompt = `Craft an authentic, inspiring developer story for ${contextData.name || 'a developer'}, covering their journey from learning code to mastering full-stack systems, engineering mindset, and passion for craft. Context: ${contextData.notes || ''}`

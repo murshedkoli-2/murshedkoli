@@ -27,7 +27,7 @@ export async function DELETE(_request: NextRequest, { params }: { params: Promis
   if (auth instanceof NextResponse) return auth
 
   try {
-    const { id } = await params
+    const id = objectId.parse((await params).id)
     await prisma.tourLocation.delete({ where: { id } })
     return NextResponse.json({ success: true })
   } catch (error) { return apiError(error) }
