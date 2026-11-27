@@ -1,3 +1,4 @@
+import { invalidatePortfolio } from '@/lib/invalidate-portfolio'
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { requireAdmin } from '@/lib/auth/require-admin'
@@ -26,6 +27,7 @@ export async function PUT(request: NextRequest) {
         where: { districtId }, create: { districtId }, update: {},
       })),
     ])
+    invalidatePortfolio()
     return NextResponse.json({ districtIds })
   } catch (error) { return apiError(error) }
 }

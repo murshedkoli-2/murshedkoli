@@ -82,7 +82,7 @@ export function CertificateRail({ certificates }: { certificates: CertificateVie
       <div className="ld-wrap">
         <SectionHead
           id="ld-cert-title"
-          index="05"
+          index="06"
           label="Credentials"
           title={
             <>

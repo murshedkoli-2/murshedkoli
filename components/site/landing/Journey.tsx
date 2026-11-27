@@ -66,13 +66,18 @@ export function Journey({ experience, education }: JourneyProps) {
     { key: 'education', label: 'Education', entries: education },
   ].filter((t) => t.entries.length > 0)
 
-  const [tab, setTab] = useState(tracks[0]?.key ?? 'experience')
-  const [openId, setOpenId] = useState<string | null>(tracks[0]?.entries[0]?.id ?? null)
+  // Hidden when empty. The scroll hook lives in JourneyBody so its target ref
+  // always exists — useScroll throws if the target never mounts.
+  return tracks.length === 0 ? null : <JourneyBody tracks={tracks} />
+}
+
+function JourneyBody({ tracks }: { tracks: Track[] }) {
+  const [tab, setTab] = useState(tracks[0].key)
+  const [openId, setOpenId] = useState<string | null>(tracks[0].entries[0]?.id ?? null)
   const listRef = useRef<HTMLOListElement>(null)
   const { scrollYProgress } = useScroll({ target: listRef, offset: ['start 75%', 'end 55%'] })
   const draw = useSpring(scrollYProgress, { stiffness: 120, damping: 24 })
 
-  if (tracks.length === 0) return null
   const track = tracks.find((t) => t.key === tab) ?? tracks[0]
 
   const select = (t: Track) => {

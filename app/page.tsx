@@ -10,7 +10,10 @@ import { Journey } from '@/components/site/landing/Journey'
 import { CertificateRail } from '@/components/site/landing/CertificateRail'
 import { ContactFinale } from '@/components/site/landing/ContactFinale'
 import { ScrollRail } from '@/components/site/landing/ScrollRail'
+import { TravelsSection } from '@/components/site/travels/TravelsSection'
 import '@/components/site/landing/landing.css'
+import '@/components/site/travels/travels.css'
+import { getTravels } from '@/lib/data/travels'
 import {
   getProfile,
   getHeroStats,
@@ -30,6 +33,7 @@ const RAIL_SECTIONS: { id: string; label: string }[] = [
   { id: 'about', label: 'About' },
   { id: 'expertise', label: 'Capabilities' },
   { id: 'journey', label: 'Journey' },
+  { id: 'travels', label: 'Travels' },
   { id: 'certificates', label: 'Credentials' },
   { id: 'contact', label: 'Contact' },
 ]
@@ -39,7 +43,7 @@ export const revalidate = 600
 
 /** Landing page: every section is data-driven and hides itself when it has nothing to show. */
 export default async function Home() {
-  const [profile, stats, featured, skills, experience, education, certificates, services] =
+  const [profile, stats, featured, skills, experience, education, certificates, services, travels] =
     await Promise.all([
       getProfile(),
       getHeroStats(),
@@ -49,6 +53,7 @@ export default async function Home() {
       getEducation(),
       getCertificates(),
       getServices(),
+      getTravels(),
     ])
 
   const personJsonLd = {
@@ -76,6 +81,7 @@ export default async function Home() {
     projects: featured.length > 0,
     journey: experience.length > 0 || education.length > 0,
     certificates: certificates.length > 0,
+    travels: travels.visitedDistricts.length + travels.spots.length + travels.countries.length > 0,
   }
   const railSections = RAIL_SECTIONS.filter((s) => rendered[s.id] ?? true)
 
@@ -97,6 +103,7 @@ export default async function Home() {
         <AboutBento profile={profile} currentRole={experience.find((e) => e.current) ?? null} />
         <Capabilities services={services} skills={skills} />
         <Journey experience={experience} education={education} />
+        <TravelsSection travels={travels} index="05" />
         <CertificateRail certificates={certificates} />
         <ContactFinale profile={profile} />
       </main>
