@@ -8,14 +8,6 @@ export async function readAIRequest(request: Request, username: string) {
   return readJson(request, 64 * 1024)
 }
 
-export const chatSchema = z.object({
-  userQuery: z.string().trim().min(1).max(8000).optional(),
-  messages: z.array(z.object({
-    role: z.enum(['user', 'assistant']), content: z.string().min(1).max(8000),
-  })).max(20).optional(),
-  model: z.string().trim().min(1).max(200).regex(/^[a-zA-Z0-9_./:-]+$/).optional(),
-}).refine((data) => data.userQuery || data.messages?.length, 'Message content is required')
-
 export const evaluationRequestSchema = z.object({
   stepId: z.string().regex(/^[a-f0-9]{24}$/i),
   taskId: z.string().min(1).max(200),
