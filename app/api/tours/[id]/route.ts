@@ -1,3 +1,4 @@
+import { invalidatePortfolio } from '@/lib/invalidate-portfolio'
 import { suppliedFields, objectId } from '@/lib/validations/content'
 import { readJson, apiError } from '@/lib/http'
 import { NextRequest, NextResponse } from 'next/server'
@@ -18,6 +19,7 @@ export async function PUT(request: NextRequest, { params }: { params: Promise<{ 
     }
 
     const tour = await prisma.tourLocation.update({ where: { id }, data: suppliedFields(body as Record<string, unknown>, parsed.data) })
+    invalidatePortfolio()
     return NextResponse.json(tour)
   } catch (error) { return apiError(error) }
 }
@@ -29,6 +31,7 @@ export async function DELETE(_request: NextRequest, { params }: { params: Promis
   try {
     const id = objectId.parse((await params).id)
     await prisma.tourLocation.delete({ where: { id } })
+    invalidatePortfolio()
     return NextResponse.json({ success: true })
   } catch (error) { return apiError(error) }
 }

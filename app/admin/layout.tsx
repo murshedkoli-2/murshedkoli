@@ -1,6 +1,11 @@
 import { Metadata } from 'next'
+import './styles/tokens.css'
+import './styles/kit.css'
+import './styles/components.css'
+import './styles/shell.css'
 import './admin.css'
-import './overview.css'
+import './styles/overview.css'
+import './styles/career.css'
 
 export const metadata: Metadata = {
   title: 'Admin Dashboard | Portfolio',

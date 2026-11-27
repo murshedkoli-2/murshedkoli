@@ -1,3 +1,4 @@
+import { invalidatePortfolio } from '@/lib/invalidate-portfolio'
 import { readJson, apiError } from '@/lib/http'
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
@@ -29,6 +30,7 @@ export async function POST(request: NextRequest) {
     }
 
     const tour = await prisma.tourLocation.create({ data: parsed.data })
+    invalidatePortfolio()
     return NextResponse.json(tour, { status: 201 })
   } catch (error) { return apiError(error) }
 }

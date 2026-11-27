@@ -1,0 +1,213 @@
+/* ============================================================
+   Shared admin primitives. Two historical families live here in
+   one visual language: .adm-* (managers) and .pe-* (project
+   editor). Same radii, same focus ring, same accent.
+   ============================================================ */
+
+/* ── Buttons ─────────────────────────────────────────────── */
+.adm-btn, .pe-btn {
+  position: relative; display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+  height: 38px; padding: 0 16px; border-radius: 999px; border: 1px solid var(--border-strong);
+  background: var(--panel); color: var(--ink); font: inherit; font-size: 13px; font-weight: 600;
+  letter-spacing: -0.005em; white-space: nowrap; text-decoration: none; cursor: pointer; overflow: hidden; isolation: isolate;
+  transition: border-color 200ms, background 200ms, color 250ms, transform 150ms var(--ease), box-shadow 250ms var(--ease);
+}
+.adm-btn:hover, .pe-btn:hover { border-color: var(--ink-muted); box-shadow: var(--shadow-1); }
+.adm-btn:active:not(:disabled), .pe-btn:active:not(:disabled) { transform: scale(0.97); }
+.adm-btn:focus-visible, .pe-btn:focus-visible { outline: none; box-shadow: var(--ring); border-color: var(--accent); }
+.adm-btn:disabled, .pe-btn:disabled { opacity: 0.5; cursor: not-allowed; box-shadow: none; }
+
+/* Primary: ink with an accent sweep on hover */
+.adm-btn.amber, .pe-btn-primary {
+  border-color: transparent; background: var(--btn-primary-bg); color: var(--btn-primary-ink);
+}
+.adm-btn.amber::before, .pe-btn-primary::before {
+  content: ""; position: absolute; inset: 0; z-index: -1; background: var(--accent);
+  transform: scaleX(0); transform-origin: left; transition: transform 450ms var(--ease);
+}
+.adm-btn.amber:hover:not(:disabled)::before, .pe-btn-primary:hover:not(:disabled)::before { transform: scaleX(1); }
+.adm-btn.amber:hover:not(:disabled), .pe-btn-primary:hover:not(:disabled) { color: var(--accent-ink); border-color: transparent; }
+.adm-btn.ghost, .pe-btn-ghost { border-color: transparent; background: transparent; color: var(--muted); }
+.adm-btn.ghost:hover, .pe-btn-ghost:hover { background: var(--rail-hover); color: var(--ink); box-shadow: none; }
+.pe-btn-secondary { background: var(--panel-2); }
+.adm-btn.danger, .pe-btn-danger { color: var(--red); border-color: color-mix(in oklab, var(--red) 35%, transparent); }
+.adm-btn.danger:hover, .pe-btn-danger:hover { background: var(--red-bg); border-color: var(--red); }
+.pe-btn-sm { height: 32px; padding: 0 12px; font-size: 12.5px; }
+.pe-btn-md { height: 38px; }
+.pe-btn-lg { height: 46px; padding: 0 22px; font-size: 14px; }
+
+.adm-icon-btn {
+  display: inline-grid; place-items: center; width: 34px; height: 34px; border-radius: 10px;
+  border: 1px solid transparent; background: transparent; color: var(--muted); cursor: pointer; font-size: 14px;
+  transition: background 200ms, color 200ms, border-color 200ms, transform 150ms var(--ease);
+}
+.adm-icon-btn:hover { background: var(--panel-2); border-color: var(--border); color: var(--ink); }
+.adm-icon-btn:active:not(:disabled) { transform: scale(0.92); }
+.adm-icon-btn.danger:hover { background: var(--red-bg); color: var(--red); border-color: transparent; }
+.adm-icon-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+.adm-icon-btn:focus-visible { outline: none; box-shadow: var(--ring); }
+
+.adm-linkbtn { border: 0; background: none; padding: 0; font: inherit; font-size: 12.5px; font-weight: 600; color: var(--accent); cursor: pointer; }
+.adm-linkbtn:hover { text-decoration: underline; }
+.adm-linkbtn.danger { color: var(--red); }
+
+/* ── Fields ──────────────────────────────────────────────── */
+/* align-content: start keeps controls at their natural height when a taller
+   neighbour in the same form row stretches the field. */
+.adm-field { display: grid; gap: 7px; align-content: start; margin-bottom: 14px; min-width: 0; }
+.adm-label, .pe-label {
+  display: block; font-family: var(--adm-mono); font-size: 10.5px; font-weight: 500;
+  letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted);
+}
+.pe-label { margin-bottom: 8px; }
+.pe-label .req { color: var(--accent); margin-left: 3px; }
+.adm-input, .adm-select, .adm-textarea, .adm-search, .pe-input, .pe-select, .pe-textarea {
+  width: 100%; min-height: 42px; padding: 10px 14px; border-radius: var(--r-sm);
+  border: 1px solid var(--border-strong); background: var(--panel); color: var(--ink);
+  font: inherit; font-size: 14px; transition: border-color 200ms, box-shadow 250ms var(--ease), background 200ms;
+}
+.adm-input::placeholder, .adm-textarea::placeholder, .adm-search::placeholder,
+.pe-input::placeholder, .pe-textarea::placeholder { color: var(--muted); opacity: 0.7; }
+.adm-input:hover, .adm-select:hover, .adm-textarea:hover, .adm-search:hover,
+.pe-input:hover, .pe-select:hover, .pe-textarea:hover { border-color: var(--ink-muted); }
+.adm-input:focus, .adm-select:focus, .adm-textarea:focus, .adm-search:focus,
+.pe-input:focus, .pe-select:focus, .pe-textarea:focus { outline: none; border-color: var(--accent); box-shadow: var(--ring); }
+.pe-input:disabled, .pe-textarea:disabled, .adm-input:disabled { color: var(--muted); background: var(--panel-2); cursor: not-allowed; }
+.pe-input.err, .pe-select.err, .pe-textarea.err { border-color: var(--red); }
+.adm-textarea, .pe-textarea { resize: vertical; line-height: 1.6; min-height: 96px; }
+.adm-select, .pe-select {
+  appearance: none; cursor: pointer; padding-right: 38px;
+  background-image: linear-gradient(45deg, transparent 50%, var(--muted) 50%), linear-gradient(135deg, var(--muted) 50%, transparent 50%);
+  background-position: calc(100% - 19px) 50%, calc(100% - 14px) 50%;
+  background-size: 5px 5px; background-repeat: no-repeat;
+}
+.pe-help { margin-top: 7px; font-size: 12px; color: var(--muted); }
+.pe-help.err { color: var(--red); }
+.adm-form-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0 16px; }
+.adm-form-grid .adm-col-2 { grid-column: 1 / -1; }
+@media (max-width: 620px) { .adm-form-grid { grid-template-columns: minmax(0, 1fr); } }
+
+/* Toggle: label.adm-toggle > input + .track + text */
+.adm-toggle { display: inline-flex; align-items: center; gap: 10px; cursor: pointer; font-size: 13px; user-select: none; }
+.adm-toggle input { position: absolute; opacity: 0; width: 1px; height: 1px; }
+.adm-toggle .track {
+  position: relative; width: 40px; height: 23px; flex-shrink: 0; border-radius: 999px;
+  background: var(--border-strong); transition: background 250ms var(--ease);
+}
+.adm-toggle .track::after {
+  content: ""; position: absolute; top: 3px; left: 3px; width: 17px; height: 17px; border-radius: 999px;
+  background: #fff; box-shadow: 0 2px 6px rgb(0 0 0 / 0.25); transition: transform 350ms var(--ease);
+}
+.adm-toggle input:checked + .track { background: var(--accent); }
+.adm-toggle input:checked + .track::after { transform: translateX(17px); }
+.adm-toggle input:focus-visible + .track { box-shadow: var(--ring); }
+
+/* ── Surfaces ────────────────────────────────────────────── */
+.adm-panel, .pe-card, .pe-section {
+  background: var(--panel); border: 1px solid var(--border); border-radius: var(--r-lg);
+  box-shadow: var(--shadow-1); overflow: hidden;
+}
+.adm-panel + .adm-panel { margin-top: 18px; }
+.pe-card { padding: 22px; overflow: visible; }
+.pe-card-hover { transition: border-color 250ms, box-shadow 300ms var(--ease), transform 300ms var(--ease); }
+.pe-card-hover:hover { border-color: var(--accent); box-shadow: var(--shadow-2); transform: translateY(-2px); }
+.adm-panel-head {
+  display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap;
+  padding: 16px 20px; border-bottom: 1px solid var(--border);
+}
+.adm-panel-head h2 { font-family: var(--adm-display); font-size: 16px; font-weight: 600; letter-spacing: -0.02em; }
+.adm-body { padding: 20px; }
+.pe-section-head {
+  width: 100%; display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 16px 22px;
+  background: none; border: 0; cursor: pointer; text-align: left; color: var(--ink);
+  font-family: var(--adm-display); font-size: 15px; font-weight: 600; letter-spacing: -0.02em; transition: background 200ms;
+}
+.pe-section-head:hover { background: var(--panel-2); }
+.pe-section-body { padding: 4px 22px 22px; display: flex; flex-direction: column; gap: 18px; }
+
+.adm-empty, .pe-empty {
+  margin: 16px; padding: 48px 24px; border-radius: var(--r-md); border: 1px dashed var(--border-strong);
+  background: var(--panel-2); text-align: center; color: var(--muted);
+}
+
+.adm-banner {
+  display: flex; align-items: flex-start; gap: 12px; margin-bottom: 18px; padding: 14px 18px; border-radius: var(--r-md);
+  background: var(--amber-bg); border: 1px solid color-mix(in oklab, var(--accent) 30%, transparent); color: var(--ink);
+}
+.adm-banner > span:first-child { color: var(--accent); font-size: 16px; line-height: 1.3; }
+.adm-banner .fill { flex: 1; font-size: 13.5px; line-height: 1.55; }
+.adm-note { margin-top: 8px; padding: 10px 12px; border-radius: var(--r-sm); background: var(--panel-2); font-size: 12.5px; color: var(--muted); }
+.adm-note.warn { background: var(--amber-bg); color: var(--ink); }
+
+/* ── Chips, pills, categories ────────────────────────────── */
+.pe-chip {
+  display: inline-flex; align-items: center; gap: 7px; height: 32px; padding: 0 13px; border-radius: 999px;
+  border: 1px solid var(--border-strong); background: var(--panel); color: var(--muted);
+  font: inherit; font-size: 12.5px; font-weight: 500; cursor: pointer; transition: all 200ms var(--ease);
+}
+.pe-chip:hover { color: var(--ink); border-color: var(--ink-muted); }
+.pe-chip.on { background: var(--ink); border-color: var(--ink); color: var(--canvas); }
+.adm-pill, .adm-cat {
+  display: inline-flex; align-items: center; gap: 6px; height: 24px; padding: 0 10px; border-radius: 999px; white-space: nowrap;
+  font-family: var(--adm-mono); font-size: 10.5px; letter-spacing: 0.06em; text-transform: uppercase;
+  background: var(--panel-2); color: var(--muted); border: 1px solid var(--border);
+}
+.adm-pill.live { background: var(--green-bg); color: var(--green); border-color: transparent; }
+.adm-pill.live::before { content: ""; width: 6px; height: 6px; border-radius: 99px; background: currentColor; }
+.adm-pill.draft { background: var(--panel-2); }
+.adm-pill.feat { background: var(--amber-bg); color: var(--accent); border-color: transparent; }
+
+/* ── Lists & tables ──────────────────────────────────────── */
+.adm-rows { display: flex; flex-direction: column; }
+.adm-list-row {
+  display: flex; align-items: center; gap: 14px; padding: 14px 20px; border-bottom: 1px solid var(--border);
+  transition: background 200ms;
+}
+.adm-list-row:last-child { border-bottom: 0; }
+.adm-list-row:hover { background: color-mix(in oklab, var(--panel-2) 60%, transparent); }
+.adm-list-row .grow { flex: 1; min-width: 0; }
+.adm-list-row b { display: block; font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.adm-list-row .sub { display: block; margin-top: 2px; font-size: 12.5px; color: var(--muted); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.adm-row-actions { display: flex; gap: 2px; opacity: 0.55; transition: opacity 200ms; }
+.adm-list-row:hover .adm-row-actions, .adm-row-actions:focus-within { opacity: 1; }
+@media (hover: none) { .adm-row-actions { opacity: 1; } }
+
+.adm-table-wrap { overflow-x: auto; }
+.adm-table { width: 100%; border-collapse: collapse; font-size: 13.5px; }
+.adm-table th {
+  padding: 12px 16px; text-align: left; border-bottom: 1px solid var(--border); white-space: nowrap;
+  font-family: var(--adm-mono); font-size: 10.5px; font-weight: 500; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted);
+}
+.adm-table td { padding: 12px 16px; border-bottom: 1px solid var(--border); vertical-align: middle; }
+.adm-table tr:last-child td { border-bottom: 0; }
+.adm-table tbody tr { transition: background 200ms; }
+.adm-table tbody tr:hover td { background: color-mix(in oklab, var(--panel-2) 60%, transparent); }
+.adm-proj { display: flex; align-items: center; gap: 12px; min-width: 0; }
+.adm-thumb { width: 54px; height: 40px; flex-shrink: 0; border-radius: 9px; object-fit: cover; background: var(--panel-2); border: 1px solid var(--border); }
+.adm-proj b { display: block; font-weight: 600; }
+.adm-proj span { display: block; font-size: 12px; color: var(--muted); }
+.adm-drag { cursor: grab; color: var(--muted); }
+
+/* ── Inline editor (legacy pages) & tabs ─────────────────── */
+.adm-editor { padding: 20px; border-bottom: 1px solid var(--border); background: var(--panel-2); }
+.adm-editor h3 { margin-bottom: 14px; font-family: var(--adm-display); font-size: 16px; font-weight: 600; letter-spacing: -0.02em; }
+.adm-editor-actions { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 6px; }
+.adm-editor-tabs { display: flex; gap: 4px; padding: 4px; margin-bottom: 18px; border-radius: 999px; background: var(--panel-2); border: 1px solid var(--border); width: fit-content; max-width: 100%; overflow-x: auto; }
+.adm-editor-tab {
+  height: 34px; padding: 0 16px; border: 0; border-radius: 999px; background: none; color: var(--muted);
+  font: inherit; font-size: 13px; font-weight: 600; cursor: pointer; white-space: nowrap; transition: background 200ms, color 200ms;
+}
+.adm-editor-tab:hover { color: var(--ink); }
+.adm-editor-tab.active { background: var(--panel); color: var(--ink); box-shadow: var(--shadow-1); }
+
+/* ── Messages (legacy markup) ────────────────────────────── */
+.adm-msg { display: flex; gap: 14px; padding: 16px 20px; border-bottom: 1px solid var(--border); }
+.adm-msg:last-child { border-bottom: 0; }
+.adm-msg .dot { width: 8px; height: 8px; margin-top: 7px; flex-shrink: 0; border-radius: 99px; background: var(--accent); }
+.adm-msg.read .dot { background: transparent; border: 1px solid var(--border-strong); }
+.adm-msg .body { flex: 1; min-width: 0; }
+.adm-msg .meta { display: flex; justify-content: space-between; gap: 12px; }
+.adm-msg .name { font-weight: 600; }
+.adm-msg .time, .adm-msg .text { font-size: 12.5px; color: var(--muted); }
+.adm-msg .subject { margin-top: 2px; font-weight: 500; }
+.adm-msg .msg-actions { display: flex; gap: 14px; margin-top: 10px; }

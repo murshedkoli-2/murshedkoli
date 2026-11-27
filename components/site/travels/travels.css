@@ -1,0 +1,114 @@
+/* Travels (.tv-*): district map, home teaser and the /travels page.
+   Builds on the landing tokens (.ld) so it matches the home page. */
+
+.tv-kicker { font-family: var(--font-mono); font-size: 0.72rem; letter-spacing: 0.14em; text-transform: uppercase; color: var(--ink-muted); }
+.tv-bn { font-family: var(--font-body); color: var(--ink-muted); font-weight: 400; }
+.tv-bar { display: block; height: 6px; border-radius: 99px; background: var(--line-strong); overflow: hidden; }
+.tv-bar > span { display: block; height: 100%; border-radius: inherit; background: var(--accent); transform-origin: left; transition: transform 1.2s var(--ease); }
+.tv-bar-lg { height: 10px; margin: 1.25rem 0 2rem; }
+.tv-year { font-family: var(--font-mono); font-size: 0.72rem; padding: 0.2rem 0.55rem; border-radius: 999px; background: var(--accent-soft); color: var(--accent); }
+
+/* ── Map ─────────────────────────────────────────────────── */
+@keyframes tv-fill { from { fill: var(--surface-2); } }
+.tv-map { position: relative; }
+.tv-map svg { display: block; width: 100%; height: auto; overflow: visible; }
+.tv-district {
+  fill: var(--surface-2); stroke: var(--canvas); stroke-width: 1.2; stroke-linejoin: round;
+  transition: fill 300ms var(--ease), opacity 300ms var(--ease), filter 300ms var(--ease);
+  cursor: default;
+}
+.tv-district[data-visited="true"] {
+  fill: url(#tv-visited);
+  animation: tv-fill 0.9s var(--ease) both;
+  animation-delay: calc(200ms + var(--i) * 45ms);
+}
+.tv-district[data-hover="true"] { fill: color-mix(in oklab, var(--ink) 18%, var(--surface-2)); }
+.tv-district[data-visited="true"][data-hover="true"] { fill: color-mix(in oklab, var(--accent) 80%, #fff); filter: drop-shadow(0 4px 10px color-mix(in oklab, var(--accent) 45%, transparent)); }
+.tv-district[data-dim="true"] { opacity: 0.22; }
+.tv-label {
+  font-family: var(--font-body); font-size: 9.5px; font-weight: 600; text-anchor: middle; dominant-baseline: middle;
+  fill: #fff; paint-order: stroke; stroke: color-mix(in oklab, var(--accent) 80%, #000); stroke-width: 2.5px;
+  pointer-events: none; transition: opacity 300ms;
+}
+.tv-label[data-dim="true"] { opacity: 0.15; }
+.tv-tip {
+  position: absolute; z-index: 5; display: grid; gap: 1px; padding: 0.55rem 0.8rem; border-radius: 12px; pointer-events: none;
+  transform: translate(14px, -50%); white-space: nowrap; background: var(--ink); color: var(--canvas);
+  box-shadow: 0 16px 30px -12px rgb(0 0 0 / 0.45); font-size: 0.85rem;
+}
+.tv-tip-bn { font-size: 0.8rem; opacity: 0.75; }
+.tv-tip-meta { font-family: var(--font-mono); font-size: 0.68rem; letter-spacing: 0.06em; text-transform: uppercase; opacity: 0.7; }
+.tv-tip-meta[data-visited="true"] { color: var(--accent); opacity: 1; }
+
+/* ── Home teaser ─────────────────────────────────────────── */
+.tv-home-grid { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 0.9fr); align-items: center; gap: clamp(2rem, 5vw, 5rem); }
+.tv-big { font-family: var(--font-display); font-size: clamp(4.5rem, 2rem + 8vw, 9rem); font-weight: 600; line-height: 0.85; letter-spacing: -0.06em; }
+.tv-big > span:last-child { font-size: 0.4em; color: var(--ink-muted); letter-spacing: -0.03em; }
+.tv-big-label { margin-top: 0.75rem; font-size: 1.05rem; color: var(--ink-muted); }
+.tv-chips { list-style: none; display: flex; flex-wrap: wrap; gap: 0.5rem; margin-top: 0.85rem; }
+.tv-chips li {
+  display: inline-flex; align-items: center; gap: 0.4rem; padding: 0.5rem 0.85rem; border-radius: 999px;
+  background: var(--surface); border: 1px solid var(--line-strong); font-size: 0.9rem; transition: border-color 250ms, transform 300ms var(--ease);
+}
+.tv-chips li:hover { border-color: var(--accent); transform: translateY(-2px); }
+.tv-chips svg { color: var(--accent); }
+.tv-chips small { font-family: var(--font-mono); font-size: 0.7rem; color: var(--ink-muted); }
+.tv-abroad { margin-top: 1.5rem; color: var(--ink-muted); }
+.tv-home-map {
+  display: block; max-width: 440px; justify-self: center; width: 100%; padding: clamp(1rem, 2vw, 1.75rem);
+  border-radius: 28px; background: var(--surface); border: 1px solid var(--line); box-shadow: var(--card-shadow);
+  transition: transform 500ms var(--ease), box-shadow 500ms var(--ease);
+}
+.tv-home-map:hover { transform: translateY(-6px) rotate(-0.6deg); box-shadow: var(--card-shadow-hover); }
+
+/* ── /travels page ───────────────────────────────────────── */
+.tv-page .tv-hero { padding-top: clamp(7rem, 12vh, 9rem); }
+.tv-back { display: inline-flex; align-items: center; gap: 0.4rem; margin-bottom: 2rem; font-size: 0.9rem; color: var(--ink-muted); transition: color 200ms; }
+.tv-back:hover { color: var(--accent); }
+.tv-title { max-width: 16ch; font-size: clamp(2.6rem, 1.2rem + 5vw, 5.6rem); line-height: 0.98; letter-spacing: -0.05em; }
+.tv-lede { margin-top: 1.25rem; max-width: 36rem; font-size: 1.1rem; line-height: 1.6; color: var(--ink-muted); }
+.tv-stats { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 1rem; margin: 2.5rem 0 3rem; }
+.tv-stat { display: grid; grid-template-columns: auto 1fr; align-items: center; gap: 0.15rem 0.75rem; padding: 1.1rem 1.25rem; border-radius: 20px; background: var(--surface); border: 1px solid var(--line); box-shadow: var(--card-shadow); }
+.tv-stat svg { grid-row: 1 / span 2; color: var(--accent); }
+.tv-stat dt { font-family: var(--font-mono); font-size: 0.68rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--ink-muted); }
+.tv-stat dd { font-family: var(--font-display); font-size: 2rem; font-weight: 600; letter-spacing: -0.04em; line-height: 1.1; font-variant-numeric: tabular-nums; }
+.tv-stat small { font-size: 0.5em; color: var(--ink-muted); }
+
+.tv-explorer { display: grid; grid-template-columns: minmax(0, 1.15fr) minmax(0, 0.85fr); gap: clamp(2rem, 5vw, 4rem); align-items: start; }
+.tv-map-lg { padding: clamp(1rem, 2vw, 2rem); border-radius: 32px; background: var(--surface); border: 1px solid var(--line); box-shadow: var(--card-shadow); }
+.tv-divisions { position: sticky; top: 7rem; }
+.tv-divisions ul { list-style: none; display: grid; gap: 0.35rem; margin-top: 0.85rem; }
+.tv-division {
+  width: 100%; display: grid; gap: 0.5rem; padding: 0.8rem 1rem; border-radius: 16px; border: 1px solid transparent;
+  background: none; color: var(--ink); font: inherit; text-align: left; cursor: pointer; transition: background 250ms, border-color 250ms;
+}
+.tv-division:hover, .tv-division[aria-pressed="true"] { background: var(--surface); border-color: var(--line-strong); }
+.tv-division-top { display: flex; justify-content: space-between; gap: 1rem; font-family: var(--font-display); font-size: 1.05rem; font-weight: 600; letter-spacing: -0.02em; }
+.tv-division-count { font-family: var(--font-mono); font-size: 0.8rem; color: var(--accent); }
+
+.tv-h2 { font-size: var(--ld-title); letter-spacing: -0.045em; margin-bottom: 2rem; }
+.tv-places, .tv-countries { list-style: none; display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 280px), 1fr)); gap: 0.85rem; }
+.tv-place, .tv-country {
+  display: flex; align-items: center; gap: 0.85rem; padding: 1rem 1.1rem; border-radius: 18px;
+  background: var(--surface); border: 1px solid var(--line); box-shadow: var(--card-shadow);
+  transition: transform 350ms var(--ease), border-color 250ms;
+}
+.tv-place:hover, .tv-country:hover { transform: translateY(-3px); border-color: color-mix(in oklab, var(--accent) 45%, var(--line)); }
+.tv-place-icon { display: grid; place-items: center; width: 40px; height: 40px; flex-shrink: 0; border-radius: 12px; background: var(--accent-soft); color: var(--accent); }
+.tv-place-main { flex: 1; min-width: 0; display: grid; }
+.tv-place-main b { font-weight: 600; line-height: 1.25; }
+.tv-place-main small { font-size: 0.82rem; color: var(--ink-muted); }
+.tv-country { display: grid; grid-template-columns: auto 1fr auto; gap: 0.1rem 0.85rem; }
+.tv-flag { grid-row: 1 / span 2; font-size: 2rem; line-height: 1; }
+.tv-country small { grid-column: 2; font-size: 0.82rem; color: var(--ink-muted); }
+.tv-country .tv-year { grid-column: 3; grid-row: 1 / span 2; }
+
+@media (max-width: 900px) {
+  .tv-home-grid, .tv-explorer { grid-template-columns: minmax(0, 1fr); }
+  .tv-home-map { order: -1; max-width: 340px; }
+  .tv-divisions { position: static; }
+  .tv-stats { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .tv-district[data-visited="true"] { animation: none; }
+}

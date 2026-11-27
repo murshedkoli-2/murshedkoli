@@ -6,6 +6,10 @@ import { toast } from 'sonner'
 import { AdminShell } from '@/components/admin/AdminShell'
 import { confirmDialog } from '@/components/ui/ConfirmDialog'
 import { useAdminGuard } from '@/lib/admin/useAdminGuard'
+import { ArrowUpRight, FolderKanban, ImageOff, Plus, Rocket, Star, Trash2 } from 'lucide-react'
+import { Toolbar } from '@/components/admin/kit/Toolbar'
+import { StatStrip } from '@/components/admin/kit/StatStrip'
+import { EmptyState } from '@/components/admin/kit/EmptyState'
 import {
   relativeTime,
   stackLabel,
@@ -39,6 +43,8 @@ export default function ProjectsManager() {
   }, [ready, load])
 
   const liveCount = useMemo(() => projects.filter(isLive).length, [projects])
+  const featuredCount = useMemo(() => projects.filter((p) => p.featured).length, [projects])
+  const incompleteCount = useMemo(() => projects.filter((p) => !projectCompleteness(p).ok).length, [projects])
 
   const filtered = useMemo(() => {
     const q = search.trim().toLowerCase()
@@ -86,46 +92,46 @@ export default function ProjectsManager() {
       badges={{ projects: projects.length }}
       actions={
         <>
-          <Link href="/" target="_blank" className="adm-btn">
-            Preview site ↗
+          <Link href="/" target="_blank" className="adm-btn ghost">
+            Preview site <ArrowUpRight size={15} aria-hidden="true" />
           </Link>
           <Link href="/admin/projects/new" className="adm-btn amber">
-            + New project
+            <Plus size={16} aria-hidden="true" /> New project
           </Link>
         </>
       }
     >
-      {/* Filter bar */}
-      <div className="pcard-toolbar">
-        <div className="pcard-filters">
-          {([
-            ['all', `All (${projects.length})`],
-            ['live', `Live (${liveCount})`],
-            ['draft', `Draft (${projects.length - liveCount})`],
-          ] as [StatusFilter, string][]).map(([value, label]) => (
-            <button
-              key={value}
-              type="button"
-              onClick={() => setStatus(value)}
-              className={`pe-chip ${status === value ? 'on' : ''}`}
-            >
-              {label}
-            </button>
-          ))}
-        </div>
-        <input
-          className="adm-search"
-          placeholder="Search projects…"
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-        />
-      </div>
+      <StatStrip
+        stats={[
+          { label: 'Projects', value: projects.length, icon: FolderKanban, tone: 'accent' },
+          { label: 'Live', value: liveCount, icon: Rocket, tone: 'good', note: `${projects.length - liveCount} in draft` },
+          { label: 'Featured', value: featuredCount, icon: Star, note: 'Shown on the home page' },
+          { label: 'Need work', value: incompleteCount, icon: ImageOff, tone: incompleteCount ? 'warn' : undefined, note: incompleteCount ? 'Missing a cover or stack' : 'All complete' },
+        ]}
+      />
+
+      <Toolbar
+        id="projects"
+        query={search}
+        onQuery={setSearch}
+        placeholder="Search title, slug or stack…"
+        filters={[
+          { value: 'all', label: 'All', count: projects.length },
+          { value: 'live', label: 'Live', count: liveCount },
+          { value: 'draft', label: 'Draft', count: projects.length - liveCount },
+        ]}
+        filter={status}
+        onFilter={(v) => setStatus(v as StatusFilter)}
+      />
 
       {filtered.length === 0 ? (
-        <div className="pe-empty">
-          {projects.length === 0
-            ? 'No projects yet. Create your first one.'
-            : 'No projects match your search.'}
+        <div className="adm-panel">
+          <EmptyState
+            icon={FolderKanban}
+            title={projects.length === 0 ? 'No projects yet' : 'No projects match'}
+            body={projects.length === 0 ? 'Create your first case study.' : 'Try a different search or filter.'}
+            action={projects.length === 0 && <Link href="/admin/projects/new" className="adm-btn amber">New project</Link>}
+          />
         </div>
       ) : (
         <div className="pcard-grid">
@@ -181,7 +187,7 @@ export default function ProjectsManager() {
                     title="View live"
                     aria-label={`View ${p.title} on the public site`}
                   >
-                    ↗
+                    <ArrowUpRight size={15} />
                   </Link>
                   {/* Deletion is switched off deliberately. The handler stays
                       wired — remove `disabled` to turn it back on. */}
@@ -192,7 +198,7 @@ export default function ProjectsManager() {
                     title="Deleting projects is disabled"
                     aria-label={`Delete ${p.title} (disabled)`}
                   >
-                    🗑
+                    <Trash2 size={15} />
                   </button>
                 </div>
               </article>

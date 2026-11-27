@@ -6,6 +6,12 @@ import { AdminShell } from '@/components/admin/AdminShell'
 import { confirmDialog } from '@/components/ui/ConfirmDialog'
 import { AIGenerateButton } from '@/components/AIGenerateButton'
 import { useAdminGuard } from '@/lib/admin/useAdminGuard'
+import { Eye, EyeOff, Layers, Pencil, Plus, Trash2 } from 'lucide-react'
+import { Drawer } from '@/components/admin/kit/Drawer'
+import { Toolbar } from '@/components/admin/kit/Toolbar'
+import { StatStrip } from '@/components/admin/kit/StatStrip'
+import { EmptyState } from '@/components/admin/kit/EmptyState'
+import { matchesQuery } from '@/lib/admin/list'
 
 interface Service {
   id?: string
@@ -27,6 +33,7 @@ export default function ServicesManager() {
   const [services, setServices] = useState<Service[]>([])
   const [editing, setEditing] = useState<Service | null>(null)
   const [saving, setSaving] = useState(false)
+  const [query, setQuery] = useState('')
 
   const load = useCallback(async () => {
     try {
@@ -112,6 +119,8 @@ export default function ServicesManager() {
     }
   }
 
+  const shown = services.filter((s) => matchesQuery(query, s.title, s.description, s.icon))
+
   if (!ready) return null
 
   return (
@@ -120,115 +129,115 @@ export default function ServicesManager() {
       title="Services"
       subtitle={`${visibleCount} visible · ${services.length} total`}
       actions={
-        <button className="adm-btn amber" onClick={() => setEditing(emptyService(services.length))}>
-          + New service
+        <button type="button" className="adm-btn amber" onClick={() => setEditing(emptyService(services.length))}>
+          <Plus size={16} aria-hidden="true" /> New service
         </button>
       }
     >
-      <div className="adm-panel">
-        {editing && (
-          <div className="adm-editor">
-            <h3>{editing.id ? 'Edit service' : 'New service'}</h3>
-            <div className="adm-form-grid">
-              <div className="adm-field">
-                <label className="adm-label">Title</label>
-                <input
-                  className="adm-input"
-                  value={editing.title}
-                  onChange={(e) => setEditing({ ...editing, title: e.target.value })}
-                  placeholder="e.g. Web Applications"
-                />
-              </div>
-              <div className="adm-field">
-                <label className="adm-label">Icon name</label>
-                <input
-                  className="adm-input"
-                  value={editing.icon ?? ''}
-                  onChange={(e) => setEditing({ ...editing, icon: e.target.value })}
-                  placeholder="e.g. web"
-                />
-              </div>
-              <div className="adm-field adm-col-2">
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 6 }}>
-                  <label className="adm-label" style={{ margin: 0 }}>Description</label>
-                  <AIGenerateButton
-                    label="AI Write Service"
-                    promptContext={{
-                      field: 'service-description',
-                      contextData: { title: editing.title || 'Custom Full-Stack Development' },
-                    }}
-                    onGenerate={(text) => setEditing((prev) => prev ? { ...prev, description: text } : null)}
-                  />
-                </div>
-                <textarea
-                  className="adm-textarea"
-                  value={editing.description}
-                  onChange={(e) => setEditing({ ...editing, description: e.target.value })}
-                  placeholder="Compelling client-focused description of what you deliver"
-                />
-              </div>
-              <div className="adm-field">
-                <label className="adm-label">Order</label>
-                <input
-                  className="adm-input"
-                  type="number"
-                  value={editing.order}
-                  onChange={(e) => setEditing({ ...editing, order: Number(e.target.value) || 0 })}
-                />
-              </div>
-            </div>
-            <p className="adm-note">Icon options: {ICON_HINTS}</p>
-            <label className="adm-toggle" style={{ marginBottom: 14, marginTop: 10 }}>
-              <input
-                type="checkbox"
-                checked={editing.isEnabled !== false}
-                onChange={(e) => setEditing({ ...editing, isEnabled: e.target.checked })}
-              />
-              <span className="track" />
-              <span>Visible on the public site</span>
-            </label>
-            <div className="adm-editor-actions">
-              <button className="adm-btn amber" onClick={save} disabled={saving}>
-                {saving ? 'Saving…' : 'Save service'}
-              </button>
-              <button className="adm-btn" onClick={() => setEditing(null)}>
-                Cancel
-              </button>
-            </div>
-          </div>
-        )}
+      <StatStrip
+        stats={[
+          { label: 'Services', value: services.length, icon: Layers, tone: 'accent' },
+          { label: 'Visible', value: visibleCount, icon: Eye, tone: 'good', note: services.length < 3 ? 'The site shows defaults below 3' : 'Shown on the home page' },
+          { label: 'Hidden', value: services.length - visibleCount, icon: EyeOff },
+        ]}
+      />
 
-        <div className="adm-panel-head">
-          <h2>All services ({services.length})</h2>
+      <Toolbar id="services" query={query} onQuery={setQuery} placeholder="Search services…" />
+
+      {shown.length === 0 ? (
+        <div className="adm-panel">
+          <EmptyState
+            icon={Layers}
+            title={services.length ? 'No services match' : 'No services yet'}
+            body={services.length ? 'Try a different search.' : 'Describe what clients can hire you for.'}
+            action={!services.length && <button type="button" className="adm-btn amber" onClick={() => setEditing(emptyService(0))}>Add a service</button>}
+          />
         </div>
-        <div className="adm-rows">
-          {services.length === 0 ? (
-            <div className="adm-empty">No services yet. Add your first one.</div>
-          ) : (
-            services.map((s) => (
-              <div className="adm-list-row" key={s.id}>
-                {s.icon ? <span className="adm-cat">{s.icon}</span> : null}
-                <div className="grow">
-                  <b>{s.title}</b>
-                  <div className="sub">{s.description}</div>
-                </div>
+      ) : (
+        <div className="kit-grid">
+          {shown.map((s, i) => (
+            <article key={s.id} className="kit-card" data-muted={s.isEnabled === false}>
+              <div className="kit-card-top">
+                <span className="kit-card-icon" aria-hidden="true">
+                  <Layers size={19} />
+                </span>
+                <span className="kit-card-meta">
+                  #{String(s.order ?? i).padStart(2, '0')}
+                  {s.icon ? ` · ${s.icon}` : ''}
+                </span>
+              </div>
+              <h3 className="kit-card-title">{s.title}</h3>
+              <p className="kit-card-body">{s.description}</p>
+              <div className="kit-card-foot">
                 <label className="adm-toggle" title="Toggle visibility">
                   <input type="checkbox" checked={s.isEnabled !== false} onChange={() => toggleVisible(s)} />
                   <span className="track" />
+                  <span>{s.isEnabled === false ? 'Hidden' : 'Visible'}</span>
                 </label>
-                <div className="adm-row-actions">
-                  <button className="adm-icon-btn" onClick={() => setEditing(s)} title="Edit">
-                    ✎
+                <div className="kit-handle">
+                  <button type="button" className="adm-icon-btn" onClick={() => setEditing(s)} aria-label={`Edit ${s.title}`}>
+                    <Pencil size={15} />
                   </button>
-                  <button className="adm-icon-btn danger" onClick={() => remove(s)} title="Delete">
-                    🗑
+                  <button type="button" className="adm-icon-btn danger" onClick={() => remove(s)} aria-label={`Delete ${s.title}`}>
+                    <Trash2 size={15} />
                   </button>
                 </div>
               </div>
-            ))
-          )}
+            </article>
+          ))}
         </div>
-      </div>
+      )}
+
+      <Drawer
+        open={editing !== null}
+        title={editing?.id ? 'Edit service' : 'New service'}
+        subtitle="Shown in the Capabilities section of the home page."
+        onClose={() => setEditing(null)}
+        footer={
+          <>
+            <button type="button" className="adm-btn ghost" onClick={() => setEditing(null)}>Cancel</button>
+            <button type="button" className="adm-btn amber" onClick={save} disabled={saving}>
+              {saving ? 'Saving…' : 'Save service'}
+            </button>
+          </>
+        }
+      >
+        {editing && (
+          <div>
+            <div className="adm-field">
+              <label className="adm-label" htmlFor="svc-title">Title</label>
+              <input id="svc-title" className="adm-input" value={editing.title} onChange={(e) => setEditing({ ...editing, title: e.target.value })} placeholder="e.g. Web Applications" />
+            </div>
+            <div className="adm-field">
+              <div className="kit-field-head">
+                <label className="adm-label" htmlFor="svc-desc">Description</label>
+                <AIGenerateButton
+                  label="AI Write Service"
+                  promptContext={{ field: 'service-description', contextData: { title: editing.title || 'Custom Full-Stack Development' } }}
+                  onGenerate={(text) => setEditing((prev) => (prev ? { ...prev, description: text } : null))}
+                />
+              </div>
+              <textarea id="svc-desc" className="adm-textarea" rows={5} value={editing.description} onChange={(e) => setEditing({ ...editing, description: e.target.value })} placeholder="Compelling client-focused description of what you deliver" />
+            </div>
+            <div className="adm-form-grid">
+              <div className="adm-field">
+                <label className="adm-label" htmlFor="svc-icon">Icon name</label>
+                <input id="svc-icon" className="adm-input" value={editing.icon ?? ''} onChange={(e) => setEditing({ ...editing, icon: e.target.value })} placeholder="e.g. web" />
+              </div>
+              <div className="adm-field">
+                <label className="adm-label" htmlFor="svc-order">Order</label>
+                <input id="svc-order" className="adm-input" type="number" value={editing.order} onChange={(e) => setEditing({ ...editing, order: Number(e.target.value) || 0 })} />
+              </div>
+            </div>
+            <p className="adm-note">Icon options: {ICON_HINTS}</p>
+            <label className="adm-toggle" style={{ marginTop: 16 }}>
+              <input type="checkbox" checked={editing.isEnabled !== false} onChange={(e) => setEditing({ ...editing, isEnabled: e.target.checked })} />
+              <span className="track" />
+              <span>Visible on the public site</span>
+            </label>
+          </div>
+        )}
+      </Drawer>
     </AdminShell>
   )
 }
