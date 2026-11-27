@@ -6,6 +6,11 @@ import { toast } from 'sonner'
 import { AdminShell } from '@/components/admin/AdminShell'
 import { confirmDialog } from '@/components/ui/ConfirmDialog'
 import { useAdminGuard } from '@/lib/admin/useAdminGuard'
+import { ArrowUpRight, Award, BadgeCheck, FileText, Image as ImageIcon, LinkIcon, Paperclip, Plus, Trash2 } from 'lucide-react'
+import { Toolbar } from '@/components/admin/kit/Toolbar'
+import { StatStrip } from '@/components/admin/kit/StatStrip'
+import { EmptyState } from '@/components/admin/kit/EmptyState'
+import { matchesQuery } from '@/lib/admin/list'
 import { fileViewUrl, previewImageUrl, toDateInput, type Certificate } from '@/lib/admin/certificates'
 
 /** "2021-07-18" → "Jul 2021" — the month is enough on a card. */
@@ -35,13 +40,9 @@ export default function CertificatesManager() {
     if (ready) load()
   }, [ready, load])
 
-  const filtered = useMemo(() => {
-    const q = search.trim().toLowerCase()
-    if (!q) return certs
-    return certs.filter(
-      (c) => c.name.toLowerCase().includes(q) || c.issuer.toLowerCase().includes(q)
-    )
-  }, [certs, search])
+  const filtered = useMemo(() => certs.filter((c) => matchesQuery(search, c.name, c.issuer, c.description)), [certs, search])
+  const verifiable = certs.filter((c) => Boolean(c.url)).length
+  const withFile = certs.filter((c) => Boolean(c.fileUrl)).length
 
   const remove = async (c: Certificate) => {
     const ok = await confirmDialog({
@@ -75,27 +76,28 @@ export default function CertificatesManager() {
       badges={{ certificates: certs.length }}
       actions={
         <Link href="/admin/certificates/new" className="adm-btn amber">
-          + New certificate
+          <Plus size={16} aria-hidden="true" /> New certificate
         </Link>
       }
     >
-      {certs.length > 0 && (
-        <div className="pcard-toolbar">
-          <span className="adm-mono" style={{ fontSize: 11, color: 'var(--muted)', letterSpacing: '0.1em', textTransform: 'uppercase' }}>
-            {filtered.length} of {certs.length}
-          </span>
-          <input
-            className="adm-search"
-            placeholder="Search certificates…"
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-          />
-        </div>
-      )}
+      <StatStrip
+        stats={[
+          { label: 'Certificates', value: certs.length, icon: Award, tone: 'accent' },
+          { label: 'Verifiable', value: verifiable, icon: BadgeCheck, tone: 'good', note: certs.length - verifiable ? `${certs.length - verifiable} missing a link` : 'All have a verify link' },
+          { label: 'With a file', value: withFile, icon: Paperclip, note: 'Image or PDF attached' },
+        ]}
+      />
+
+      <Toolbar id="certificates" query={search} onQuery={setSearch} placeholder="Search name, issuer or notes…" />
 
       {filtered.length === 0 ? (
-        <div className="pe-empty">
-          {certs.length === 0 ? 'No certificates yet. Add your first one.' : 'No certificates match your search.'}
+        <div className="adm-panel">
+          <EmptyState
+            icon={Award}
+            title={certs.length === 0 ? 'No certificates yet' : 'No certificates match'}
+            body={certs.length === 0 ? 'Add courses and credentials that back up your skills.' : 'Try a different search.'}
+            action={certs.length === 0 && <Link href="/admin/certificates/new" className="adm-btn amber">New certificate</Link>}
+          />
         </div>
       ) : (
         <div className="pcard-grid">
@@ -112,7 +114,7 @@ export default function CertificatesManager() {
                     <img src={preview} alt="" loading="lazy" />
                   ) : (
                     <span className="pcard-doc" aria-hidden>
-                      <span className="pcard-doc-icon">{isPdf ? '📄' : '✦'}</span>
+                      <span className="pcard-doc-icon">{isPdf ? <FileText size={30} strokeWidth={1.5} /> : <Award size={30} strokeWidth={1.5} />}</span>
                       <span className="pcard-doc-label">{isPdf ? 'PDF' : 'no file'}</span>
                     </span>
                   )}
@@ -135,7 +137,7 @@ export default function CertificatesManager() {
 
                   <div className="pcard-foot">
                     <span className={c.url ? 'pcard-ok' : 'pcard-warn'}>
-                      {c.url ? '✓ Verifiable' : '✗ No verify link'}
+                      {c.url ? <><BadgeCheck size={13} aria-hidden="true" /> Verifiable</> : <><LinkIcon size={13} aria-hidden="true" /> No verify link</>}
                     </span>
                     {c.fileUrl && (
                       <span className="pcard-time">{isPdf ? 'PDF attached' : 'Image attached'}</span>
@@ -153,7 +155,7 @@ export default function CertificatesManager() {
                       title={isPdf ? 'View PDF' : 'View image'}
                       aria-label={`Open the file for ${c.name}`}
                     >
-                      {isPdf ? '📄' : '🖼'}
+                      {isPdf ? <FileText size={15} /> : <ImageIcon size={15} />}
                     </a>
                   )}
                   {c.url && (
@@ -165,7 +167,7 @@ export default function CertificatesManager() {
                       title="Open verify link"
                       aria-label={`Verify ${c.name}`}
                     >
-                      ↗
+                      <ArrowUpRight size={15} />
                     </a>
                   )}
                   <button
@@ -174,7 +176,7 @@ export default function CertificatesManager() {
                     title="Delete"
                     aria-label={`Delete ${c.name}`}
                   >
-                    🗑
+                    <Trash2 size={15} />
                   </button>
                 </div>
               </article>

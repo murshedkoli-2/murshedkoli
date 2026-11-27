@@ -1,14 +1,16 @@
 import { serializeJsonLd } from '@/lib/json-ld'
 import { Nav } from '@/components/site/Nav'
 import { Footer } from '@/components/site/Footer'
-import { Hero } from '@/components/site/home/Hero'
-import { WorkSection } from '@/components/site/home/WorkSection'
-import { AboutSection } from '@/components/site/home/AboutSection'
-import { CapabilitiesSection } from '@/components/site/home/CapabilitiesSection'
-import { TimelineSection } from '@/components/site/home/TimelineSection'
-import { CertificatesSection } from '@/components/site/home/CertificatesSection'
-import { ContactSection } from '@/components/site/home/ContactSection'
-import '@/components/site/home/home.css'
+import { LandingHero } from '@/components/site/landing/LandingHero'
+import { SkillMarquee } from '@/components/site/landing/SkillMarquee'
+import { WorkIndex } from '@/components/site/landing/WorkIndex'
+import { AboutBento } from '@/components/site/landing/AboutBento'
+import { Capabilities } from '@/components/site/landing/Capabilities'
+import { Journey } from '@/components/site/landing/Journey'
+import { CertificateRail } from '@/components/site/landing/CertificateRail'
+import { ContactFinale } from '@/components/site/landing/ContactFinale'
+import { ScrollRail } from '@/components/site/landing/ScrollRail'
+import '@/components/site/landing/landing.css'
 import {
   getProfile,
   getHeroStats,
@@ -21,6 +23,16 @@ import {
 } from '@/lib/data/portfolio'
 
 const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://murshedkoli.com'
+
+const RAIL_SECTIONS: { id: string; label: string }[] = [
+  { id: 'top', label: 'Intro' },
+  { id: 'projects', label: 'Work' },
+  { id: 'about', label: 'About' },
+  { id: 'expertise', label: 'Capabilities' },
+  { id: 'journey', label: 'Journey' },
+  { id: 'certificates', label: 'Credentials' },
+  { id: 'contact', label: 'Contact' },
+]
 
 /** ISR: served static (instant navigation), regenerated in the background every 10 min. */
 export const revalidate = 600
@@ -59,6 +71,14 @@ export default async function Home() {
     ],
   }
 
+  // Sections hide themselves when empty; keep the rail in step with what renders.
+  const rendered: Record<string, boolean> = {
+    projects: featured.length > 0,
+    journey: experience.length > 0 || education.length > 0,
+    certificates: certificates.length > 0,
+  }
+  const railSections = RAIL_SECTIONS.filter((s) => rendered[s.id] ?? true)
+
   return (
     <>
       <script
@@ -66,23 +86,19 @@ export default async function Home() {
         dangerouslySetInnerHTML={{ __html: serializeJsonLd(personJsonLd) }}
       />
       <Nav name={profile.name} resumeUrl={profile.resume} />
-      <main className="apple-light-main">
-        {/* Statement, actions and the interactive 3D point cloud */}
-        <Hero profile={profile} stats={stats} />
+      <ScrollRail sections={railSections} />
+      <main className="ld">
+        {/* Live dot field, rotating statement, tilting portrait, counters, kinetic wordmark */}
+        <LandingHero profile={profile} stats={stats} />
+        <SkillMarquee skills={skills} />
 
-        {/* Selected projects as 3D tilt cards (hidden when empty) */}
-        <WorkSection projects={featured} />
-
-        <AboutSection profile={profile} />
-
-        {/* Services and tech stack (each hidden when empty) */}
-        <CapabilitiesSection services={services} skills={skills} />
-
-        <TimelineSection experience={experience} education={education} />
-
-        <CertificatesSection certificates={certificates} />
-
-        <ContactSection profile={profile} />
+        {/* Each section below hides itself when it has no data */}
+        <WorkIndex projects={featured} />
+        <AboutBento profile={profile} currentRole={experience.find((e) => e.current) ?? null} />
+        <Capabilities services={services} skills={skills} />
+        <Journey experience={experience} education={education} />
+        <CertificateRail certificates={certificates} />
+        <ContactFinale profile={profile} />
       </main>
       <Footer name={profile.name} email={profile.email} socialLinks={profile.socialLinks} />
     </>

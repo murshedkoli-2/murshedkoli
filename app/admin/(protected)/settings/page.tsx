@@ -254,7 +254,7 @@ export default function SettingsManager() {
       }
     >
       {/* ── NVIDIA NIM AI INTEGRATION (PRIMARY) ─────────────────────────── */}
-      <div className="adm-panel" style={{ marginBottom: 20, border: '1px solid rgba(16, 185, 129, 0.35)' }}>
+      <div className="adm-panel" style={{ marginBottom: 20, border: '1px solid color-mix(in oklch, var(--green) 35%, transparent)' }}>
         <div
           className="adm-panel-head"
           style={{
@@ -263,11 +263,11 @@ export default function SettingsManager() {
             justifyContent: 'space-between',
             flexWrap: 'wrap',
             gap: 10,
-            background: 'linear-gradient(90deg, rgba(16, 185, 129, 0.08) 0%, transparent 100%)',
+            background: 'linear-gradient(90deg, color-mix(in oklch, var(--green) 8%, transparent) 0%, transparent 100%)',
           }}
         >
           <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-            <Sparkles size={18} style={{ color: '#10b981' }} />
+            <Sparkles size={18} style={{ color: 'var(--green)' }} />
             <h2 style={{ margin: 0 }}>NVIDIA NIM AI Architecture (Primary Engine)</h2>
             <span
               style={{
@@ -275,8 +275,8 @@ export default function SettingsManager() {
                 fontFamily: 'var(--font-mono)',
                 padding: '2px 8px',
                 borderRadius: 999,
-                background: 'rgba(16, 185, 129, 0.15)',
-                color: '#10b981',
+                background: 'color-mix(in oklch, var(--green) 15%, transparent)',
+                color: 'var(--green)',
                 fontWeight: 700,
               }}
             >
@@ -337,7 +337,7 @@ export default function SettingsManager() {
             <div className="adm-field">
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 6 }}>
                 <label className="adm-label" style={{ margin: 0 }}>Select Active NVIDIA NIM Model</label>
-                <span style={{ fontSize: 11, fontFamily: 'var(--font-mono)', color: '#10b981' }}>
+                <span style={{ fontSize: 11, fontFamily: 'var(--font-mono)', color: 'var(--green)' }}>
                   ✓ {availableModels.length} models available
                 </span>
               </div>
@@ -396,13 +396,13 @@ export default function SettingsManager() {
                 marginTop: 14,
                 padding: '10px 14px',
                 borderRadius: 10,
-                background: testResult.success ? 'rgba(16, 185, 129, 0.1)' : 'rgba(239, 68, 68, 0.1)',
-                border: `1px solid ${testResult.success ? 'rgba(16, 185, 129, 0.3)' : 'rgba(239, 68, 68, 0.3)'}`,
+                background: testResult.success ? 'color-mix(in oklch, var(--green) 10%, transparent)' : 'color-mix(in oklch, var(--red) 10%, transparent)',
+                border: `1px solid ${testResult.success ? 'color-mix(in oklch, var(--green) 30%, transparent)' : 'color-mix(in oklch, var(--red) 30%, transparent)'}`,
                 display: 'flex',
                 alignItems: 'center',
                 gap: 8,
                 fontSize: 12.5,
-                color: testResult.success ? '#10b981' : '#ef4444',
+                color: testResult.success ? 'var(--green)' : 'var(--red)',
                 wordBreak: 'break-word',
               }}
             >
@@ -425,7 +425,7 @@ export default function SettingsManager() {
               href="https://build.nvidia.com/"
               target="_blank"
               rel="noreferrer"
-              style={{ color: '#10b981', textDecoration: 'underline' }}
+              style={{ color: 'var(--green)', textDecoration: 'underline' }}
             >
               build.nvidia.com
             </a>

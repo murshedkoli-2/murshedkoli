@@ -42,8 +42,8 @@ interface CareerStats {
 }
 
 const CATEGORY_COLORS: Record<string, { bg: string; text: string; border: string }> = {
-  frontend: { bg: 'rgba(59, 130, 246, 0.08)', text: '#3b82f6', border: 'rgba(59, 130, 246, 0.2)' },
-  backend: { bg: 'rgba(16, 185, 129, 0.08)', text: '#10b981', border: 'rgba(16, 185, 129, 0.2)' },
+  frontend: { bg: 'color-mix(in oklch, var(--blue) 8%, transparent)', text: 'var(--blue)', border: 'color-mix(in oklch, var(--blue) 20%, transparent)' },
+  backend: { bg: 'color-mix(in oklch, var(--green) 8%, transparent)', text: 'var(--green)', border: 'color-mix(in oklch, var(--green) 20%, transparent)' },
   database: { bg: 'rgba(168, 85, 247, 0.08)', text: '#a855f7', border: 'rgba(168, 85, 247, 0.2)' },
   devops: { bg: 'rgba(249, 115, 22, 0.08)', text: '#f97316', border: 'rgba(249, 115, 22, 0.2)' },
   'system-design': { bg: 'rgba(236, 72, 153, 0.08)', text: '#ec4899', border: 'rgba(236, 72, 153, 0.2)' },
@@ -509,7 +509,7 @@ export default function CareerRoadmapPage() {
                 fontSize: '2.4rem',
                 fontWeight: 800,
                 fontFamily: 'var(--font-display)',
-                color: stats.readinessScore >= 80 ? '#10b981' : 'var(--accent)',
+                color: stats.readinessScore >= 80 ? 'var(--green)' : 'var(--accent)',
               }}
             >
               {stats.readinessScore}%
@@ -533,7 +533,7 @@ export default function CareerRoadmapPage() {
               style={{
                 width: `${stats.readinessScore}%`,
                 height: '100%',
-                background: stats.readinessScore >= 80 ? '#10b981' : 'var(--accent)',
+                background: stats.readinessScore >= 80 ? 'var(--green)' : 'var(--accent)',
                 borderRadius: 999,
                 transition: 'width 400ms ease',
               }}
@@ -555,7 +555,7 @@ export default function CareerRoadmapPage() {
             {'// ACTIVE SPRINTS'}
           </div>
           <div style={{ display: 'flex', alignItems: 'baseline', gap: 8, marginBottom: 6 }}>
-            <span style={{ fontSize: '2.4rem', fontWeight: 800, fontFamily: 'var(--font-display)', color: '#3b82f6' }}>
+            <span style={{ fontSize: '2.4rem', fontWeight: 800, fontFamily: 'var(--font-display)', color: 'var(--blue)' }}>
               {stats.inProgressSteps}
             </span>
             <span style={{ fontSize: 13, color: 'var(--ink-muted)' }}>milestones in progress</span>
@@ -579,7 +579,7 @@ export default function CareerRoadmapPage() {
             {'// PROOF OF WORK LINKED'}
           </div>
           <div style={{ display: 'flex', alignItems: 'baseline', gap: 8, marginBottom: 6 }}>
-            <span style={{ fontSize: '2.4rem', fontWeight: 800, fontFamily: 'var(--font-display)', color: '#10b981' }}>
+            <span style={{ fontSize: '2.4rem', fontWeight: 800, fontFamily: 'var(--font-display)', color: 'var(--green)' }}>
               {stats.deliverablesLinked}
             </span>
             <span style={{ fontSize: 13, color: 'var(--ink-muted)' }}>deliverables with code URLs</span>
@@ -682,14 +682,14 @@ export default function CareerRoadmapPage() {
           <button
             className={`adm-btn ${statusFilter === 'in_progress' ? 'active' : ''}`}
             onClick={() => setStatusFilter('in_progress')}
-            style={{ padding: '6px 12px', fontSize: 12, color: '#3b82f6' }}
+            style={{ padding: '6px 12px', fontSize: 12, color: 'var(--blue)' }}
           >
             ● In Progress ({stats.inProgressSteps})
           </button>
           <button
             className={`adm-btn ${statusFilter === 'completed' ? 'active' : ''}`}
             onClick={() => setStatusFilter('completed')}
-            style={{ padding: '6px 12px', fontSize: 12, color: '#10b981' }}
+            style={{ padding: '6px 12px', fontSize: 12, color: 'var(--green)' }}
           >
             ✓ Completed ({stats.completedSteps})
           </button>
@@ -773,9 +773,9 @@ export default function CareerRoadmapPage() {
                   background: 'var(--card-bg)',
                   border: `1px solid ${
                     step.status === 'completed'
-                      ? 'rgba(16, 185, 129, 0.3)'
+                      ? 'color-mix(in oklch, var(--green) 30%, transparent)'
                       : step.status === 'in_progress'
-                      ? 'rgba(59, 130, 246, 0.35)'
+                      ? 'color-mix(in oklch, var(--blue) 35%, transparent)'
                       : 'var(--card-border)'
                   }`,
                   borderRadius: 16,
@@ -857,9 +857,9 @@ export default function CareerRoadmapPage() {
                       style={{
                         padding: '4px 10px',
                         borderRadius: 8,
-                        border: step.status === 'in_progress' ? '1px solid #3b82f6' : '1px solid var(--line)',
-                        background: step.status === 'in_progress' ? 'rgba(59, 130, 246, 0.1)' : 'transparent',
-                        color: step.status === 'in_progress' ? '#3b82f6' : 'var(--ink-muted)',
+                        border: step.status === 'in_progress' ? '1px solid var(--blue)' : '1px solid var(--line)',
+                        background: step.status === 'in_progress' ? 'color-mix(in oklch, var(--blue) 10%, transparent)' : 'transparent',
+                        color: step.status === 'in_progress' ? 'var(--blue)' : 'var(--ink-muted)',
                         fontSize: 12,
                         cursor: 'pointer',
                         fontWeight: step.status === 'in_progress' ? 600 : 400,
@@ -874,9 +874,9 @@ export default function CareerRoadmapPage() {
                       style={{
                         padding: '4px 10px',
                         borderRadius: 8,
-                        border: step.status === 'completed' ? '1px solid #10b981' : '1px solid var(--line)',
-                        background: step.status === 'completed' ? 'rgba(16, 185, 129, 0.1)' : 'transparent',
-                        color: step.status === 'completed' ? '#10b981' : 'var(--ink-muted)',
+                        border: step.status === 'completed' ? '1px solid var(--green)' : '1px solid var(--line)',
+                        background: step.status === 'completed' ? 'color-mix(in oklch, var(--green) 10%, transparent)' : 'transparent',
+                        color: step.status === 'completed' ? 'var(--green)' : 'var(--ink-muted)',
                         fontSize: 12,
                         cursor: 'pointer',
                         fontWeight: step.status === 'completed' ? 600 : 400,
@@ -1017,7 +1017,7 @@ export default function CareerRoadmapPage() {
                       style={{
                         width: `${Math.round((completedTasksCount / (stepTasks.length || 1)) * 100)}%`,
                         height: '100%',
-                        background: '#10b981',
+                        background: 'var(--green)',
                         borderRadius: 999,
                         transition: 'width 300ms ease',
                       }}
@@ -1037,7 +1037,7 @@ export default function CareerRoadmapPage() {
                             style={{
                               background: 'var(--card-bg)',
                               border: `1px solid ${
-                                isTaskDone ? 'rgba(16, 185, 129, 0.3)' : 'var(--line)'
+                                isTaskDone ? 'color-mix(in oklch, var(--green) 30%, transparent)' : 'var(--line)'
                               }`,
                               borderRadius: 10,
                               padding: '12px 14px',
@@ -1056,7 +1056,7 @@ export default function CareerRoadmapPage() {
                                 onChange={(e) =>
                                   handleToggleTaskStatus(step, t.id, e.target.checked ? 'completed' : 'todo')
                                 }
-                                style={{ marginTop: 3, cursor: 'pointer', accentColor: '#10b981' }}
+                                style={{ marginTop: 3, cursor: 'pointer', accentColor: 'var(--green)' }}
                                 title="Toggle Task Completion"
                               />
 
@@ -1093,9 +1093,9 @@ export default function CareerRoadmapPage() {
                                         padding: '1px 6px',
                                         borderRadius: 4,
                                         background: t.evaluation?.passed
-                                          ? 'rgba(16, 185, 129, 0.12)'
-                                          : 'rgba(245, 158, 11, 0.12)',
-                                        color: t.evaluation?.passed ? '#10b981' : '#f59e0b',
+                                          ? 'color-mix(in oklch, var(--green) 12%, transparent)'
+                                          : 'color-mix(in oklch, var(--accent) 12%, transparent)',
+                                        color: t.evaluation?.passed ? 'var(--green)' : 'var(--accent)',
                                       }}
                                     >
                                       {t.evaluation?.passed ? '✓' : '●'} {evalScore}% AI Score
@@ -1350,9 +1350,9 @@ export default function CareerRoadmapPage() {
                       padding: '2px 8px',
                       borderRadius: 6,
                       background: activeExamTask.task.status === 'completed'
-                        ? 'rgba(16, 185, 129, 0.12)'
+                        ? 'color-mix(in oklch, var(--green) 12%, transparent)'
                         : 'var(--surface-2)',
-                      color: activeExamTask.task.status === 'completed' ? '#10b981' : 'var(--ink)',
+                      color: activeExamTask.task.status === 'completed' ? 'var(--green)' : 'var(--ink)',
                       fontWeight: 600,
                     }}
                   >
@@ -1408,7 +1408,7 @@ export default function CareerRoadmapPage() {
                       width: 8,
                       height: 8,
                       borderRadius: 999,
-                      background: activeExamTask.task.evaluation.passed ? '#10b981' : '#f59e0b',
+                      background: activeExamTask.task.evaluation.passed ? 'var(--green)' : 'var(--accent)',
                     }}
                   />
                 )}
@@ -1421,8 +1421,8 @@ export default function CareerRoadmapPage() {
                 {/* Problem Statement Box */}
                 <div
                   style={{
-                    background: 'rgba(59, 130, 246, 0.05)',
-                    border: '1px solid rgba(59, 130, 246, 0.2)',
+                    background: 'color-mix(in oklch, var(--blue) 5%, transparent)',
+                    border: '1px solid color-mix(in oklch, var(--blue) 20%, transparent)',
                     borderRadius: 10,
                     padding: 14,
                   }}
@@ -1431,7 +1431,7 @@ export default function CareerRoadmapPage() {
                     style={{
                       fontSize: 11,
                       fontFamily: 'var(--font-mono)',
-                      color: '#3b82f6',
+                      color: 'var(--blue)',
                       fontWeight: 700,
                       marginBottom: 6,
                       textTransform: 'uppercase',
@@ -1576,7 +1576,7 @@ export function solution() {
                   <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
                     {activeExamTask.task.exam.rubric.map((r, i) => (
                       <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: 13 }}>
-                        <span style={{ color: '#10b981', fontWeight: 700 }}>✓</span>
+                        <span style={{ color: 'var(--green)', fontWeight: 700 }}>✓</span>
                         <span>{r}</span>
                       </div>
                     ))}
@@ -1650,12 +1650,12 @@ export function solution() {
                     <div
                       style={{
                         background: activeExamTask.task.evaluation.passed
-                          ? 'rgba(16, 185, 129, 0.08)'
-                          : 'rgba(245, 158, 11, 0.08)',
+                          ? 'color-mix(in oklch, var(--green) 8%, transparent)'
+                          : 'color-mix(in oklch, var(--accent) 8%, transparent)',
                         border: `1px solid ${
                           activeExamTask.task.evaluation.passed
-                            ? 'rgba(16, 185, 129, 0.35)'
-                            : 'rgba(245, 158, 11, 0.35)'
+                            ? 'color-mix(in oklch, var(--green) 35%, transparent)'
+                            : 'color-mix(in oklch, var(--accent) 35%, transparent)'
                         }`,
                         borderRadius: 12,
                         padding: 18,
@@ -1674,7 +1674,7 @@ export function solution() {
                           <b
                             style={{
                               fontSize: 16,
-                              color: activeExamTask.task.evaluation.passed ? '#10b981' : '#f59e0b',
+                              color: activeExamTask.task.evaluation.passed ? 'var(--green)' : 'var(--accent)',
                             }}
                           >
                             {activeExamTask.task.evaluation.passed
@@ -1695,7 +1695,7 @@ export function solution() {
                           style={{
                             fontSize: 28,
                             fontWeight: 800,
-                            color: activeExamTask.task.evaluation.passed ? '#10b981' : '#f59e0b',
+                            color: activeExamTask.task.evaluation.passed ? 'var(--green)' : 'var(--accent)',
                           }}
                         >
                           {activeExamTask.task.evaluation.score}/100
@@ -1717,7 +1717,7 @@ export function solution() {
                           style={{
                             fontSize: 11,
                             fontFamily: 'var(--font-mono)',
-                            color: '#10b981',
+                            color: 'var(--green)',
                             fontWeight: 700,
                             marginBottom: 8,
                             textTransform: 'uppercase',
@@ -1728,7 +1728,7 @@ export function solution() {
                         <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
                           {activeExamTask.task.evaluation.strengths.map((str, i) => (
                             <div key={i} style={{ display: 'flex', gap: 8, fontSize: 13 }}>
-                              <span style={{ color: '#10b981' }}>✓</span>
+                              <span style={{ color: 'var(--green)' }}>✓</span>
                               <span>{str}</span>
                             </div>
                           ))}
@@ -1750,7 +1750,7 @@ export function solution() {
                           style={{
                             fontSize: 11,
                             fontFamily: 'var(--font-mono)',
-                            color: '#f59e0b',
+                            color: 'var(--accent)',
                             fontWeight: 700,
                             marginBottom: 8,
                             textTransform: 'uppercase',
@@ -1761,7 +1761,7 @@ export function solution() {
                         <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
                           {activeExamTask.task.evaluation.improvements.map((imp, i) => (
                             <div key={i} style={{ display: 'flex', gap: 8, fontSize: 13 }}>
-                              <span style={{ color: '#f59e0b' }}>➔</span>
+                              <span style={{ color: 'var(--accent)' }}>➔</span>
                               <span>{imp}</span>
                             </div>
                           ))}
@@ -1773,8 +1773,8 @@ export function solution() {
                     {activeExamTask.task.evaluation.seniorTips && (
                       <div
                         style={{
-                          background: 'rgba(59, 130, 246, 0.06)',
-                          border: '1px solid rgba(59, 130, 246, 0.25)',
+                          background: 'color-mix(in oklch, var(--blue) 6%, transparent)',
+                          border: '1px solid color-mix(in oklch, var(--blue) 25%, transparent)',
                           borderRadius: 10,
                           padding: 14,
                           fontSize: 13,
@@ -1784,7 +1784,7 @@ export function solution() {
                           style={{
                             fontSize: 11,
                             fontFamily: 'var(--font-mono)',
-                            color: '#3b82f6',
+                            color: 'var(--blue)',
                             fontWeight: 700,
                             marginBottom: 6,
                             textTransform: 'uppercase',

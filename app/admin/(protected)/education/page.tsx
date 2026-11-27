@@ -1,11 +1,17 @@
 'use client'
 
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
+import { Plus, Trash2, GraduationCap, School, Sparkles } from 'lucide-react'
 import { toast } from 'sonner'
 import { AdminShell } from '@/components/admin/AdminShell'
 import { confirmDialog } from '@/components/ui/ConfirmDialog'
 import { AIGenerateButton } from '@/components/AIGenerateButton'
 import { useAdminGuard } from '@/lib/admin/useAdminGuard'
+import { Drawer } from '@/components/admin/kit/Drawer'
+import { Toolbar } from '@/components/admin/kit/Toolbar'
+import { StatStrip } from '@/components/admin/kit/StatStrip'
+import { EmptyState } from '@/components/admin/kit/EmptyState'
+import { matchesQuery } from '@/lib/admin/list'
 import { period, toDateInput, type Education } from '@/lib/admin/timeline'
 
 export default function EducationManager() {
@@ -13,6 +19,7 @@ export default function EducationManager() {
   const [educations, setEducations] = useState<Education[]>([])
   const [editing, setEditing] = useState<Education | null>(null)
   const [saving, setSaving] = useState(false)
+  const [query, setQuery] = useState('')
 
   const load = useCallback(async () => {
     try {
@@ -70,6 +77,8 @@ export default function EducationManager() {
     } else toast.error('Could not delete.')
   }
 
+  const shown = useMemo(() => educations.filter((e) => matchesQuery(query, e.degree, e.institution, e.field, e.description)), [educations, query])
+
   if (!ready) return null
 
   const blank: Education = {
@@ -83,15 +92,25 @@ export default function EducationManager() {
       title="Education"
       subtitle={`${educations.length} qualification${educations.length === 1 ? '' : 's'}`}
       actions={
-        <button className="adm-btn amber" onClick={() => setEditing(blank)}>
-          + New qualification
+        <button type="button" className="adm-btn amber" onClick={() => setEditing(blank)}>
+          <Plus size={16} aria-hidden="true" /> New qualification
         </button>
       }
     >
-      {editing && (
-        <div className="adm-panel" style={{ marginBottom: 20 }}>
-          <div className="adm-editor" style={{ borderBottom: 0 }}>
-            <h3>{editing.id ? 'Edit education' : 'New education'}</h3>
+      <Drawer
+        open={editing !== null}
+        title={editing?.id ? 'Edit qualification' : 'New qualification'}
+        subtitle="Qualifications appear on your About page timeline."
+        onClose={() => setEditing(null)}
+        footer={
+          <>
+            <button type="button" className="adm-btn ghost" onClick={() => setEditing(null)}>Cancel</button>
+            <button type="button" className="adm-btn amber" onClick={save} disabled={saving}>{saving ? 'Saving…' : 'Save'}</button>
+          </>
+        }
+      >
+        {editing && (
+          <div>
             <div className="adm-form-grid">
               <div className="adm-field">
                 <label className="adm-label">Degree</label>
@@ -143,19 +162,32 @@ export default function EducationManager() {
                 <textarea className="adm-textarea" value={editing.description || ''} onChange={(e) => setEditing({ ...editing, description: e.target.value })} />
               </div>
             </div>
-            <div className="adm-editor-actions">
-              <button className="adm-btn amber" onClick={save} disabled={saving}>{saving ? 'Saving…' : 'Save'}</button>
-              <button className="adm-btn" onClick={() => setEditing(null)}>Cancel</button>
-            </div>
           </div>
-        </div>
-      )}
+        )}
+      </Drawer>
 
-      {educations.length === 0 ? (
-        <div className="pe-empty">No education entries yet. Add your first qualification.</div>
+      <StatStrip
+        stats={[
+          { label: 'Qualifications', value: educations.length, icon: GraduationCap, tone: 'accent' },
+          { label: 'In progress', value: educations.filter((x) => x.current).length, icon: Sparkles, tone: 'good' },
+          { label: 'Institutions', value: new Set(educations.map((x) => x.institution.trim().toLowerCase())).size, icon: School },
+        ]}
+      />
+
+      <Toolbar id="education" query={query} onQuery={setQuery} placeholder="Search education…" />
+
+
+      {shown.length === 0 ? (
+        <div className="adm-panel">
+          <EmptyState
+            icon={GraduationCap}
+            title={educations.length ? 'Nothing matches' : 'Nothing here yet'}
+            body={educations.length ? 'Try a different search.' : 'Add your first qualification to build the timeline.'}
+          />
+        </div>
       ) : (
         <div className="tl-grid">
-          {educations.map((e) => (
+          {shown.map((e) => (
             <article key={e.id} className={`tl-card ${e.current ? 'current' : ''}`}>
               <div className="tl-top">
                 <span className="tl-period">{period(e.startDate, e.endDate, e.current)}</span>
@@ -183,7 +215,7 @@ export default function EducationManager() {
                   title="Delete"
                   aria-label={`Delete ${e.degree} from ${e.institution}`}
                 >
-                  🗑
+                  <Trash2 size={15} aria-hidden="true" />
                 </button>
               </div>
             </article>

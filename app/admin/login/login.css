@@ -1,0 +1,184 @@
+/* Admin sign-in — matches the public "studio index" look: live dot field,
+   editorial type, one accent. Scoped under .lgx; colours come from the
+   global theme tokens so light/dark both work. */
+
+.lgx {
+  --lgx-ok: #2f9e5b;
+  --lgx-radius: 14px;
+  min-height: 100svh;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  background: var(--canvas);
+  color: var(--ink);
+}
+
+.lgx em {
+  font-family: var(--font-serif);
+  font-style: italic;
+  font-weight: 400;
+  color: var(--accent);
+}
+
+/* ── Showcase panel ───────────────────────────────────────────────── */
+.lgx-show {
+  position: relative;
+  display: none;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 2rem;
+  margin: 12px 0 12px 12px;
+  padding: clamp(2rem, 1rem + 2.5vw, 3.25rem);
+  overflow: hidden;
+  isolation: isolate;
+  border-radius: 28px;
+  border: 1px solid var(--line);
+  background:
+    radial-gradient(90% 70% at 100% 100%, color-mix(in oklab, var(--accent) 16%, transparent), transparent 65%),
+    var(--surface-2);
+}
+.lgx-dots {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  width: 100%;
+  height: 100%;
+  -webkit-mask-image: radial-gradient(ellipse 90% 80% at 40% 45%, #000 30%, transparent 85%);
+  mask-image: radial-gradient(ellipse 90% 80% at 40% 45%, #000 30%, transparent 85%);
+}
+
+.lgx-show-top { display: flex; align-items: center; justify-content: space-between; }
+.lgx-brand { font-family: var(--font-display); font-size: 1.1rem; font-weight: 600; letter-spacing: -0.02em; }
+.lgx-brand span { color: var(--accent); }
+@keyframes lgx-ping { 0% { box-shadow: 0 0 0 0 rgb(47 158 91 / 0.55); } 100% { box-shadow: 0 0 0 8px rgb(47 158 91 / 0); } }
+.lgx-chip {
+  display: inline-flex; align-items: center; gap: 0.5rem; padding: 0.4rem 0.8rem; border-radius: 999px;
+  border: 1px solid var(--line-strong); background: var(--nav-bg); backdrop-filter: blur(8px);
+  font-family: var(--font-mono); font-size: 0.68rem; letter-spacing: 0.12em; text-transform: uppercase;
+}
+.lgx-chip-dot { width: 7px; height: 7px; border-radius: 999px; background: var(--lgx-ok); animation: lgx-ping 1.8s ease-out infinite; }
+
+.lgx-clock { min-height: 10rem; }
+.lgx-greeting { font-family: var(--font-display); font-size: clamp(1.1rem, 0.9rem + 0.6vw, 1.45rem); color: var(--ink-muted); letter-spacing: -0.02em; }
+.lgx-time {
+  font-family: var(--font-display); font-size: clamp(4.5rem, 2.5rem + 5.5vw, 8.75rem); font-weight: 600;
+  line-height: 0.9; letter-spacing: -0.065em; font-variant-numeric: tabular-nums; margin: 0.4rem 0 0.8rem;
+}
+.lgx-date { font-family: var(--font-mono); font-size: 0.76rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--ink-muted); }
+
+.lgx-statement {
+  font-family: var(--font-display); font-size: clamp(2rem, 1.2rem + 2.2vw, 3.3rem); font-weight: 500;
+  line-height: 1.04; letter-spacing: -0.045em; max-width: 13ch;
+}
+.lgx-manage { display: flex; align-items: baseline; gap: 0.9rem; margin-top: 1.4rem; }
+.lgx-manage-label { font-family: var(--font-mono); font-size: 0.72rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--ink-muted); }
+.lgx-ticker {
+  position: relative; display: inline-grid; overflow: hidden; min-width: 12ch; height: 1.25em;
+  font-family: var(--font-display); font-size: 1.6rem; font-weight: 600; letter-spacing: -0.03em; color: var(--accent);
+}
+.lgx-ticker > span { grid-area: 1 / 1; white-space: nowrap; }
+.lgx-foot {
+  margin-top: 2rem; padding-top: 1rem; border-top: 1px solid var(--line-strong);
+  font-family: var(--font-mono); font-size: 0.7rem; letter-spacing: 0.06em; color: var(--ink-muted);
+}
+
+/* ── Form side ────────────────────────────────────────────────────── */
+.lgx-main { display: flex; flex-direction: column; min-height: 100svh; padding: clamp(1.25rem, 0.75rem + 2vw, 2.5rem); }
+.lgx-main-top { display: flex; align-items: center; justify-content: space-between; }
+.lgx-back {
+  display: inline-flex; align-items: center; gap: 0.4rem; padding: 0.5rem 0.2rem;
+  color: var(--ink-muted); font-size: 0.88rem; transition: color 200ms;
+}
+.lgx-back svg { transition: transform 300ms var(--ease); }
+.lgx-back:hover { color: var(--ink); }
+.lgx-back:hover svg { transform: translateX(-3px); }
+
+.lgx-panel { flex: 1; display: grid; place-items: center; padding-block: 2.5rem; }
+.lgx-form { width: min(100%, 400px); display: grid; gap: 1.2rem; }
+.lgx-form header { margin-bottom: 0.6rem; }
+.lgx-eyebrow {
+  display: flex; align-items: center; gap: 0.7rem;
+  font-family: var(--font-mono); font-size: 0.72rem; letter-spacing: 0.14em; text-transform: uppercase; color: var(--accent);
+}
+.lgx-eyebrow::before { content: ""; width: 1.75rem; height: 1px; background: currentColor; }
+.lgx-title {
+  margin: 0.9rem 0 0.6rem; font-family: var(--font-display);
+  font-size: clamp(2.5rem, 2rem + 1.8vw, 3.4rem); font-weight: 600; line-height: 1; letter-spacing: -0.055em;
+}
+.lgx-sub { color: var(--ink-muted); font-size: 0.98rem; }
+
+.lgx-field { display: grid; gap: 0.5rem; }
+.lgx-label { font-family: var(--font-mono); font-size: 0.7rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--ink-muted); }
+.lgx-control {
+  display: flex; align-items: center; border-radius: var(--lgx-radius);
+  border: 1px solid var(--line-strong); background: var(--surface);
+  transition: border-color 200ms, box-shadow 250ms var(--ease);
+}
+.lgx-control:hover { border-color: var(--ink-muted); }
+.lgx-control:focus-within { border-color: var(--accent); box-shadow: 0 0 0 4px var(--accent-soft); }
+.lgx-control[data-invalid="true"] { border-color: var(--danger); }
+.lgx-control[data-invalid="true"]:focus-within { box-shadow: 0 0 0 4px var(--danger-soft); }
+.lgx-control-icon { flex-shrink: 0; margin-left: 1rem; color: var(--ink-muted); transition: color 200ms; }
+.lgx-control:focus-within .lgx-control-icon { color: var(--accent); }
+.lgx-input {
+  flex: 1; min-width: 0; padding: 0.95rem 0.85rem; border: 0; outline: none; background: transparent;
+  color: var(--ink); font: inherit; font-size: 1rem;
+}
+.lgx-input:-webkit-autofill {
+  -webkit-text-fill-color: var(--ink);
+  box-shadow: inset 0 0 0 100px var(--surface);
+  caret-color: var(--ink);
+}
+.lgx-reveal {
+  display: grid; place-items: center; width: 38px; height: 38px; margin-right: 0.4rem; flex-shrink: 0;
+  border: 0; border-radius: 10px; background: transparent; color: var(--ink-muted); cursor: pointer;
+  transition: background 200ms, color 200ms;
+}
+.lgx-reveal:hover { background: var(--surface-2); color: var(--ink); }
+.lgx-caps { display: flex; align-items: center; gap: 0.4rem; font-family: var(--font-mono); font-size: 0.76rem; color: var(--accent); }
+
+.lgx-error { overflow: hidden; }
+.lgx-error > span {
+  display: flex; align-items: flex-start; gap: 0.55rem; padding: 0.8rem 1rem; border-radius: 12px;
+  background: var(--danger-soft); color: var(--danger); font-size: 0.88rem; line-height: 1.45;
+}
+.lgx-error svg { flex-shrink: 0; margin-top: 2px; }
+
+@keyframes lgx-spin { to { rotate: 360deg; } }
+.lgx-spin { animation: lgx-spin 0.8s linear infinite; }
+.lgx-submit {
+  position: relative; isolation: isolate; overflow: hidden; margin-top: 0.3rem;
+  display: flex; align-items: center; justify-content: space-between; width: 100%;
+  padding: 1rem 1.25rem 1rem 1.5rem; border: 0; border-radius: var(--lgx-radius);
+  background: var(--btn-primary-bg); color: var(--btn-primary-ink);
+  font: inherit; font-size: 1rem; font-weight: 600; letter-spacing: -0.01em; cursor: pointer;
+  transition: color 300ms var(--ease), background 300ms, transform 200ms var(--ease);
+}
+.lgx-submit::before {
+  content: ""; position: absolute; inset: 0; z-index: -1; background: var(--accent);
+  transform: scaleX(0); transform-origin: left; transition: transform 450ms var(--ease);
+}
+.lgx-submit:hover:not(:disabled)::before, .lgx-submit:focus-visible::before { transform: scaleX(1); }
+.lgx-submit:hover:not(:disabled), .lgx-submit:focus-visible { color: var(--accent-ink); }
+.lgx-submit svg { transition: transform 300ms var(--ease); }
+.lgx-submit:hover:not(:disabled) svg { transform: translateX(4px); }
+.lgx-submit:active:not(:disabled) { transform: scale(0.985); }
+.lgx-submit:disabled { cursor: progress; }
+.lgx-submit[data-status="success"] { background: var(--lgx-ok); color: #fff; }
+.lgx-submit:focus-visible, .lgx-back:focus-visible, .lgx-reveal:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+
+.lgx-hint { text-align: center; font-size: 0.8rem; color: var(--ink-muted); }
+.lgx-hint kbd {
+  padding: 0.1rem 0.45rem; border-radius: 6px; border: 1px solid var(--line-strong); border-bottom-width: 2px;
+  background: var(--surface); font-family: var(--font-mono); font-size: 0.72rem; color: var(--ink);
+}
+.lgx-legal { text-align: center; font-family: var(--font-mono); font-size: 0.68rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--ink-muted); }
+
+@media (min-width: 960px) {
+  .lgx { grid-template-columns: minmax(0, 1.1fr) minmax(0, 0.9fr); }
+  .lgx-show { display: flex; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .lgx-chip-dot, .lgx-spin { animation: none; }
+  .lgx *, .lgx *::before { transition-duration: 1ms !important; }
+}

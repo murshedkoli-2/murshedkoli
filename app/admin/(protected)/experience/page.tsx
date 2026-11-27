@@ -1,11 +1,17 @@
 'use client'
 
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
+import { Plus, Trash2, Briefcase, Building2, Sparkles } from 'lucide-react'
 import { toast } from 'sonner'
 import { AdminShell } from '@/components/admin/AdminShell'
 import { confirmDialog } from '@/components/ui/ConfirmDialog'
 import { AIGenerateButton } from '@/components/AIGenerateButton'
 import { useAdminGuard } from '@/lib/admin/useAdminGuard'
+import { Drawer } from '@/components/admin/kit/Drawer'
+import { Toolbar } from '@/components/admin/kit/Toolbar'
+import { StatStrip } from '@/components/admin/kit/StatStrip'
+import { EmptyState } from '@/components/admin/kit/EmptyState'
+import { matchesQuery } from '@/lib/admin/list'
 import { period, toDateInput, type Experience } from '@/lib/admin/timeline'
 
 export default function ExperienceManager() {
@@ -13,6 +19,7 @@ export default function ExperienceManager() {
   const [experiences, setExperiences] = useState<Experience[]>([])
   const [editing, setEditing] = useState<Experience | null>(null)
   const [saving, setSaving] = useState(false)
+  const [query, setQuery] = useState('')
 
   const load = useCallback(async () => {
     try {
@@ -70,6 +77,8 @@ export default function ExperienceManager() {
     } else toast.error('Could not delete.')
   }
 
+  const shown = useMemo(() => experiences.filter((e) => matchesQuery(query, e.position, e.company, e.location, e.description)), [experiences, query])
+
   if (!ready) return null
 
   const blank: Experience = {
@@ -83,15 +92,25 @@ export default function ExperienceManager() {
       title="Experience"
       subtitle={`${experiences.length} role${experiences.length === 1 ? '' : 's'}`}
       actions={
-        <button className="adm-btn amber" onClick={() => setEditing(blank)}>
-          + New role
+        <button type="button" className="adm-btn amber" onClick={() => setEditing(blank)}>
+          <Plus size={16} aria-hidden="true" /> New role
         </button>
       }
     >
-      {editing && (
-        <div className="adm-panel" style={{ marginBottom: 20 }}>
-          <div className="adm-editor" style={{ borderBottom: 0 }}>
-            <h3>{editing.id ? 'Edit experience' : 'New experience'}</h3>
+      <Drawer
+        open={editing !== null}
+        title={editing?.id ? 'Edit role' : 'New role'}
+        subtitle="Roles appear on your About page timeline."
+        onClose={() => setEditing(null)}
+        footer={
+          <>
+            <button type="button" className="adm-btn ghost" onClick={() => setEditing(null)}>Cancel</button>
+            <button type="button" className="adm-btn amber" onClick={save} disabled={saving}>{saving ? 'Saving…' : 'Save'}</button>
+          </>
+        }
+      >
+        {editing && (
+          <div>
             <div className="adm-form-grid">
               <div className="adm-field">
                 <label className="adm-label">Role</label>
@@ -139,19 +158,32 @@ export default function ExperienceManager() {
                 <textarea className="adm-textarea" value={editing.description} onChange={(e) => setEditing({ ...editing, description: e.target.value })} />
               </div>
             </div>
-            <div className="adm-editor-actions">
-              <button className="adm-btn amber" onClick={save} disabled={saving}>{saving ? 'Saving…' : 'Save'}</button>
-              <button className="adm-btn" onClick={() => setEditing(null)}>Cancel</button>
-            </div>
           </div>
-        </div>
-      )}
+        )}
+      </Drawer>
 
-      {experiences.length === 0 ? (
-        <div className="pe-empty">No experience entries yet. Add your first role.</div>
+      <StatStrip
+        stats={[
+          { label: 'Roles', value: experiences.length, icon: Briefcase, tone: 'accent' },
+          { label: 'Current', value: experiences.filter((x) => x.current).length, icon: Sparkles, tone: 'good' },
+          { label: 'Companies', value: new Set(experiences.map((x) => x.company.trim().toLowerCase())).size, icon: Building2 },
+        ]}
+      />
+
+      <Toolbar id="experience" query={query} onQuery={setQuery} placeholder="Search experience…" />
+
+
+      {shown.length === 0 ? (
+        <div className="adm-panel">
+          <EmptyState
+            icon={Briefcase}
+            title={experiences.length ? 'Nothing matches' : 'Nothing here yet'}
+            body={experiences.length ? 'Try a different search.' : 'Add your first role to build the timeline.'}
+          />
+        </div>
       ) : (
         <div className="tl-grid">
-          {experiences.map((e) => (
+          {shown.map((e) => (
             <article key={e.id} className={`tl-card ${e.current ? 'current' : ''}`}>
               <div className="tl-top">
                 <span className="tl-period">{period(e.startDate, e.endDate, e.current)}</span>
@@ -178,7 +210,7 @@ export default function ExperienceManager() {
                   title="Delete"
                   aria-label={`Delete ${e.position} at ${e.company}`}
                 >
-                  🗑
+                  <Trash2 size={15} aria-hidden="true" />
                 </button>
               </div>
             </article>

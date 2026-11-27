@@ -1,13 +1,17 @@
 'use client'
 
-import { useCallback, useEffect, useMemo, useState, type ReactNode } from 'react'
-import Link from 'next/link'
-import { ArrowRight } from 'lucide-react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
+import { Award, Briefcase, FolderKanban, GraduationCap, Hexagon, Layers, Mail, Rocket } from 'lucide-react'
 import { toast } from 'sonner'
 import { AdminShell } from '@/components/admin/AdminShell'
 import { useAdminGuard } from '@/lib/admin/useAdminGuard'
+import { pipelineSegments } from '@/lib/admin/overview'
+import { StatStrip, type Stat } from '@/components/admin/kit/StatStrip'
+import { WelcomeTile } from '@/components/admin/overview/WelcomeTile'
+import { ReadinessRing } from '@/components/admin/overview/ReadinessRing'
+import { ContentMap, type ContentTile } from '@/components/admin/overview/ContentMap'
+import { RecentProjects, LatestMessages } from '@/components/admin/overview/ActivityLists'
 import {
-  relativeTime,
   isLive,
   buildCompleteness,
   MAX_VISIBLE_SKILLS,
@@ -20,7 +24,7 @@ import {
   type AdminExperience,
 } from '@/lib/admin/portfolio-summary'
 
-const RECENT_PROJECTS = 5
+const RECENT_PROJECTS = 6
 const RECENT_MESSAGES = 5
 
 interface OverviewData {
@@ -91,141 +95,45 @@ export default function AdminOverview() {
   const drafts = projects.length - liveProjects
   /** Open completeness issues, plus one if there is unread mail. */
   const attention = completeness.issues.length + (unread ? 1 : 0)
+  const pipeline = useMemo(() => pipelineSegments(projects), [projects])
 
-  /** One row per content type: count, a qualifying note, and a way in. */
-  const inventory = [
-    { label: 'Projects', value: projects.length, detail: `${liveProjects} live · ${drafts} draft`, href: '/admin/projects' },
-    { label: 'Skills', value: skills.length, detail: `${visibleSkills} visible`, href: '/admin/skills', warn: visibleSkills > MAX_VISIBLE_SKILLS },
-    { label: 'Services', value: services.length, detail: services.length ? 'offered' : 'none yet', href: '/admin/services' },
-    { label: 'Certificates', value: certs.length, detail: certsMissingLink ? `${certsMissingLink} missing a link` : certs.length ? 'all verifiable' : 'none yet', href: '/admin/certificates', warn: certsMissingLink > 0 },
-    { label: 'Experience', value: experience.length, detail: experience.length === 1 ? 'role' : 'roles', href: '/admin/experience' },
-    { label: 'Education', value: education.length, detail: education.length === 1 ? 'qualification' : 'qualifications', href: '/admin/education' },
-    { label: 'Messages', value: messages.length, detail: unread ? `${unread} unread` : 'inbox clear', href: '/admin/messages', warn: unread > 0 },
+  const tiles: ContentTile[] = [
+    { label: 'Projects', value: projects.length, detail: `${liveProjects} live · ${drafts} draft`, href: '/admin/projects', icon: FolderKanban },
+    { label: 'Skills', value: skills.length, detail: `${visibleSkills} visible`, href: '/admin/skills', icon: Hexagon, warn: visibleSkills > MAX_VISIBLE_SKILLS },
+    { label: 'Services', value: services.length, detail: services.length ? 'offered' : 'none yet', href: '/admin/services', icon: Layers },
+    { label: 'Certificates', value: certs.length, detail: certsMissingLink ? `${certsMissingLink} missing a link` : certs.length ? 'all verifiable' : 'none yet', href: '/admin/certificates', icon: Award, warn: certsMissingLink > 0 },
+    { label: 'Experience', value: experience.length, detail: experience.length === 1 ? 'role' : 'roles', href: '/admin/experience', icon: Briefcase },
+    { label: 'Education', value: education.length, detail: education.length === 1 ? 'qualification' : 'qualifications', href: '/admin/education', icon: GraduationCap },
+    { label: 'Messages', value: messages.length, detail: unread ? `${unread} unread` : 'inbox clear', href: '/admin/messages', icon: Mail, warn: unread > 0 },
+  ]
+
+  const stats: Stat[] = [
+    { label: 'Live projects', value: liveProjects, icon: Rocket, tone: 'good', note: drafts ? `${drafts} still in draft` : 'Nothing in draft' },
+    { label: 'Unread', value: unread, icon: Mail, tone: unread ? 'warn' : undefined, note: unread ? 'Awaiting your reply' : 'Inbox clear' },
+    { label: 'Visible skills', value: visibleSkills, icon: Hexagon, tone: visibleSkills > MAX_VISIBLE_SKILLS ? 'warn' : undefined, note: `Aim for ${MAX_VISIBLE_SKILLS} or fewer` },
+    { label: 'Certificates', value: certs.length, icon: Award, tone: 'accent', note: certsMissingLink ? `${certsMissingLink} missing a link` : 'All verifiable' },
   ]
 
   if (!ready) return null
 
   const firstName = profile?.name?.trim().split(/\s+/)[0]
-  const figure = (value: ReactNode) => (loaded ? value : <span className="dash-skeleton" aria-label="Loading" />)
 
   return (
     <AdminShell
       active="overview"
       title="Overview"
-      subtitle="Portfolio at a glance"
+      subtitle="Your portfolio at a glance"
       badges={{ projects: projects.length, skills: skills.length, certificates: certs.length, messages: unread }}
-      actions={
-        <>
-          <Link href="/" target="_blank" className="adm-btn">Preview site ↗</Link>
-          <Link href="/admin/projects/new" className="adm-btn amber">New project</Link>
-        </>
-      }
     >
-      <div className="dash">
-        <p className="dash-lede">
-          {firstName ? `Welcome back, ${firstName}. ` : 'Welcome back. '}
-          {!loaded ? 'Checking the site…' : attention === 0
-            ? <>Everything is <em>in order</em>.</>
-            : <>{attention} thing{attention === 1 ? '' : 's'} could use <em>your attention</em>.</>}
-        </p>
-
-        <dl className="dash-figures">
-          <div className="dash-figure">
-            <dt className="dash-label">Live projects</dt>
-            <dd className="dash-figure-value">{figure(<>{liveProjects}<small>/ {projects.length}</small></>)}</dd>
-            <dd className="dash-figure-note">{drafts ? `${drafts} still in draft` : 'Nothing in draft'}</dd>
-          </div>
-          <div className="dash-figure">
-            <dt className="dash-label">Unread messages</dt>
-            <dd className="dash-figure-value">{figure(unread)}</dd>
-            <dd className="dash-figure-note" data-tone={unread ? 'warn' : undefined}>
-              {unread ? 'Awaiting your reply' : `${messages.length} total · inbox clear`}
-            </dd>
-          </div>
-          <div className="dash-figure">
-            <dt className="dash-label">Completeness</dt>
-            <dd className="dash-figure-value">{figure(<>{completeness.percent}<small>%</small></>)}</dd>
-            <dd className="dash-meter" aria-hidden="true"><i style={{ transform: `scaleX(${loaded ? completeness.percent / 100 : 0})` }} /></dd>
-          </div>
-          <div className="dash-figure">
-            <dt className="dash-label">Résumé</dt>
-            <dd className="dash-figure-value">{figure(profile?.resume ? 'On file' : 'None')}</dd>
-            <dd className="dash-figure-note"><Link href="/admin/about">{profile?.resume ? 'Replace file' : 'Upload one'}</Link></dd>
-          </div>
-        </dl>
-
-        {completeness.issues.length > 0 && (
-          <section aria-labelledby="dash-attention">
-            <div className="dash-section-head">
-              <h2 id="dash-attention">Needs attention</h2>
-              <span className="dash-label">{completeness.issues.length} open</span>
-            </div>
-            {completeness.issues.map((issue) => (
-              <Link key={issue.label} href={issue.href} className="dash-row">
-                <span className="dash-row-main"><span className="dash-dot" aria-hidden="true" /><span className="dash-row-title">{issue.label}</span></span>
-                <span className="dash-row-meta">Fix <ArrowRight size={14} className="dash-row-arrow" aria-hidden="true" /></span>
-              </Link>
-            ))}
-          </section>
-        )}
-
-        <section aria-labelledby="dash-content">
-          <div className="dash-section-head">
-            <h2 id="dash-content">Content</h2>
-            <span className="dash-label">{inventory.length} types</span>
-          </div>
-          {inventory.map((item) => (
-            <Link key={item.label} href={item.href} className="dash-row">
-              <span className="dash-row-main"><span className="dash-row-title">{item.label}</span></span>
-              <span className="dash-row-meta" data-tone={item.warn ? 'warn' : undefined}>
-                {loaded && item.detail}
-                <span className="dash-row-count">{figure(item.value)}</span>
-                <ArrowRight size={14} className="dash-row-arrow" aria-hidden="true" />
-              </span>
-            </Link>
-          ))}
-        </section>
-
-        <div className="dash-columns">
-          <section aria-labelledby="dash-recent">
-            <div className="dash-section-head">
-              <h2 id="dash-recent">Recently updated</h2>
-              <Link href="/admin/projects" className="dash-more">All projects →</Link>
-            </div>
-            {loaded && recentProjects.length === 0 && <div className="dash-empty">No projects yet. Create your first one.</div>}
-            {recentProjects.map((p) => (
-              <Link key={p.id} href={`/admin/projects/${p.id}`} className="dash-row">
-                <span style={{ minWidth: 0 }}>
-                  <span className="dash-row-title" style={{ display: 'block' }}>{p.title}</span>
-                  <span className="dash-row-sub" style={{ display: 'block' }}>
-                    {p.lifecycleStatus || 'project'}{p.updatedAt ? ` · updated ${relativeTime(p.updatedAt)}` : ''}
-                  </span>
-                </span>
-                <span className="dash-status" data-live={isLive(p)}>{isLive(p) ? 'Live' : 'Draft'}</span>
-              </Link>
-            ))}
-          </section>
-
-          <section aria-labelledby="dash-messages">
-            <div className="dash-section-head">
-              <h2 id="dash-messages">Latest messages</h2>
-              <Link href="/admin/messages" className="dash-more">Inbox →</Link>
-            </div>
-            {loaded && recentMessages.length === 0 && <div className="dash-empty">No messages yet.</div>}
-            {recentMessages.map((m) => (
-              <Link key={m.id} href="/admin/messages" className="dash-row">
-                <span className="dash-row-main">
-                  {m.status === 'unread' && <span className="dash-dot" role="img" aria-label="Unread" />}
-                  <span style={{ minWidth: 0 }}>
-                    <span className="dash-row-title" style={{ display: 'block' }}>{m.name || 'Anonymous'}</span>
-                    <span className="dash-row-sub" style={{ display: 'block' }}>{m.subject || 'No subject'}</span>
-                  </span>
-                </span>
-                <span className="dash-row-meta">{relativeTime(m.createdAt) || 'just now'}</span>
-              </Link>
-            ))}
-          </section>
+      <div className="ov">
+        <WelcomeTile firstName={firstName} loaded={loaded} attention={attention} unread={unread} />
+        <ReadinessRing percent={completeness.percent} issues={completeness.issues} loaded={loaded} />
+        <div className="ov-stats">
+          <StatStrip stats={stats} />
         </div>
+        <ContentMap tiles={tiles} pipeline={pipeline} loaded={loaded} />
+        <RecentProjects projects={recentProjects} loaded={loaded} />
+        <LatestMessages messages={recentMessages} loaded={loaded} />
       </div>
     </AdminShell>
   )
