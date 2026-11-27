@@ -1,5 +1,5 @@
 import { serializeJsonLd } from '@/lib/json-ld'
-import { Space_Grotesk, Inter, JetBrains_Mono, Instrument_Serif } from 'next/font/google'
+import localFont from 'next/font/local'
 import './globals.css'
 import { Metadata, Viewport } from 'next'
 import ToasterProvider from '@/components/ToasterProvider'
@@ -8,31 +8,35 @@ import { ThemeProvider } from '@/components/site/ThemeProvider'
 import { themeInitScript } from '@/lib/theme'
 import { getPublicProfile, getSettingsMap } from '@/lib/site-data'
 
-const spaceGrotesk = Space_Grotesk({
-  subsets: ['latin'],
-  weight: ['400', '500', '600', '700'],
+// Self-hosted from the Fontsource npm packages, so builds never download fonts
+// from Google: a failed download broke Turbopack builds ("next/font/google
+// queries have exactly one entry") in CI and on first dev start.
+const spaceGrotesk = localFont({
+  src: '../node_modules/@fontsource-variable/space-grotesk/files/space-grotesk-latin-wght-normal.woff2',
+  weight: '300 700',
   variable: '--font-space-grotesk',
   display: 'swap',
 })
 
-const inter = Inter({
-  subsets: ['latin'],
-  weight: ['400', '500', '600'],
+const inter = localFont({
+  src: '../node_modules/@fontsource-variable/inter/files/inter-latin-wght-normal.woff2',
+  weight: '100 900',
   variable: '--font-inter',
   display: 'swap',
 })
 
-const jetbrainsMono = JetBrains_Mono({
-  subsets: ['latin'],
-  weight: ['400', '500', '600'],
+const jetbrainsMono = localFont({
+  src: '../node_modules/@fontsource-variable/jetbrains-mono/files/jetbrains-mono-latin-wght-normal.woff2',
+  weight: '100 800',
   variable: '--font-jetbrains-mono',
   display: 'swap',
 })
 
-const instrumentSerif = Instrument_Serif({
-  subsets: ['latin'],
-  weight: '400',
-  style: ['normal', 'italic'],
+const instrumentSerif = localFont({
+  src: [
+    { path: '../node_modules/@fontsource/instrument-serif/files/instrument-serif-latin-400-normal.woff2', weight: '400', style: 'normal' },
+    { path: '../node_modules/@fontsource/instrument-serif/files/instrument-serif-latin-400-italic.woff2', weight: '400', style: 'italic' },
+  ],
   variable: '--font-instrument-serif',
   display: 'swap',
 })
@@ -200,8 +204,6 @@ export default async function RootLayout({
     >
       <head>
         <script dangerouslySetInnerHTML={{ __html: themeInitScript }} />
-        <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: serializeJsonLd(jsonLd) }}
